@@ -132,6 +132,7 @@ object ScalaApp4 {
     val predK = predicted.take(k)
     var score = 0.0
     var numHits = 0.0
+    //
     for ((p, i) <- predK.zipWithIndex) {
       if (actual.contains(p)) {
         numHits += 1.0
