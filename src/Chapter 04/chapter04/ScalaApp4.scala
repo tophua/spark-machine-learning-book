@@ -30,18 +30,20 @@ object ScalaApp4 {
     //参数说明:rank对应ALS模型中的因子个数,通常合理取值为10---200
     //iterations:对应运行时迭代次数,10次左右一般就挺好
     //lambda:该参数控制模型的正则化过程,从而控制模型的过拟合情况0.01 
-    val model = ALS.train(ratings, 50, 10, 0.01) //返回MatrFactorizationModel对象
+    val model = ALS.train(ratings, 50, 10, 0.01) //返回MatrFactorizationModel对象矩阵分解模型
     model.userFeatures //用户因子
     model.userFeatures.count
     model.productFeatures.count //物品因子 
     /**=================使用推荐模型==============================**/
     //该模型预测用户789对电影123的评级为3.12 
-    val predictedRating = model.predict(789, 123) //方便地计算给定用户对给定物品的预期得分
+    //使用推荐模型预对用户和商品进行评分，得到预测评分的数据集  
+    val predictedRating = model.predict(789, 123) //计算给定用户对给定物品的预期得分
     println("预测用户789对电影123的评级为:" + predictedRating)
     val userId = 789
     val K = 10
     //算下给用户789推荐的前10个物品 
-    val topKRecs = model.recommendProducts(userId, K) //参数用户ID,num参数要推荐的物品个数 
+    val topKRecs = model.recommendProducts(userId, K) //参数是模型用户ID,num参数要推荐的物品个数 
+
     println("用户789推荐的前10个物品\t" + topKRecs.mkString("\n"))
 
     /*****检验推荐内容*******/
@@ -49,8 +51,9 @@ object ScalaApp4 {
     //电影ID|电影标题                       |发行时间          |
     //1     |Toy Story (1995)|01-Jan-1995||http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0
 
-    //获取前二列数据 ,从电影ID和标题
+    //获取前二列数据 ,从电影ID和标题,返回Map形式
     val titles = movies.map(line => line.split("\\|").take(2)).map(array => (array(0).toInt, array(1))).collectAsMap()
+    topKRecs.foreach { x => println("前10个物品名称:" + titles(x.product.intValue()) + "\t评级:" + x.rating.doubleValue()) }
     println("电影ID 123名称:" + titles(123))
     //找出用户789所接触过的电影
     val moviesForUser = ratings.keyBy(_.user).lookup(789)
@@ -65,25 +68,62 @@ object ScalaApp4 {
     /***********物品推荐模型效果*******************/
     //从MovieLens 100K数据集生成相似电影
     val aMatrix = new DoubleMatrix(Array(1.0, 2.0, 3.0))
+    //定义一个函数来计算两个向量之间的余弦相似度,
     def cosineSimilarity(vec1: DoubleMatrix, vec2: DoubleMatrix): Double = {
+      //余弦相似度:两个向量的点积与各向量范数的乘积的商,相似度的取值在-1和1之间
+      //相似度取值在-1和1之间,1表示完 全相似,0表示两者不相关(即无相似性)
       vec1.dot(vec2) / (vec1.norm2() * vec2.norm2())
     }
+    //以物品567为例从模型中取回其对应的因子,
     val itemId = 567
+    //返回第一个数组而我们只需第一个值(实际上,数组里也只会有一个值,也就是该物品的因子向量)
     val itemFactor = model.productFeatures.lookup(itemId).head
+    //创建一个DoubleMatrix对象,然后再用该对象来计算它与自己的相似度
     val itemVector = new DoubleMatrix(itemFactor)
     cosineSimilarity(itemVector, itemVector)
+    //现在求各个物品的余弦相似度
     val sims = model.productFeatures.map {
       case (id, factor) =>
         val factorVector = new DoubleMatrix(factor)
         val sim = cosineSimilarity(factorVector, itemVector)
         (id, sim)
     }
+    //对物品按照相似度排序,然后取出与物品567最相似的前10个物品, 
+    //top传入Ordering对象,它会告诉Spark根据键值对里的值排序(也就是用similarity排序)
     val sortedSims = sims.top(K)(Ordering.by[(Int, Double), Double] { case (id, similarity) => similarity })
     println(sortedSims.mkString("\n"))
-    //检查推荐的相似物品
-    println(titles(itemId))
+    /* 
+    (567,1.0000000000000002)
+    (413,0.7431091494962073)
+    (1471,0.7301420755366541)
+    (288,0.7229307761535951)
+    (201,0.7174894985405192)
+    (895,0.7167458613072292)
+    (403,0.7129522148795585)
+    (219,0.712221807408798)
+    (670,0.7118086627261311)
+    (853,0.7014903255601453)
+		*/
+    /**检查推荐的相似物品**/
+    //对物品相似度排序,然后取出与物品567最相似的前10个物品
+    //传入Ordering对象,它会告诉Spark根据键值对里的值排序(也就是用similarity排序)
+    println(titles(itemId)) //Wes Craven's New Nightmare (1994)
     val sortedSims2 = sims.top(K + 1)(Ordering.by[(Int, Double), Double] { case (id, similarity) => similarity })
-    sortedSims2.slice(1, 11).map { case (id, sim) => (titles(id), sim) }.mkString("\n")
+
+    sortedSims2.slice(1, 11).map { case (id, sim) => (titles(id), sim) }.mkString("\n" + ">>>>>")
+    /* 
+    (Hideaway (1995),0.6932331537649621)
+    (Body Snatchers (1993),0.6898690594544726)
+    (Evil Dead II (1987),0.6897964975027041)
+    (Alien: Resurrection (1997),0.6891221044611473)
+    (Stephen King's The Langoliers (1995),0.6864214133620066)
+    (Liar Liar (1997),0.6812075443259535)
+    (Tales from the Crypt Presents: Bordello of Blood (1996),0.6754663844488256)
+    (Army of Darkness (1993),0.6702643811753909)
+    (Mystery Science Theater 3000: The Movie (1996),0.6594872765176396)
+    (Scream (1996),0.6538249646863378)
+    */
+    
 
     /**推荐模型效果的评估***/
     //用户789找出第一个评级
@@ -103,12 +143,13 @@ object ScalaApp4 {
     val ratingsAndPredictions = ratings.map {
       case Rating(user, product, rating) => ((user, product), rating)
     }.join(predictions)
-    //
+    //均方差
     val MSE = ratingsAndPredictions.map {
       case ((user, product), (actual, predicted)) => math.pow((actual - predicted), 2)
     }.reduce(_ + _) / ratingsAndPredictions.count
-    println("Mean Squared Error = " + MSE)
-    val RMSE = math.sqrt(MSE)
+    //
+    println("均方差:Mean Squared Error = " + MSE)
+    val RMSE = math.sqrt(MSE) //均方根误差
     println("Root Mean Squared Error = " + RMSE)
     val actualMovies = moviesForUser.map(_.product)
     val predictedMovies = topKRecs.map(_.product)
@@ -126,6 +167,51 @@ object ScalaApp4 {
         val recommendedIds = sortedWithId.map(_._2 + 1).toSeq
         (userId, recommendedIds)
     }
+    
+    
+    /**MLib内置的评估函数**/
+
+    // MSE, RMSE and MAE
+    import org.apache.spark.mllib.evaluation.RegressionMetrics
+    /**
+     * 标准误差(Standard error)为各测量值误差的平方和的平均值的平方根,
+     * 故也称均方根误差(Root mean squared error)。在相同测量条件下进行的测量称为等精度测量
+     */
+    // next get all the movie ids per user, grouped by user id
+    val userMovies = ratings.map { case Rating(user, product, rating) => (user, product) }.groupBy(_._1)
+    val predictedAndTrue = ratingsAndPredictions.map { case ((user, product), (actual, predicted)) => (actual, predicted) }
+    //实例化一个RegressionMetrics对象需要一个键值对类型的RDD,其每一条记录对应每个数据点上相应的预测值与实际值
+    val regressionMetrics = new RegressionMetrics(predictedAndTrue)
+    //均方差
+    println("Mean Squared Error = " + regressionMetrics.meanSquaredError)
+    //均方根误差
+    println("Root Mean Squared Error = " + regressionMetrics.rootMeanSquaredError)
+    // Mean Squared Error = 0.08231947642632852
+    // Root Mean Squared Error = 0.2869137090247319
+
+    // MAPK 准确率
+    import org.apache.spark.mllib.evaluation.RankingMetrics
+    val predictedAndTrueForRanking = allRecs.join(userMovies).map {
+      case (userId, (predicted, actualWithIds)) =>
+        val actual = actualWithIds.map(_._2)
+        (predicted.toArray, actual.toArray)
+    }
+    //使用RankingMetrics类计算基于排名的评估指标,需要向我们之前平均率函数传入一个健值对类型的RDD
+    //其键为给定用户预测的推荐物品的ID数组,而值则实际的物品ID数组
+    val rankingMetrics = new RankingMetrics(predictedAndTrueForRanking)
+    //平均正确率值 meanAveragePrecision
+    println("平均正确率值:Mean Average Precision = " + rankingMetrics.meanAveragePrecision)
+    // Mean Average Precision = 0.07171412913757183
+
+    // Compare to our implementation, using K = 2000 to approximate the overall MAP
+    //
+    val MAPK2000 = allRecs.join(userMovies).map {
+      case (userId, (predicted, actualWithIds)) =>
+        val actual = actualWithIds.map(_._2).toSeq
+        avgPrecisionK(actual, predicted, 2000)
+    }.reduce(_ + _) / allRecs.count
+    println("Mean Average Precision = " + MAPK2000)
+    // Mean Average Precision = 0.07171412913757186
   }
 
   def avgPrecisionK(actual: Seq[Int], predicted: Seq[Int], k: Int): Double = {
