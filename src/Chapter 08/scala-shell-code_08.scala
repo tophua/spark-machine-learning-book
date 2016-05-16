@@ -20,6 +20,8 @@ println(first)
 
 // extract just the file names
 val files = rdd.map { case (fileName, content) => fileName.replace("file:", "") }
+
+
 println(files.first)
 // file:/PATH/lfw/Aaron_Eckhart/Aaron_Eckhart_0001.jpg
 println(files.count)

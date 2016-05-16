@@ -109,7 +109,7 @@ object ScalaApp4 {
     //传入Ordering对象,它会告诉Spark根据键值对里的值排序(也就是用similarity排序)
     println(titles(itemId)) //Wes Craven's New Nightmare (1994)
     val sortedSims2 = sims.top(K + 1)(Ordering.by[(Int, Double), Double] { case (id, similarity) => similarity })
-
+    //slice提取第1列开始到11列的特征矩阵
     sortedSims2.slice(1, 11).map { case (id, sim) => (titles(id), sim) }.mkString("\n" + ">>>>>")
     /* 
     (Hideaway (1995),0.6932331537649621)
@@ -170,7 +170,6 @@ object ScalaApp4 {
     
     
     /**MLib内置的评估函数**/
-
     // MSE, RMSE and MAE
     import org.apache.spark.mllib.evaluation.RegressionMetrics
     /**

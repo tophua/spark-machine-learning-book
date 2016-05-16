@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/Chapter 02"/>
-	<classpathentry kind="src" path="src/Chapter 01/scala-spark-app/src/main/scala"/>
+	<classpathentry excluding="scala-shell-code_01.scala" kind="src" path="src/Chapter 01"/>
+	<classpathentry excluding="Code_07/" kind="src" path="src/Chapter 07"/>
 	<classpathentry kind="src" path="src/Chapter 04"/>
 	<classpathentry kind="src" path="src/Chapter 03"/>
 	<classpathentry kind="src" path="src/Chapter 06"/>
 	<classpathentry kind="src" path="src/Chapter 14"/>
+	<classpathentry kind="src" path="src/Chapter 05"/>
+	<classpathentry excluding="scala-shell-code_08.scala" kind="src" path="src/Chapter 08"/>
 	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
 	<classpathentry kind="lib" path="D:/eclipse44_64/workspace/spark1.5/lib_managed/jars/unused-1.0.0.jar"/>
 	<classpathentry kind="lib" path="D:/eclipse44_64/workspace/spark1.5/lib_managed/bundles/guava-14.0.1.jar"/>
