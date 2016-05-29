@@ -20,16 +20,17 @@ object ScalaApp4 {
     //用户ID  | 影片ID   | 星级   | 时间戳	
     //196	    | 242	    |  3   |	881250949
     /*提取前三个字段即 用户ID  | 影片ID   | 星级 */
-    val rawRatings = rawData.map(_.split("\t").take(3))
+    val rawRatings = rawData.map(_.split("\t").take(3)) //取出前三个字段,第四列时间暂时不需要
     //Rating评级类参数对应用户ID,产品(即影片ID),实际星级
     //map方法将原来user ID,movie ID,星级的数组转换为对应的对象,从而创建所需的评级的数组集
-    val ratings = rawRatings.map { case Array(user, movie, rating) => Rating(user.toInt, movie.toInt, rating.toDouble) }
+    val ratings = rawRatings.map { case Array(user, movie, rating) => Rating(user.toInt, movie.toInt, rating.toDouble) }       
     /**===================构建数据模型推荐=====================================**/
     //ratings.first()
     //构建训练推荐模型
-    //参数说明:rank对应ALS模型中的因子个数,通常合理取值为10---200
+    //参数说明:
+    //rank:对应ALS模型中在低阶近似矩阵中的隐含特征个数,通常合理取值为10---200
     //iterations:对应运行时迭代次数,10次左右一般就挺好
-    //lambda:该参数控制模型的正则化过程,从而控制模型的过拟合情况0.01 
+    //lambda:该参数控制模型的正则化过程,从而控制模型的过拟合情况0.01,正则参数应该通过用非样本的测试数据进行交叉验证调整     
     val model = ALS.train(ratings, 50, 10, 0.01) //返回MatrFactorizationModel对象矩阵分解模型
     model.userFeatures //用户因子
     model.userFeatures.count
@@ -37,7 +38,18 @@ object ScalaApp4 {
     /**=================使用推荐模型==============================**/
     //该模型预测用户789对电影123的评级为3.12 
     //使用推荐模型预对用户和商品进行评分，得到预测评分的数据集  
+    //predict方法可以用来对新的数据点或数据点组成的RDD应用该模型进行预测。
+    
     val predictedRating = model.predict(789, 123) //计算给定用户对给定物品的预期得分
+    //每一对都生成得分
+    val predictedRatings = model.predict(ratings.map(x => (x.user, x.product))) //每个用户对所有产品预测分
+    //第二种方式传RDD
+    val userPros = rawRatings.map { case Array(user, movie, rating) => (user.toInt, movie.toInt) }   
+    val userProsRDD = model.predict(userPros) //每个用户对所有产品预测分
+    for (pre <- userProsRDD) {
+      println("userProsRDD>>>" + pre)
+    }
+   
     println("预测用户789对电影123的评级为:" + predictedRating)
     val userId = 789
     val K = 10
@@ -55,7 +67,7 @@ object ScalaApp4 {
     val titles = movies.map(line => line.split("\\|").take(2)).map(array => (array(0).toInt, array(1))).collectAsMap()
     topKRecs.foreach { x => println("前10个物品名称:" + titles(x.product.intValue()) + "\t评级:" + x.rating.doubleValue()) }
     println("电影ID 123名称:" + titles(123))
-    //找出用户789所接触过的电影
+    //找出用户789所接评价过的电影
     val moviesForUser = ratings.keyBy(_.user).lookup(789)
     //查看这个用户评价了多少电影
     println("用户789评价了多少电影:" + moviesForUser.size)
@@ -72,12 +84,14 @@ object ScalaApp4 {
     def cosineSimilarity(vec1: DoubleMatrix, vec2: DoubleMatrix): Double = {
       //余弦相似度:两个向量的点积与各向量范数的乘积的商,相似度的取值在-1和1之间
       //相似度取值在-1和1之间,1表示完 全相似,0表示两者不相关(即无相似性)
-      vec1.dot(vec2) / (vec1.norm2() * vec2.norm2())
+      val retur=vec1.dot(vec2) / (vec1.norm2() * vec2.norm2())
+      retur
     }
     //以物品567为例从模型中取回其对应的因子,
     val itemId = 567
     //返回第一个数组而我们只需第一个值(实际上,数组里也只会有一个值,也就是该物品的因子向量)
     val itemFactor = model.productFeatures.lookup(itemId).head
+    
     //创建一个DoubleMatrix对象,然后再用该对象来计算它与自己的相似度
     val itemVector = new DoubleMatrix(itemFactor)
     cosineSimilarity(itemVector, itemVector)
@@ -85,6 +99,7 @@ object ScalaApp4 {
     val sims = model.productFeatures.map {
       case (id, factor) =>
         val factorVector = new DoubleMatrix(factor)
+        //计算余弦
         val sim = cosineSimilarity(factorVector, itemVector)
         (id, sim)
     }
@@ -123,7 +138,6 @@ object ScalaApp4 {
     (Mystery Science Theater 3000: The Movie (1996),0.6594872765176396)
     (Scream (1996),0.6538249646863378)
     */
-    
 
     /**推荐模型效果的评估***/
     //用户789找出第一个评级
@@ -145,39 +159,55 @@ object ScalaApp4 {
     }.join(predictions)
     //均方差
     val MSE = ratingsAndPredictions.map {
+      //各个平方误差的和与总数目的商,其中平方误差是指预测到的评级与真实评级的差值的平方
       case ((user, product), (actual, predicted)) => math.pow((actual - predicted), 2)
     }.reduce(_ + _) / ratingsAndPredictions.count
     //
     println("均方差:Mean Squared Error = " + MSE)
     val RMSE = math.sqrt(MSE) //均方根误差
     println("Root Mean Squared Error = " + RMSE)
-    val actualMovies = moviesForUser.map(_.product)
-    val predictedMovies = topKRecs.map(_.product)
-    val apk10 = avgPrecisionK(actualMovies, predictedMovies, 10)
+    val actualMovies = moviesForUser.map(_.product)//
+    val predictedMovies = topKRecs.map(_.product)//
+    val apk10 = avgPrecisionK(actualMovies, predictedMovies, 10)  
+    //取回物品因子向量并用它构建一个DoubleMatrix
     val itemFactors = model.productFeatures.map { case (id, factor) => factor }.collect()
-
     val itemMatrix = new DoubleMatrix(itemFactors)
+    //打印行列数分别为1682和50,因为电影数目和因子维数就是这么多
     println(itemMatrix.rows, itemMatrix.columns)
+    //将该矩阵以一个广播变量的方式分发出去,以便每个工作节点都能访问到
     val imBroadcast = sc.broadcast(itemMatrix)
-    val allRecs = model.userFeatures.map {
+    
+    val allRecsQ = model.userFeatures.map {//
       case (userId, array) =>
-        val userVector = new DoubleMatrix(array)
-        val scores = imBroadcast.value.mmul(userVector)
-        val sortedWithId = scores.data.zipWithIndex.sortBy(-_._1)
-        val recommendedIds = sortedWithId.map(_._2 + 1).toSeq
+        val userVector = new DoubleMatrix(array) //物品向量 array
+        val scores = imBroadcast.value.mmul(userVector)//矩阵相乘
+        val sortedWithId = scores.data.zipWithIndex.sortBy(-_._1) //电影ID按照预计评级的高低转换,转换K,索引值键值对
+        val recommendedIds = sortedWithId.map(_._2 + 1).toSeq //与物品ID加1,因为物品因子矩阵的编号从0开始,而我们电影的编号从1开始
         (userId, recommendedIds)
-    }
+    }  
+    //返回所有以用户分组的物品,包含每个用户ID所对应的(userId,movieId)对,因为group操作所使用的主键就是用户ID
+    val userMovie = ratings.map { case Rating(user, product, rating) => (user, product) }.groupBy(_._1)    
+    //使用avgPrecisionK函数定义计算
+    //Join操作将这个两个RDD以用户ID相连接,对于每一个用户,我们都有一个实际和预测的那些电影的ID
+    //这些ID可以作为APK函数的输入,在计算MSE时类似,我们调用reduce操作来对这些APK得分求和,然后再以总的用户数目
+    //(即allRecs RDD的大小)
+    val MAPK = allRecsQ.join(userMovie).map {
+      case (userId, (predicted, actualWithIds)) =>
+        val actual = actualWithIds.map(_._2).toSeq
+        avgPrecisionK(actual, predicted, K)
+    }.reduce(_ + _) / allRecsQ.count
+    println("Mean Average Precision = " + MAPK)
+    // Mean Average Precision = 0.07171412913757186
     
-    
+
     /**MLib内置的评估函数**/
     // MSE, RMSE and MAE
     import org.apache.spark.mllib.evaluation.RegressionMetrics
     /**
      * 标准误差(Standard error)为各测量值误差的平方和的平均值的平方根,
      * 故也称均方根误差(Root mean squared error)。在相同测量条件下进行的测量称为等精度测量
-     */
-    // next get all the movie ids per user, grouped by user id
-    val userMovies = ratings.map { case Rating(user, product, rating) => (user, product) }.groupBy(_._1)
+     */ 
+       //返回一个预测值与实际值
     val predictedAndTrue = ratingsAndPredictions.map { case ((user, product), (actual, predicted)) => (actual, predicted) }
     //实例化一个RegressionMetrics对象需要一个键值对类型的RDD,其每一条记录对应每个数据点上相应的预测值与实际值
     val regressionMetrics = new RegressionMetrics(predictedAndTrue)
@@ -189,8 +219,23 @@ object ScalaApp4 {
     // Root Mean Squared Error = 0.2869137090247319
 
     // MAPK 准确率
+    //RankingMetrics类用来计算基于排名的评估指标
     import org.apache.spark.mllib.evaluation.RankingMetrics
-    val predictedAndTrueForRanking = allRecs.join(userMovies).map {
+     //返回所有以用户分组的物品,包含每个用户ID所对应的(userId,movieId)对,因为group操作所使用的主键就是用户ID
+    val userMovies = ratings.map { case Rating(user, product, rating) => (user, product) }.groupBy(_._1)
+    //用户因子进行一次map操作,会对用户因子矩阵和电影因子矩阵做乘积,其结果为一个表示各个电影预计评级的向量(长度1682即电影的总数目)
+    //之后,用预计评级对它们排序
+    val allRecs = model.userFeatures.map {//
+      case (userId, array) =>
+        val userVector = new DoubleMatrix(array) //物品向量 array
+        val scores = imBroadcast.value.mmul(userVector)//矩阵相乘
+        val sortedWithId = scores.data.zipWithIndex.sortBy(-_._1) //电影ID按照预计评级的高低转换,转换K,索引值键值对
+        val recommendedIds = sortedWithId.map(_._2 + 1).toSeq //与物品ID加1,因为物品因子矩阵的编号从0开始,而我们电影的编号从1开始
+        (userId, recommendedIds)
+    }
+    //需要向我们之前的平均准确率函数传入一个键值对类型的RDD,
+    //其键为给定用户预测的物品的ID数组,而值则是实际的物品ID数组
+       val predictedAndTrueForRanking = allRecs.join(userMovies).map {
       case (userId, (predicted, actualWithIds)) =>
         val actual = actualWithIds.map(_._2)
         (predicted.toArray, actual.toArray)
@@ -203,16 +248,20 @@ object ScalaApp4 {
     // Mean Average Precision = 0.07171412913757183
 
     // Compare to our implementation, using K = 2000 to approximate the overall MAP
-    //
+    //使用avgPrecisionK函数定义计算
+    //Join操作将这个两个RDD以用户ID相连接,对于每一个用户,我们都有一个实际和预测的那些电影的ID
+    //这些ID可以作为APK函数的输入,在计算MSE时类似,我们调用reduce操作来对这些APK得分求和,然后再以总的用户数目
+    //(即allRecs RDD的大小)
     val MAPK2000 = allRecs.join(userMovies).map {
       case (userId, (predicted, actualWithIds)) =>
         val actual = actualWithIds.map(_._2).toSeq
         avgPrecisionK(actual, predicted, 2000)
     }.reduce(_ + _) / allRecs.count
+    //输出指定K值时的平均准确度
     println("Mean Average Precision = " + MAPK2000)
     // Mean Average Precision = 0.07171412913757186
   }
-
+  //输出指定K值时的平均准确度
   def avgPrecisionK(actual: Seq[Int], predicted: Seq[Int], k: Int): Double = {
     val predK = predicted.take(k)
     var score = 0.0

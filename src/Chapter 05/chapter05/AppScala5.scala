@@ -12,6 +12,9 @@ import org.apache.spark.mllib.tree.configuration.Algo
 import org.apache.spark.mllib.tree.impurity.Entropy
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
 import org.apache.spark.mllib.tree.impurity.Impurity
+/**
+ * 构建分类模型:分类通常是将事物分成不同的类别
+ */
 object AppScala5 {
   def main(args: Array[String]) {
     val sparkConf = new SparkConf().setMaster("local[2]").setAppName("SparkHdfsLR")
@@ -51,7 +54,7 @@ object AppScala5 {
       //r.size - 1把所有列"\"",替换成 ""    
       //取出最后一列值转换成toInt,一般0和1
       val label = trimmed(r.size - 1).toInt
-      println("(最后一列值)label:" + label)
+      //println("(最后一列值)label:" + label)
       //创建一个迭代器返回由这个迭代器所产生的值区间,取子集set(1,4为元素位置, 从0开始),从位置4开始,到数组的长度     
       //slice提取第5列开始到25列的特征矩阵
       //数据集中缺失数据为?,直接用0替换缺失数据
@@ -66,6 +69,7 @@ object AppScala5 {
           }
       }
       //将标签和特征向量转换为LabeledPoint为实例,将特征向量存储到MLib的Vectors中,label一般是0和1
+      //参数目标变量(标签)和特征向量
       LabeledPoint(label, Vectors.dense(features))
     }
     data.cache
@@ -87,14 +91,16 @@ object AppScala5 {
     val numIterations = 10
     //决策树最大深度
     val maxTreeDepth = 5
-    //创建逻辑回归模型
+    //创建逻辑回归是一个概率模型,预测结果的值域为[0,1],SGD(随机梯度下降)
     val lrModel = LogisticRegressionWithSGD.train(data, numIterations)
-    //创建训练SVM模型
+    //创建训练线性支持向量机SVM模型,和逻辑不同,SVM并不是概率模型,但是可以基于模型对正负的估计预测类别
     val svmModel = SVMWithSGD.train(data, numIterations)
-    //创建朴素贝叶斯模型,使用没有负特征的数据
+    //创建朴素贝叶斯模型是一个概率模型,通过计算给定数据点在某个别的概率来进行预测,使用没有负特征的数据
+    //普通使用文本分类
     // note we use nbData here for the NaiveBayes model training
     val nbModel = NaiveBayes.train(nbData)
-    //创建决策树
+    //创建决策树非概率模型,叶子代表值为0或1的分类
+    //Algo时使用Entropy不纯度估计
     val dtModel = DecisionTree.train(data, Algo.Classification, Entropy, maxTreeDepth)
 
     /***使用分类模型预测**/
@@ -116,13 +122,16 @@ object AppScala5 {
     //SVM模型
     val predictionsSvmModel = svmModel.predict(data.map(lp => lp.features))
     predictionsSvmModel.take(5)
+    //res8: Array[Double] = Array(1.0, 1.0, 1.0, 1.0, 1.0)
     //NaiveBayes模型朴素贝叶斯
     val predictionsNbModel = nbModel.predict(data.map(lp => lp.features))
     predictionsNbModel.take(5)
+    //res4: Array[Double] = Array(1.0, 0.0, 0.0, 0.0, 1.0)
     ///创建决策树
     val predictionsDtModel = dtModel.predict(data.map(lp => lp.features))
     predictionsDtModel.take(5)
-
+    //res7: Array[Double] = Array(0.0, 0.0, 1.0, 0.0, 1.0)
+    
     /***评估分类模型的性能**/
     /**
      * 二分类中使用的评估方法包括
@@ -142,33 +151,38 @@ object AppScala5 {
       if (lrModel.predict(point.features) == point.label) 1 else 0
     }.sum
     // lrTotalCorrect: Double = 3806.0
-    /**正确率 将对正确分类的样本数目求和并除以样本总数,逻辑回归模型得到正确率51.5%**/
+    /**平均分类正确率=将对正确分类的样本数目求和并除以样本总数,逻辑回归模型得到正确率51.5%**/
     val lrAccuracy = lrTotalCorrect / numData
+    //得到51.5%正确率,结果看起来不是很好,和随机猜测差不多 
     // lrAccuracy: Double = 0.5146720757268425       
 
-    //SVM模型对输入特征预测值与实际标签进行比较求和
+    //支持线性向量机SVM模型对输入特征预测值与实际标签进行比较求和
     val svmTotalCorrect = data.map { point =>
       //point.label实际标签进行比较
       if (svmModel.predict(point.features) == point.label) 1 else 0
     }.sum
+    //预测SVM模型正确率,逻辑回归模型得到正确率51.4%/
+    val svmAccuracy = svmTotalCorrect / numData
+    //svmAccuracy: Double = 0.5146720757268425
     //朴素贝叶斯模型对输入特征预测值与实际标签进行比较求和
     val nbTotalCorrect = nbData.map { point =>
       if (nbModel.predict(point.features) == point.label) 1 else 0
     }.sum
+     //预测朴素贝叶斯模型正确率58%
+    val nbAccuracy = nbTotalCorrect / numData
+    // nbAccuracy: Double = 0.5803921568627451
+    
     //决策树模型对输入特征预测值与实际标签进行比较求和
     // decision tree threshold needs to be specified
     val dtTotalCorrect = data.map { point =>
       val score = dtModel.predict(point.features)
       //决策树的预测阈值需要明确给出 0.5
+      //如果类型1的概率估计超过50%,这个模型将会标记为类别为1,否则标记为类别为0
       val predicted = if (score > 0.5) 1 else 0
       if (predicted == point.label) 1 else 0
     }.sum
-    //预测SVM模型正确率,逻辑回归模型得到正确率51.4%/
-    val svmAccuracy = svmTotalCorrect / numData
-    //svmAccuracy: Double = 0.5146720757268425
-    //预测朴素贝叶斯模型正确率58%
-    val nbAccuracy = nbTotalCorrect / numData
-    // nbAccuracy: Double = 0.5803921568627451
+    
+   
     //决策树斯模型正确率 65%
     val dtAccuracy = dtTotalCorrect / numData
     // dtAccuracy: Double = 0.6482758620689655
@@ -184,16 +198,23 @@ object AppScala5 {
      * *
      */
     //计算二分类的PR(召回率)和ROC曲线下的面积
+    //lrModel逻辑回归是一个概率模型,线性支持向量机SVM模型
     val metrics = Seq(lrModel, svmModel).map { model =>
       val scoreAndLabels = data.map { point =>
+       // println("point.features:"+point.features+"\t label:"+point.label)
+        val predict=model.predict(point.features)
+        //println("predict:"+predict)
         (model.predict(point.features), point.label)
       }
+      println(">>>>>>>>>>>"+scoreAndLabels)
+      //二分类评估测量
       val metrics = new BinaryClassificationMetrics(scoreAndLabels)
       (model.getClass.getSimpleName, metrics.areaUnderPR, metrics.areaUnderROC)
     }
     // again, we need to use the special nbData for the naive Bayes metrics 
     val nbMetrics = Seq(nbModel).map { model =>
       val scoreAndLabels = nbData.map { point =>
+        //预测分和标签
         val score = model.predict(point.features)
         (if (score > 0.5) 1.0 else 0.0, point.label)
       }
@@ -216,7 +237,7 @@ object AppScala5 {
         println(f"$m, Area under PR: ${pr * 100.0}%2.4f%%, Area under ROC: ${roc * 100.0}%2.4f%%")
     }
     /*
-          平均准确率,得到模型的平均率都差不多
+    PR准确率和召回率,得到模型分类的平均准确率都50.1418%差不多
     LogisticRegressionModel, Area under PR: 75.6759%, Area under ROC: 50.1418%
     SVMModel, Area under PR: 75.6759%, Area under ROC: 50.1418%
     NaiveBayesModel, Area under PR: 68.0851%, Area under ROC: 58.3559%
@@ -252,7 +273,8 @@ object AppScala5 {
     //对每个特征进行标准化,使得每个特征是0均值和单位标准差,具体做法是对每个特征值减去列的均值,然后除以列的标准差
     //进行缩放
     import org.apache.spark.mllib.feature.StandardScaler
-    //第一个参数是否从数据中减去均值,另一个表示是否应用标准差缩放,返回归一化的向量
+    //特征提取和转换标准化(StandardScaler)
+    //第一个参数是否从数据中减去均值,另一个表示是否应用标准差缩放
     val scaler = new StandardScaler(withMean = true, withStd = true).fit(vectors)
     //使用Map保留LabeledPoint数据集的标签,transform数据标准化
     val scaledData = data.map(lp => LabeledPoint(lp.label, scaler.transform(lp.features)))
@@ -286,10 +308,10 @@ object AppScala5 {
     val lrPr = lrMetricsScaled.areaUnderPR
     //
     val lrRoc = lrMetricsScaled.areaUnderROC
-    println(f"${lrModelScaled.getClass.getSimpleName}\n 正确率Accuracy: ${lrAccuracyScaled * 100}%2.4f%%\nArea under PR: ${lrPr * 100.0}%2.4f%%\nArea under ROC: ${lrRoc * 100.0}%2.4f%%")
+    println(f"${lrModelScaled.getClass.getSimpleName}\n 正确率Accuracy: ${lrAccuracyScaled * 100}%2.4f%%\nArea under PR: ${lrPr * 100.0}%2.4f%%\nArea under ROC(平均准确率): ${lrRoc * 100.0}%2.4f%%")
 
     /*
-           从结果可以看出,通过简单的特征标准化,就提高了逻辑回归的准确率,并将AUC从随机50%,提升到62%
+           从结果可以看出,通过简单的特征标准化,就提高了逻辑回归的准确率,并将平均准确率AUC从随机50%,提升到62%
     LogisticRegressionModel
     Accuracy: 62.0419%
     Area under PR: 72.7254%
@@ -362,7 +384,7 @@ object AppScala5 {
     val lrRocCats = lrMetricsScaledCats.areaUnderROC
     println(f"${lrModelScaledCats.getClass.getSimpleName}\nAccuracy: ${lrAccuracyScaledCats * 100}%2.4f%%\nArea under PR: ${lrPrCats * 100.0}%2.4f%%\nArea under ROC: ${lrRocCats * 100.0}%2.4f%%")
     /*
-     * 总结对数据标准化,模型准确率得到提升,将50%提升到62%,之后类别特征,模型性能进一步提升到65%(其中新添加的特征也做了标准化操作)
+     * 总结对数据标准化,模型准确率得到提升,将50%提升到62%,之后类别特征,模型性能进一步提升到66.55%(其中新添加的特征也做了标准化操作)
     LogisticRegressionModel
     Accuracy: 66.5720%
     Area under PR: 75.7964%
@@ -398,6 +420,8 @@ object AppScala5 {
     Area under PR: 74.0522%
     Area under ROC: 60.5138%
     */
+    
+    
     /**模型参数调优**/
     import org.apache.spark.rdd.RDD
     import org.apache.spark.mllib.optimization.Updater
@@ -408,13 +432,15 @@ object AppScala5 {
     /**线性模型参数**/
     // helper function to train a logistic regresson model
     //给定输入训练模型
+    
     def trainWithParams(input: RDD[LabeledPoint], regParam: Double, numIterations: Int, updater: Updater, stepSize: Double) = {
       val lr = new LogisticRegressionWithSGD
+      //numIterations迭代次数,stepSize步长,regParam
       lr.optimizer.setNumIterations(numIterations).setUpdater(updater).setRegParam(regParam).setStepSize(stepSize)
       lr.run(input)
     }
     // helper function to create AUC metric
-    //定义第二个辅助函数并根据输入数据和分类模型,计算相关的AUC
+    //定义第二个辅助函数并根据输入数据和分类模型,计算相关的平均准确率 AUC
     def createMetrics(label: String, data: RDD[LabeledPoint], model: ClassificationModel) = {
       val scoreAndLabels = data.map { point =>
         (model.predict(point.features), point.label)
@@ -455,6 +481,11 @@ object AppScala5 {
     10.0 step size, AUC = 61.92%
     */
     /**正则化通过限制模型的复杂度避免模型在训练数据中过拟合regularization**/
+    /*
+     * MLlib中可用的正则化形式有如下几个
+     * SimpleUpdater 相当没有正则化,逻辑罗回归的默认配置
+     * SquaredL2Updater 正则项基于权重向量的L2正则化,是SVM模型的默认值
+     */
     val regResults = Seq(0.001, 0.01, 0.1, 1.0, 10.0).map { param =>
       val model = trainWithParams(scaledDataCats, param, numIterations, new SquaredL2Updater, 1.0)
       createMetrics(s"$param L2 regularization parameter", scaledDataCats, model)
@@ -470,14 +501,20 @@ object AppScala5 {
     */
 
     /**决策树模型参数**/
-    /**决策树模型在一开始使用原始数据做训练时获得了最好的性能,当时设置了参数最大深度**/
+    /**
+     * 注意:决策树不需要特征标准化和归一化,也不要求将类型特征进行二元编码
+     * 
+     * 决策树模型在一开始使用原始数据做训练时获得了最好的性能,当时设置了参数最大深度**/
     import org.apache.spark.mllib.tree.impurity.Entropy
     import org.apache.spark.mllib.tree.impurity.Gini
+    //maxDepth决策 树的最大深度
+    //不纯度度量方式:Gini或者Entropy
     def trainDTWithParams(input: RDD[LabeledPoint], maxDepth: Int, impurity: Impurity) = {
       DecisionTree.train(input, Algo.Classification, impurity, maxDepth)
     }
 
     // investigate tree depth impact for Entropy impurity
+    //通过使用Entropy不纯度并改变树的深度训练模型
     val dtResultsEntropy = Seq(1, 2, 3, 4, 5, 10, 20).map { param =>
       val model = trainDTWithParams(data, param, Entropy)
       val scoreAndLabels = data.map { point =>
@@ -489,7 +526,7 @@ object AppScala5 {
     }
     dtResultsEntropy.foreach { case (param, auc) => println(f"$param, AUC = ${auc * 100}%2.2f%%") }
     /*
-     * 
+     * 决策树不需要特征标准化和归一化,也不要求将类型特征进行二元编码
       1 tree depth, AUC = 59.33%
       2 tree depth, AUC = 61.68%
       3 tree depth, AUC = 62.61%
@@ -499,6 +536,7 @@ object AppScala5 {
       20 tree depth, AUC = 98.45%
       */
     // investigate tree depth impact for Gini impurity
+    //通过使用Gini不纯度并改变树的深度训练模型
     val dtResultsGini = Seq(1, 2, 3, 4, 5, 10, 20).map { param =>
       val model = trainDTWithParams(data, param, Gini)
       val scoreAndLabels = data.map { point =>
@@ -545,20 +583,27 @@ object AppScala5 {
     1.0 lambda, AUC = 60.51%
     10.0 lambda, AUC = 60.51%
     */
-    /**交叉验证参数**/
+    /**
+     * 交叉验证的目的是测试模型在未知数据上的性能
+     ***/
     // illustrate cross-validation
     // create a 60% / 40% train/test data split
+    //随机种子 123
     val trainTestSplit = scaledDataCats.randomSplit(Array(0.6, 0.4), 123)
+    //训练数据集
     val train = trainTestSplit(0)
+    //测试数据集
     val test = trainTestSplit(1)
     // now we train our model using the 'train' dataset, and compute predictions on unseen 'test' data
     // in addition, we will evaluate the differing performance of regularization on training and test datasets
+    //接下来在不同的正则化参数下评估模型的性能(平均准确率)
     val regResultsTest = Seq(0.0, 0.001, 0.0025, 0.005, 0.01).map { param =>
       val model = trainWithParams(train, param, numIterations, new SquaredL2Updater, 1.0)
       createMetrics(s"$param L2 regularization parameter", test, model)
     }
     regResultsTest.foreach { case (param, auc) => println(f"$param, AUC = ${auc * 100}%2.6f%%") }
     /*
+     * 测试集的模型性能
     0.0 L2 regularization parameter, AUC = 66.480874%
     0.001 L2 regularization parameter, AUC = 66.480874%
     0.0025 L2 regularization parameter, AUC = 66.515027%
@@ -567,17 +612,22 @@ object AppScala5 {
     */
 
     // training set results
+    //接下来在不同的正则化参数下评估模型的性能(平均准确率)
     val regResultsTrain = Seq(0.0, 0.001, 0.0025, 0.005, 0.01).map { param =>
       val model = trainWithParams(train, param, numIterations, new SquaredL2Updater, 1.0)
       createMetrics(s"$param L2 regularization parameter", train, model)
     }
     regResultsTrain.foreach { case (param, auc) => println(f"$param, AUC = ${auc * 100}%2.6f%%") }
     /*
+     * 训练集上的模型性能,训练集和测试集相同时,通常在正则化参数比较小的情况下可以得到最高的性能
     0.0 L2 regularization parameter, AUC = 66.260311%
     0.001 L2 regularization parameter, AUC = 66.260311%
     0.0025 L2 regularization parameter, AUC = 66.260311%
     0.005 L2 regularization parameter, AUC = 66.238294%
     0.01 L2 regularization parameter, AUC = 66.238294%
     */
+    /**
+     * 总结:一般选择测试集中性能表现最好的参数设置,然后用这些参数在所有的数据集上重新训练,最后用于新数据集的预测
+     */
   }
 }

@@ -1,6 +1,7 @@
 package chapter06
 
 import org.apache.spark.SparkConf
+
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.classification.LogisticRegressionWithSGD
 import org.apache.spark.mllib.classification.NaiveBayes
@@ -13,6 +14,9 @@ import org.apache.spark.mllib.tree.configuration.Algo
 import org.apache.spark.mllib.tree.impurity.Entropy
 import org.apache.spark.mllib.tree.impurity.Impurity
 import org.apache.spark.rdd.RDD
+/**
+ * 构建回归模型----连续型的数据
+ */
 object AppScala6 {
 
   def main(args: Array[String]) {
@@ -22,7 +26,9 @@ object AppScala6 {
     val rawData = sc.textFile("BikeSharingDataset/hour_noheader.csv")
     val records = rawData.map(line => line.split(","))
     records.count
+    //res1: Long = 17379
     records.first()
+    //res0: Array[String] = Array(1, 2011-1-1, 1, 0, 1, 0, 0, 6, 0, 1, 0.24, 0.2879, 0.81, 0, 3, 13, 16)
     //将参数idx列值去重,然后对每个值使用zipWithIndex函数映射到一个唯一的索引,这样组成了一个RDD的键值映射,键是变量,值是索引
     //四季节信息(春,夏,秋,冬)
     records.map(fields => fields(2)).distinct().zipWithIndex().collectAsMap()

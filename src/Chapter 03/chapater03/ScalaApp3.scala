@@ -204,8 +204,24 @@ object ScalaApp3 {
  
      println("222Encoding of 'doctor': %d".format(all_terms_dict3("doctor")))
      println("222 Encoding of 'programmer': %d".format(all_terms_dict3("programmer")))
+     /**
+      * 将类别特征转换二元向量
+      * 假设变量可取的值有K个,如果对这些值用1到K编序,则可以用长度为K的二元向量来表示一个变更的取值
+      * 在这个向量里,该取值对应的序号所在的元素为1,其他元素为0
+      * 1)将先创建一个长度和职业数目相同的数组
+      * 2)其他元素为0,提取职业的序号,将数组中对应该序号的那个元素值赋为1
+      * **/
+     val k = new Array[Int](all_terms_dict3.size)
+     val k_programmer=all_terms_dict3("programmer")
+     k(k_programmer.toInt)=1
+     println("Binary feature Vector:%s"+k.toString())
+     /**
+      * 
+      */
     
-
+     
+     
+     
     
     //println("Index of term 'Dead': %d".format(all_terms_dict3("doctor"))
     // println("Index of term 'Rooms': %d".format(all_terms_dict3("programmer"))
@@ -246,6 +262,15 @@ object ScalaApp3 {
     println("Index of term 'Rooms': %d".format(all_terms_dict2("Rooms"))
         */
    
+import org.apache.spark.ml.feature.Normalizer
+
+     /**正则化***/
+     val l2Normalizer = new Normalizer()
+   //转换
+   // val normalized_x_mllib = l2Normalizer.transform(vector).first().toArray()
+
+
+
     
     
     
