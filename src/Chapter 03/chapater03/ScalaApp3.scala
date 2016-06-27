@@ -29,7 +29,22 @@ object ScalaApp3 {
     val usre_files = user_data.map(line => line.split('|')) //以竖线分隔
     println(usre_files)
     //统计用户数
-    val num_users = usre_files.map(line => line.head).count()
+    val num_users = usre_files.map(line => {
+       /**
+       * usre_files: Array[Array[String]] = Array(Array(1, 24, M, technician, 85711), Array(2,53, F, other, 94043), 
+       * Array(3, 23, M, writer, 32067), Array(4, 24, M, technician, 43537), Array(5, 33, F, other, 15213), 
+       * Array(6, 42, M, executive, 98101), Array(7, 57, M, administrator, 91344),Array(8, 36, M, administrator, 05201),
+       * Array(9, 29, M, student, 01002), Array(10, 53, M, lawyer, 90703),
+       * Array(11, 39, F, other, 30329), Array(12, 28, F, other, 06405), Array(13, 47, M, educator, 29206),
+       * Array(14, 45, M, scientist, 55106), Array(15, 49, F, educator, 97301), Array(16,21, M, entertainment, 10309),
+       * Array(17, 30, M, programmer, 06355), Array(18, 35, F, other, 37212), Array(19, 40, M, librarian, 02138),
+       * Array(20, 42, F, homemaker, 95660), Array(21, 26, M, writer, 30068), Array(22, 25, M, writer, 40206),...
+       **/
+      println(line(0))// line.head是一样
+      //取出用户ID
+      line.head
+    }
+    ).count()
     //统计性别的数目
     val num_genders = usre_files.map { line => line(2) }.distinct().count()
     //统计职业的数目
@@ -266,8 +281,8 @@ import org.apache.spark.ml.feature.Normalizer
 
      /**正则化***/
      val l2Normalizer = new Normalizer()
-   //转换
-   // val normalized_x_mllib = l2Normalizer.transform(vector).first().toArray()
+     //转换
+     // val normalized_x_mllib = l2Normalizer.transform(vector).first().toArray()
 
 
 

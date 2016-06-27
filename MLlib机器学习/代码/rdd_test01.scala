@@ -114,9 +114,10 @@ object rdd_test01 {
 
   def myfunc[T](iter: Iterator[T]): Iterator[(T, T)] = {
     var res = List[(T, T)]()
-    var pre = iter.next
+    var pre = iter.next	
     while (iter.hasNext) {
       val cur = iter.next
+	  println(pre+"<<<<<<<<<<>>>>>>>>"+cur)
       res.::=(pre, cur)
       pre = cur
     }
