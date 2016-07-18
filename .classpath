@@ -6,10 +6,10 @@
 	<classpathentry kind="src" path="src/Chapter 04"/>
 	<classpathentry kind="src" path="src/Chapter 03"/>
 	<classpathentry kind="src" path="src/Chapter 06"/>
-	<classpathentry kind="src" path="src/Chapter 14"/>
 	<classpathentry kind="src" path="src/Chapter 05"/>
 	<classpathentry excluding="scala-shell-code_08.scala" kind="src" path="src/Chapter 08"/>
 	<classpathentry excluding="scala-shell-code_09.scala" kind="src" path="src/Chapter 09"/>
+	<classpathentry kind="src" path="src/Chapter 10/scala-spark-streaming-app/src/main/scala"/>
 	<classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
 	<classpathentry kind="lib" path="D:/eclipse44_64/workspace/spark1.5/lib_managed/jars/unused-1.0.0.jar"/>
 	<classpathentry kind="lib" path="D:/eclipse44_64/workspace/spark1.5/lib_managed/bundles/guava-14.0.1.jar"/>

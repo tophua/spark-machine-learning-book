@@ -620,11 +620,11 @@ object AppScala5 {
     regResultsTrain.foreach { case (param, auc) => println(f"$param, AUC = ${auc * 100}%2.6f%%") }
     /*
      * 训练集上的模型性能,训练集和测试集相同时,通常在正则化参数比较小的情况下可以得到最高的性能
-    0.0 L2 regularization parameter, AUC = 66.260311%
-    0.001 L2 regularization parameter, AUC = 66.260311%
-    0.0025 L2 regularization parameter, AUC = 66.260311%
-    0.005 L2 regularization parameter, AUC = 66.238294%
-    0.01 L2 regularization parameter, AUC = 66.238294%
+        0.0 L2 regularization parameter, AUC = 66.260311%
+        0.001 L2 regularization parameter, AUC = 66.260311%
+        0.0025 L2 regularization parameter, AUC = 66.260311%
+        0.005 L2 regularization parameter, AUC = 66.238294%
+        0.01 L2 regularization parameter, AUC = 66.238294%
     */
     /**
      * 总结:一般选择测试集中性能表现最好的参数设置,然后用这些参数在所有的数据集上重新训练,最后用于新数据集的预测
