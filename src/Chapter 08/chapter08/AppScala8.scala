@@ -124,6 +124,7 @@ object AppScala8 {
     // 14/09/17 19:53:49 WARN LAPACK: Failed to load implementation from: com.github.fommil.netlib.NativeRefLAPACK
 
     // use Breeze to save the principal components as a CSV file
+    //主成分析行业和列数
     val rows = pc.numRows
     val cols = pc.numCols
     println(rows, cols)
@@ -137,6 +138,7 @@ object AppScala8 {
     csvwrite(new File("/tmp/pc.csv"), pcBreeze)
 
     // project the raw images to the K-dimensional space of the principla components
+    //矩阵乘法把图像矩阵和主成分析矩阵相乘实现投影矩阵
     val projected = matrix.multiply(pc)
     println(projected.numRows, projected.numCols)
     // (1055,10)
@@ -150,18 +152,21 @@ object AppScala8 {
 		*/
 
     // relationship to SVD
+    //主成分析和奇异值的关系
     val svd = matrix.computeSVD(10, computeU = true)
+    //SVD计算产生的右奇异向量等于我们计算得到的主成分
     println(s"U dimension: (${svd.U.numRows}, ${svd.U.numCols})")
     println(s"S dimension: (${svd.s.size}, )")
     println(s"V dimension: (${svd.V.numRows}, ${svd.V.numCols})")
-    // U dimension: (1055, 10)
+    // U dimension: (1055, 10),U矩阵等于投影数据
     // S dimension: (10, )
-    // V dimension: (2500, 10)
+    // V dimension: (2500, 10)  右奇异向量等于我们计算得到的主成分
     // simple function to compare the two matrices, with a tolerance for floating point number comparison
+    //比较两个向量数据
     def approxEqual(array1: Array[Double], array2: Array[Double], tolerance: Double = 1e-6): Boolean = {
       // note we ignore sign of the principal component / singular vector elements
       val bools = array1.zip(array2).map { case (v1, v2) => if (math.abs(math.abs(v1) - math.abs(v2)) > 1e-6) false else true }
-      bools.fold(true)(_ & _)
+      bools.fold(true)(_ & _)//fold函数开始对传进的两个参数进行计算,初始值为true,& 从左到右
     }
     // test the function
     println(approxEqual(Array(1.0, 2.0, 3.0), Array(1.0, 2.0, 3.0)))
@@ -182,6 +187,7 @@ object AppScala8 {
     // 1055
 
     // inspect singular values
+    //评估SVD的k值
     val sValues = (1 to 5).map { i => matrix.computeSVD(i, computeU = false).s }
     sValues.foreach(println)
     /*

@@ -3,7 +3,9 @@ package Chapter01
 import org.apache.spark.mllib.stat.test.ChiSqTestResult
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.stat.Statistics
-
+/**
+ * 卡方检验测试
+ */
 object ChiSqTest {
   def main(args: Array[String]): Unit = {
      val vec1 = Vectors.dense(1, 7, 2, 3, 18);
@@ -20,7 +22,7 @@ object ChiSqTest {
      * Chi squared test summary:
       method: pearson
       degrees of freedom = 4 (自由度)
-      statistic = 31.41935483870968(计算卡方检定的统计值)
+      statistic = 31.41935483870968(计算卡方检验的统计值)
       //概率
       pValue = 2.513864414077638E-6 
       Very strong presumption against null hypothesis: observed follows the same distribution as expected..
