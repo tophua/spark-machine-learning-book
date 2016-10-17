@@ -4,6 +4,9 @@ import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 import breeze.linalg.csvwrite
 import java.awt.image.BufferedImage
+/**
+ * 从数据中抽取合适的数据,降维模型
+ */
 object AppScala8 {
   def main(args: Array[String]) {
     val conf = new SparkConf().setAppName("test").setMaster("local")
