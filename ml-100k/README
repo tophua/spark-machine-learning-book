@@ -6,8 +6,10 @@ at the University of Minnesota.
  
 This data set consists of:
 	* 100,000 ratings (1-5) from 943 users on 1682 movies. 
-	* Each user has rated at least 20 movies. 
+	* 1682电影,943用户,100万(1-5)评级
+	* Each user has rated at least 20 movies.每个用户最少20个电影的评级
         * Simple demographic info for the users (age, gender, occupation, zip)
+	* 一个简单的用户信息包括(年龄,性别,职业,邮编)
 
 The data was collected through the MovieLens web site
 (movielens.umn.edu) during the seven-month period from September 19th, 
@@ -110,35 +112,40 @@ u.data     -- 用户对电影的评级
               numbered consecutively from 1.  The data is randomly
               ordered. This is a tab separated list of
              用户ID  | 影片ID  | 星级   | 时间戳			  
-	         user id | item id | rating | timestamp. 
+	      user id | item id | rating | timestamp. 
               The time stamps are unix seconds since 1/1/1970 UTC   
 
-u.info     -- The number of users, items, and ratings in the u data set.
+u.info     -- The number of users, items, and ratings in the u data set. 设置用户数,电影数,评级数
 
 u.item     -- 电影元数据
 			  Information about the items (movies); this is a tab separated
               list of
-			  电影ID   | 电影标题    | 发行时间     |
+	      电影ID   | 电影标题    | 发行时间     |视频发行时间
               movie id | movie title | release date | video release date |
+	      电影URL  | 未知    |动作    | 冒险      |卡通
               IMDb URL | unknown | Action | Adventure | Animation |
+	      儿童       |喜剧    |犯罪   |记录         |戏剧   |心理
               Children's | Comedy | Crime | Documentary | Drama | Fantasy |
+	      悲剧      |恐怖    |音乐     |推理     |浪漫     | 科幻
               Film-Noir | Horror | Musical | Mystery | Romance | Sci-Fi |
+	      恐怖     |战争 | 西部
               Thriller | War | Western |
+	      最后19个分类字段,1标示分类,0标示未分类
               The last 19 fields are the genres, a 1 indicates the movie
               is of that genre, a 0 indicates it is not; movies can be in
               several genres at once.
               The movie ids are the ones used in the u.data data set.
 
-u.genre    -- A list of the genres.
+u.genre    -- A list of the genres.一个电影分类的列表
 
 u.user     -- 用户属性文件
               Demographic information about the users; this is a tab
               separated list of
-			  用户ID  |年龄 | 性别   | 职业       | 邮编
+	      用户ID  |年龄 | 性别   | 职业       | 邮编
               user id | age | gender | occupation | zip code
               The user ids are the ones used in the u.data data set.
 
-u.occupation -- A list of the occupations.
+u.occupation -- A list of the occupations.一个职业列表
 
 u1.base    -- The data sets u1.base and u1.test through u5.base and u5.test
 u1.test       are 80%/20% splits of the u data into training and test data.
