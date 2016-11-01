@@ -183,7 +183,7 @@ object ScalaApp7 {
       856925845146179,0.41255903244018555,-0.26579615473747253,-0.00452867476269602...
      */
     val moviesAssigned = titlesWithFactors.map {
-      //id 电影ID,title 电影标题,genres 电影题材,vector 预测样本向量
+      //id 电影ID,title 电影标题,genres 电影题材分类,vector 预测样本向量
       case (id, ((title, genres), vector)) =>
         println("id:"+id+"\t title:"+title+"\t genres:"+genres+"\t vector:"+vector)
         //预测聚类vector
@@ -192,13 +192,13 @@ object ScalaApp7 {
         val clusterCentre = movieClusterModel.clusterCenters(pred)
       //计算 类中心的距离
         val dist = computeDistance(DenseVector(clusterCentre.toArray), DenseVector(vector.toArray))
-        //id 电影ID,title 电影标题,genres 电影题材,cluster 类别索引,dist 类中心的距离
+        //id 电影ID,title 电影标题,genres 电影题材分类,cluster 类别索引,dist 类中心的距离
         //id:384   title:Naked Gun 33 1/3: The Final Insult (1994)  genres:Comedy cluster:4 dist:1.4373933940893153
         (id, title, genres.mkString(" "), pred, dist)
     }
-    //clusterAssignments 键是类簇的标识,值是电影ID,标题,题材,类别索引及类中心的距离
+    //clusterAssignments 键是类簇的标识,值是电影ID,标题,题材分类,类别索引及类中心的距离
     val clusterAssignments = moviesAssigned.groupBy { 
-         //id 电影ID,title 电影标题,genres 电影题材,cluster 类别索引,dist 类中心的距离
+         //id 电影ID,title 电影标题,genres 电影题材分类,cluster 类别索引,dist 类中心的距离
           case (id, title, genres, cluster, dist) => 
             //id:384   title:Naked Gun 33 1/3: The Final Insult (1994)  genres:Comedy cluster:4 dist:1.4373933940893153           
             cluster 
@@ -228,7 +228,7 @@ object ScalaApp7 {
     for ((k, v) <- clusterAssignments.toSeq.sortBy(_._1)) {
       //
       println(s"Cluster $k:")
-      //id 电影ID,title 电影标题,genres 电影题材,cluster 类别索引,dist 类中心的距离
+      //id 电影ID,title 电影标题,genres 电影题材分类,cluster 类别索引,dist 类中心的距离
       val m = v.toSeq.sortBy(_._5)//以类中心的距离升序排序
       println(m.take(20).map { case (_, title, genres, _, d) => (title, genres, d) }.mkString("\n"))
       println("=====\n")

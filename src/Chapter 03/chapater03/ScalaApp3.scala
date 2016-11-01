@@ -40,16 +40,16 @@ object ScalaApp3 {
        * Array(17, 30, M, programmer, 06355), Array(18, 35, F, other, 37212), Array(19, 40, M, librarian, 02138),
        * Array(20, 42, F, homemaker, 95660), Array(21, 26, M, writer, 30068), Array(22, 25, M, writer, 40206),...
        **/
-      println(line(0))// line.head是一样
+      //println(line(0))// line.head是一样
       //取出用户ID
       line.head
     }
     ).count()
-    //统计性别的数目
+    //统计性别的数目,即第三列
     val num_genders = usre_files.map { line => line(2) }.distinct().count()
-    //统计职业的数目
+    //统计职业的数目,即第四列
     val num_occuptions = usre_files.map { line => line(3) }.distinct().count()
-    //统计邮编的数目
+    //统计邮编的数目,即第五列
     val num_zipCode = usre_files.map { line => line(4) }.distinct().count()
     //println("Most popular product: %s with %d purchases".format(mostPopular._1, mostPopular._2))
     println("Users: %d,genders: %d,occupations: %d,ZIP Codes: %d".format(num_users, num_genders, num_occuptions, num_zipCode))
@@ -201,8 +201,7 @@ object ScalaApp3 {
     //如果不使用split分隔\\s,flatMap会把每个字符串变成字符数组
   
     println("Encoding of 'doctor': %d".format(map("doctor")))
-    println("Encoding of 'programmer': %d".format(map("programmer")))
-        
+    println("Encoding of 'programmer': %d".format(map("programmer")))        
       for(u<-user_fields.map(fields => fields(3)).flatMap(x => x.split("\\s")).distinct().zipWithIndex().collect()){
        println("111111>>>>>>>>>>>>>>"+u)
     }    
@@ -277,7 +276,7 @@ object ScalaApp3 {
     println("Index of term 'Rooms': %d".format(all_terms_dict2("Rooms"))
         */
    
-import org.apache.spark.ml.feature.Normalizer
+    import org.apache.spark.ml.feature.Normalizer
 
      /**正则化***/
      val l2Normalizer = new Normalizer()
