@@ -97,7 +97,11 @@ object SimpleStreamingModel {
 
     // train and test model on the stream, and print predictions for illustrative purposes
     model.trainOn(labeledStream)
-    model.predictOn(labeledStream).print()
+    model.predictOnValues(labeledStream.map(x =>{
+        println(x.label+"\t"+x.features)  
+        (x.label, x.features)
+        }))
+    
 
     ssc.start()
     ssc.awaitTermination()
