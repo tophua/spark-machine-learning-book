@@ -4,6 +4,7 @@ import org.apache.spark.mllib.recommendation.Rating
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 import org.apache.spark.util.StatCounter
+import org.jblas.DoubleMatrix
 
 /**
  * A simple Spark app in Scala
@@ -60,9 +61,33 @@ object ScalaApp4 {
     //看一下前10个推荐
     println("=========看一下前10个推荐=============")
     topKRecs.map(rating => (titles(rating.product), rating.rating)).foreach(println)
-    /************推荐评估模型效果*******************/
-     //用户789找出第一个评级
-    val actualRating = moviesForUser.take(1)(0)//
+
+    /***********物品推荐模型效果*******************/
+    //从MovieLens 100K数据集生成相似电影
+    val aMatrix = new DoubleMatrix(Array(1.0, 2.0, 3.0))
+    def cosineSimilarity(vec1: DoubleMatrix, vec2: DoubleMatrix): Double = {
+      vec1.dot(vec2) / (vec1.norm2() * vec2.norm2())
+    }
+    val itemId = 567
+    val itemFactor = model.productFeatures.lookup(itemId).head
+    val itemVector = new DoubleMatrix(itemFactor)
+    cosineSimilarity(itemVector, itemVector)
+    val sims = model.productFeatures.map {
+      case (id, factor) =>
+        val factorVector = new DoubleMatrix(factor)
+        val sim = cosineSimilarity(factorVector, itemVector)
+        (id, sim)
+    }
+    val sortedSims = sims.top(K)(Ordering.by[(Int, Double), Double] { case (id, similarity) => similarity })
+    println(sortedSims.mkString("\n"))
+    //检查推荐的相似物品
+    println(titles(itemId))
+    val sortedSims2 = sims.top(K + 1)(Ordering.by[(Int, Double), Double] { case (id, similarity) => similarity })
+    sortedSims2.slice(1, 11).map { case (id, sim) => (titles(id), sim) }.mkString("\n")
+
+    /**推荐模型效果的评估***/
+    //用户789找出第一个评级
+    val actualRating = moviesForUser.take(1)(0) //
     //然后求模型的预计评级
     val predictedRatingR = model.predict(789, actualRating.product)
     //计算实际评级和预计评级的平方误差
@@ -89,7 +114,7 @@ object ScalaApp4 {
     val predictedMovies = topKRecs.map(_.product)
     val apk10 = avgPrecisionK(actualMovies, predictedMovies, 10)
     val itemFactors = model.productFeatures.map { case (id, factor) => factor }.collect()
-    /*
+
     val itemMatrix = new DoubleMatrix(itemFactors)
     println(itemMatrix.rows, itemMatrix.columns)
     val imBroadcast = sc.broadcast(itemMatrix)
@@ -100,7 +125,7 @@ object ScalaApp4 {
         val sortedWithId = scores.data.zipWithIndex.sortBy(-_._1)
         val recommendedIds = sortedWithId.map(_._2 + 1).toSeq
         (userId, recommendedIds)
-    }*/
+    }
   }
 
   def avgPrecisionK(actual: Seq[Int], predicted: Seq[Int], k: Int): Double = {
