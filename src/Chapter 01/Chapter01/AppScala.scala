@@ -8,9 +8,15 @@ object AppScala {
    //val sparkConf = new SparkConf().setMast("local[2]").setAppName("SparkHdfsLR")
     
     
-    val conf = new SparkConf().setAppName("test").setMaster("local")
-    val  sc = new SparkContext(conf)
-   // val sc = new SparkContext("local[2]", "First Spark App")
+    val conf = new SparkConf().setAppName("test").setMaster("local") 
+   /** val conf = new SparkConf().setMaster("spark://dept3:8088").setAppName("Chapter01")
+       .set("spark.driver.port", "8088")
+      .set("spark.fileserver.port", "3306")
+      .set("spark.replClassServer.port", "8080")
+      .set("spark.broadcast.port", "8089")
+      .set("spark.blockManager.port", "15000")**/
+    //val  sc = new SparkContext(conf)
+   val sc = new SparkContext("local[2]", "First Spark App")
     // we take the raw data in CSV format and convert it into a set of records of the form (user, product, price)
     //将csv格式的原始数据转化为(user, product, price),返回三元数组(客户名称,商品名称,商品价格)
     
@@ -23,8 +29,10 @@ object AppScala {
 		 * Jill	   Samsung Galaxy Cover	8.95
 		 * Bob	   iPad Cover	          5.49
      */
-      
-    val data = sc.textFile("data/UserPurchaseHistory.csv")
+      //hdfs://xcsq:8089/machineLearning/Chapter01/UserPurchaseHistory.csv
+    //不能指定文件名
+    //val data = sc.textFile("hdfs://xcsq:8089/machineLearning/Chapter01/")
+    val data = sc.textFile("D:\\eclipse44_64\\workspace\\MachineLearning\\data\\UserPurchaseHistory.csv")
       .map(line => line.split(","))
       .map(purchaseRecord => (purchaseRecord(0), purchaseRecord(1), purchaseRecord(2)))
     // let's count the number of purchases

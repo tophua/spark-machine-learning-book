@@ -10,6 +10,7 @@ import scala.util.Random
 
 /**
  * A producer application that generates random linear regression data.
+ * 产生随机线性回归数据的生产者程序
  */
 object StreamingModelProducer {
   import breeze.linalg._
@@ -17,19 +18,27 @@ object StreamingModelProducer {
   def main(args: Array[String]) {
 
     // Maximum number of events per second
+    //每秒事件的最大数量
     val MaxEvents = 100
     val NumFeatures = 100
 
     val random = new Random()
 
-    /** Function to generate a normally distributed dense vector */
+    /** 
+     *  Function to generate a normally distributed dense vector 
+     *  生成正态分布稠密向量的函数
+     *  */
     def generateRandomArray(n: Int) = Array.tabulate(n)(_ => random.nextGaussian())
 
     // Generate a fixed random model weight vector
+    //生成固定随机模型权值向量
     val w = new DenseVector(generateRandomArray(NumFeatures))
     val intercept = random.nextGaussian() * 10
 
-    /** Generate a number of random product events */
+    /** 
+     *  Generate a number of random product events 
+     *  产生多项随机产品事件
+     *  */
     def generateNoisyData(n: Int) = {
       (1 to n).map { i =>
         val x = new DenseVector(generateRandomArray(NumFeatures))
@@ -40,6 +49,7 @@ object StreamingModelProducer {
     }
 
     // create a network producer
+    //创建网络生产者
     val listener = new ServerSocket(9999)
     println("Listening on port: 9999")
 
@@ -72,6 +82,7 @@ object StreamingModelProducer {
 
 /**
  * A simple streaming linear regression that prints out predicted value for each batch
+ * 一个简单的流线性回归打印出每批预测值
  */
 object SimpleStreamingModel {
 
@@ -88,6 +99,7 @@ object SimpleStreamingModel {
       .setStepSize(0.01)
 
     // create a stream of labeled points
+    //创建一个流的标记点
     val labeledStream = stream.map { event =>
       val split = event.split("\t")
       val y = split(0).toDouble
@@ -96,6 +108,7 @@ object SimpleStreamingModel {
     }
 
     // train and test model on the stream, and print predictions for illustrative purposes
+    //在流上训练和测试模型,并打印用于说明目的的预测
     model.trainOn(labeledStream)
     model.predictOnValues(labeledStream.map(x =>{
         println(x.label+"\t"+x.features)  
@@ -112,6 +125,7 @@ object SimpleStreamingModel {
 /**
  * A streaming regression model that compares the model performance of two models, printing out metrics for
  * each batch
+ * 流回归模型,比较两个模型的模型性能,打印出每批的度量
  */
 object MonitoringStreamingModel {
   import org.apache.spark.SparkContext._
@@ -134,6 +148,7 @@ object MonitoringStreamingModel {
       .setStepSize(1.0)
 
     // create a stream of labeled points
+    //创建一个流的标记点
     val labeledStream = stream.map { event =>
       val split = event.split("\t")
       val y = split(0).toDouble
@@ -142,10 +157,12 @@ object MonitoringStreamingModel {
     }
 
     // train both models on the same stream
+    //在同一条流上训练两个模型
     model1.trainOn(labeledStream)
     model2.trainOn(labeledStream)
 
     // use transform to create a stream with model error rates
+    //使用变换创建具有模型错误率的流
     val predsAndTrue = labeledStream.transform { rdd =>
       val latest1 = model1.latestModel()
       val latest2 = model2.latestModel()
@@ -157,6 +174,7 @@ object MonitoringStreamingModel {
     }
 
     // print out the MSE and RMSE metrics for each model per batch
+    //打印出各模型的每批MSE和均方根误差度量
     predsAndTrue.foreachRDD { (rdd, time) =>
       val mse1 = rdd.map { case (err1, err2) => err1 * err1 }.mean()
       val rmse1 = math.sqrt(mse1)

@@ -19,9 +19,11 @@ object StreamingProducer {
     val random = new Random()
 
     // Maximum number of events per second
+    //每秒事件的最大数量
     val MaxEvents = 6
 
     // Read the list of possible names
+    //读取可能名称的列表
     val namesResource = this.getClass.getResourceAsStream("/names.csv")
     val names = scala.io.Source.fromInputStream(namesResource)
       .getLines()//行读取
@@ -31,6 +33,7 @@ object StreamingProducer {
       .toSeq
 
     // Generate a sequence of possible products
+    //生成可能的产品序列
     val products = Seq(
       "iPhone Cover" -> 9.99,
       "Headphones" -> 5.49,
@@ -38,7 +41,10 @@ object StreamingProducer {
       "iPad Cover" -> 7.49
     )
 
-    /** Generate a number of random product events */
+    /** 
+     *  Generate a number of random product events 
+     *  产生多项随机产品事件
+     *  */
     def generateProductEvents(n: Int) = {
       (1 to n).map { i =>
         //随机产生一个产品和价格
@@ -95,6 +101,7 @@ object SimpleStreamingApp {
     val stream = ssc.socketTextStream("localhost", 9999)
 
     // here we simply print out the first few elements of each batch
+    //在这里,我们只需打印出每个批次的前几个元素
     println("==================")
     stream.print()
     ssc.start()
@@ -115,6 +122,7 @@ object StreamingAnalyticsApp {
     val stream = ssc.socketTextStream("localhost", 9999)
 
     // create stream of events from raw text elements
+    //从原始文本元素创建事件流
     val events = stream.map { record =>
       val event = record.split(",")
       (event(0), event(1), event(2))
@@ -180,6 +188,7 @@ object StreamingStateApp {
     val stream = ssc.socketTextStream("localhost", 9999)
 
     // create stream of events from raw text elements
+    //从原始文本元素创建事件流
     val events = stream.map { record =>
       val event = record.split(",")
       (event(0), event(1), event(2).toDouble)
