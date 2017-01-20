@@ -151,12 +151,21 @@ object ScalaApp3 {
     val ratings_per_user = num_ratings / num_users
     //平均电影评级
     val ratings_per_movie = num_ratings / num_movies
+<<<<<<< HEAD
+    print("Min rating: %d".format(min_rating))
+    print("Max rating: %d".format(max_rating))
+    print("Average rating: %2.2f".format(mean_rating))
+    print("Median rating: %d".format(median_rating))
+    print("Average # of ratings per user: %2.2f".format(ratings_per_user))
+    print("Average # of ratings per movie: %2.2f".format(ratings_per_movie))
+=======
     println("Min rating: %d".format(min_rating))
     println("Max rating: %d".format(max_rating))
     println("Average rating: %d".format(mean_rating))
     println("Median rating: %f".format(median_rating))
     println("Average # of ratings per user: %d".format(ratings_per_user))
     println("Average # of ratings per movie: %d".format(ratings_per_movie))
+>>>>>>> 909e73ce8d55704746c86f6b74a12382a8deb3dc
 
     /**缺失数据填充对下面发行日期有问题进行填充**/
     //过滤掉发行日期有问题 
@@ -180,11 +189,23 @@ object ScalaApp3 {
     //用户ID|年龄  |性别|   职业         | 邮编
     // 1    |24  |  M |technician| 85711
     val all_occupations = user_fields.map(fields => fields(3)).distinct().collect()
+<<<<<<< HEAD
+    //排序
+=======
     //排序 user_fields.map(fields => fields(3)).collect()
+>>>>>>> 909e73ce8d55704746c86f6b74a12382a8deb3dc
     all_occupations.sorted
     val map = mutable.Map.empty[String, Int]
     var idx = 0
     for (occu <- all_occupations) {
+<<<<<<< HEAD
+      idx += 1
+      map(occu) = idx
+    }
+    println("Encoding of 'doctor': %d".format(map("doctor")))
+    println("Encoding of 'programmer': %d".format(map("programmer")))
+
+=======
      
       println("职业>>>"+occu+"\tidx:"+idx)
       map(occu) = idx
@@ -288,6 +309,7 @@ object ScalaApp3 {
     
     
     
+>>>>>>> 909e73ce8d55704746c86f6b74a12382a8deb3dc
   }
 
 }

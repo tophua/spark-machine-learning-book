@@ -80,6 +80,27 @@ object ScalaApp4 {
     /***********物品推荐模型效果*******************/
     //从MovieLens 100K数据集生成相似电影
     val aMatrix = new DoubleMatrix(Array(1.0, 2.0, 3.0))
+<<<<<<< HEAD
+    def cosineSimilarity(vec1: DoubleMatrix, vec2: DoubleMatrix): Double = {
+      vec1.dot(vec2) / (vec1.norm2() * vec2.norm2())
+    }
+    val itemId = 567
+    val itemFactor = model.productFeatures.lookup(itemId).head
+    val itemVector = new DoubleMatrix(itemFactor)
+    cosineSimilarity(itemVector, itemVector)
+    val sims = model.productFeatures.map {
+      case (id, factor) =>
+        val factorVector = new DoubleMatrix(factor)
+        val sim = cosineSimilarity(factorVector, itemVector)
+        (id, sim)
+    }
+    val sortedSims = sims.top(K)(Ordering.by[(Int, Double), Double] { case (id, similarity) => similarity })
+    println(sortedSims.mkString("\n"))
+    //检查推荐的相似物品
+    println(titles(itemId))
+    val sortedSims2 = sims.top(K + 1)(Ordering.by[(Int, Double), Double] { case (id, similarity) => similarity })
+    sortedSims2.slice(1, 11).map { case (id, sim) => (titles(id), sim) }.mkString("\n")
+=======
     //定义一个函数来计算两个向量之间的余弦相似度,
     def cosineSimilarity(vec1: DoubleMatrix, vec2: DoubleMatrix): Double = {
       //余弦相似度:两个向量的点积与各向量范数的乘积的商,相似度的取值在-1和1之间
@@ -138,6 +159,7 @@ object ScalaApp4 {
     (Mystery Science Theater 3000: The Movie (1996),0.6594872765176396)
     (Scream (1996),0.6538249646863378)
     */
+>>>>>>> 909e73ce8d55704746c86f6b74a12382a8deb3dc
 
     /**推荐模型效果的评估***/
     //用户789找出第一个评级
@@ -173,6 +195,10 @@ object ScalaApp4 {
     val apk10 = avgPrecisionK(actualMovies, predictedMovies, 10)  
     //取回物品因子向量并用它构建一个DoubleMatrix
     val itemFactors = model.productFeatures.map { case (id, factor) => factor }.collect()
+<<<<<<< HEAD
+
+=======
+>>>>>>> 909e73ce8d55704746c86f6b74a12382a8deb3dc
     val itemMatrix = new DoubleMatrix(itemFactors)
     //打印行列数分别为1682和50,因为电影数目和因子维数就是这么多
     println(itemMatrix.rows, itemMatrix.columns)
@@ -186,6 +212,10 @@ object ScalaApp4 {
         val sortedWithId = scores.data.zipWithIndex.sortBy(-_._1) //电影ID按照预计评级的高低转换,转换K,索引值键值对
         val recommendedIds = sortedWithId.map(_._2 + 1).toSeq //与物品ID加1,因为物品因子矩阵的编号从0开始,而我们电影的编号从1开始
         (userId, recommendedIds)
+<<<<<<< HEAD
+    }
+  }
+=======
     }  
     //返回所有以用户分组的物品,包含每个用户ID所对应的(userId,movieId)对,因为group操作所使用的主键就是用户ID
     val userMovie = ratings.map { case Rating(user, product, rating) => (user, product) }.groupBy(_._1)    
@@ -201,6 +231,7 @@ object ScalaApp4 {
     println("Mean Average Precision = " + MAPK)
     // Mean Average Precision = 0.07171412913757186
     
+>>>>>>> 909e73ce8d55704746c86f6b74a12382a8deb3dc
 
     /**MLib内置的评估函数**/
     // MSE, RMSE and MAE
