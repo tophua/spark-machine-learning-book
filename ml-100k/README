@@ -100,19 +100,25 @@ DETAILED DESCRIPTIONS OF DATA FILES
 ==============================================
 
 Here are brief descriptions of the data.
+这里是简短的数据描述:
 
 ml-data.tar.gz   -- Compressed tar file.  To rebuild the u data files do this:
+		 --压缩的tar文件,重建U数据文件这样做
                 gunzip ml-data.tar.gz
                 tar xvf ml-data.tar
                 mku.sh
 
 u.data     -- 用户对电影的评级
 			  The full u data set, 100000 ratings by 943 users on 1682 items.
+			  100000评级由943用户1682个项目
               Each user has rated at least 20 movies.  Users and items are
+	      每个用户都评级至少20个电影,用户和项目编号从1开始
               numbered consecutively from 1.  The data is randomly
+	      数据是随机排序,这是一个标签分隔的列表
               ordered. This is a tab separated list of
              用户ID  | 影片ID  | 星级   | 时间戳			  
 	      user id | item id | rating | timestamp. 
+	      时间戳是UNIX从秒开始
               The time stamps are unix seconds since 1/1/1970 UTC   
 
 u.info     -- The number of users, items, and ratings in the u data set. 设置用户数,电影数,评级数
@@ -132,8 +138,10 @@ u.item     -- 电影元数据
               Thriller | War | Western |
 	      最后19个分类字段,1标示分类,0标示未分类
               The last 19 fields are the genres, a 1 indicates the movie
+	      一个电影可以多个流派
               is of that genre, a 0 indicates it is not; movies can be in
               several genres at once.
+	      这部电影的入侵检测系统的数据的数据集
               The movie ids are the ones used in the u.data data set.
 
 u.genre    -- A list of the genres.一个电影分类的列表
