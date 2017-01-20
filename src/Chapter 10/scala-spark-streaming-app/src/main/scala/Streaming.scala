@@ -23,8 +23,9 @@ object StreamingProducer {
     val MaxEvents = 6
 
     // Read the list of possible names
-    //读取可能名称的列表
+    //读取可能名称的列表,namesResource: InputStream
     val namesResource = this.getClass.getResourceAsStream("/names.csv")
+    //names: Seq[String]
     val names = scala.io.Source.fromInputStream(namesResource)
       .getLines()//行读取
       .toList//转换列表

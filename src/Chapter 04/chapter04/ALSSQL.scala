@@ -199,7 +199,7 @@ object ALSSQL {
     //使用RankingMetrics类计算基于排名的评估指标,需要向我们之前平均率函数传入一个健值对类型的RDD
     //其键为给定用户预测的推荐物品的ID数组,而值则实际的物品ID数组
     val rankingMetrics = new RankingMetrics(predictedAndTrueForRanking)
-    //平均正确率值 meanAveragePrecision
+    //K值平均准确率 meanAveragePrecision
     println("平均正确率值:Mean Average Precision = " + rankingMetrics.meanAveragePrecision)
     // Mean Average Precision = 0.07171412913757183
 

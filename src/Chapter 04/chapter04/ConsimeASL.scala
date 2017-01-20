@@ -197,7 +197,7 @@ object ConsimeASL {
     //其键为给定用户预测的推荐物品的ID数组,而值则实际的物品ID数组
     val rankingMetrics = new RankingMetrics(predictedAndTrueForRanking)
     //平均正确率值 meanAveragePrecision
-    println("平均正确率值:Mean Average Precision = " + rankingMetrics.meanAveragePrecision)
+    println("平均准确率:Mean Average Precision = " + rankingMetrics.meanAveragePrecision)
     // Mean Average Precision = 0.07171412913757183
 
     // Compare to our implementation, using K = 2000 to approximate the overall MAP

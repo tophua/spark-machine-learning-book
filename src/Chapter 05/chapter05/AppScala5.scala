@@ -30,7 +30,7 @@ object AppScala5 {
     //开始四列分别包含URL，页面的ID，原始的文本内容和分配给页面的类别
     // records.first
     //Array[String] = Array("http://www.bloomberg.com/news/2010-12-23/ibm-predicts-holographic-calls-air-breathing-batteries-by-2015.html", "4042", ...
-    //由于数据格式的问题，我们做一些数据清理的工作：把额外的(“)去掉，。   
+    //由于数据格式的问题,我们做一些数据清理的工作：把额外的(“)去掉，。   
     val data = records.map { r =>
       //把额外的(“)去掉
       val trimmed = r.map(_.replaceAll("\"", ""))
@@ -58,6 +58,10 @@ object AppScala5 {
       //创建一个迭代器返回由这个迭代器所产生的值区间,取子集set(1,4为元素位置, 从0开始),从位置4开始,到数组的长度     
       //slice提取第5列开始到25列的特征矩阵
       //数据集中缺失数据为?,直接用0替换缺失数据
+      /**res1: org.apache.spark.mllib.regression.LabeledPoint = 
+       * (0.0,[0.789131,2.055555556,0.676470588,0.205882353,0.047058824,
+       *       0.023529412,0.443783175,0.0,0.0,0.09077381,0.0,0.245831182,
+       *       0.003883495,1.0,1.0,24.0,0.0,5424.0,170.0,8.0,0.152941176,0.079129575])**/
       val features = trimmed.slice(4, r.size - 1).map {
         d =>
           //println("" + d)
@@ -107,7 +111,8 @@ object AppScala5 {
     // make prediction on a single data point    
     val dataPoint = data.first
     //逻辑模型预测
-    // dataPoint: org.apache.spark.mllib.regression.LabeledPoint = LabeledPoint(0.0, [0.789131,2.055555556,0.676470588, ...
+    // dataPoint: org.apache.spark.mllib.regression.LabeledPoint = 
+    //LabeledPoint(0.0, [0.789131,2.055555556,0.676470588, ...
     //训练数据中第一个样本,模型预测值为1,即长久
     val prediction = lrModel.predict(dataPoint.features)
     //模型预测出错了
@@ -139,7 +144,6 @@ object AppScala5 {
      * 2)准确率和召回率
      * 3)准确率一召回率曲线下方的面积ROC曲线
      * 4)准确率和召回率
-     *
      */
     //预测的正确率和错误率
     //正确率=训练样本中被正确分类的数目/总样本数
@@ -150,7 +154,7 @@ object AppScala5 {
       //point.label实际标签进行比较
       if (lrModel.predict(point.features) == point.label) 1 else 0
     }.sum
-    // lrTotalCorrect: Double = 3806.0
+    // lrTotalCorrect: Double = 3806.0 完全正确
     /**平均分类正确率=将对正确分类的样本数目求和并除以样本总数,逻辑回归模型得到正确率51.5%**/
     val lrAccuracy = lrTotalCorrect / numData
     //得到51.5%正确率,结果看起来不是很好,和随机猜测差不多 
@@ -195,7 +199,6 @@ object AppScala5 {
      * 二分类准确率=真阳性的数目除以真阳性和假阳性的总数,
      * 真阳性是指被正确预测的类别为1的样本
      * 假阳性是指被错误预测的类别为1的样本
-     * *
      */
     //计算二分类的PR(召回率)和ROC曲线下的面积
     //lrModel逻辑回归是一个概率模型,线性支持向量机SVM模型
@@ -206,12 +209,13 @@ object AppScala5 {
         //println("predict:"+predict)
         (model.predict(point.features), point.label)
       }
-      println(">>>>>>>>>>>"+scoreAndLabels)
+      //println(">>>>>>>>>>>"+scoreAndLabels)
       //二分类评估测量
       val metrics = new BinaryClassificationMetrics(scoreAndLabels)
       (model.getClass.getSimpleName, metrics.areaUnderPR, metrics.areaUnderROC)
     }
     // again, we need to use the special nbData for the naive Bayes metrics 
+    //再次,我们需要使用特殊的nbdata的朴素贝叶斯的度量
     val nbMetrics = Seq(nbModel).map { model =>
       val scoreAndLabels = nbData.map { point =>
         //预测分和标签
@@ -223,6 +227,7 @@ object AppScala5 {
     }
     // here we need to compute for decision tree separately since it does 
     // not implement the ClassificationModel interface
+    //在这里,我们需要为决策树分别计算分类模型接口
     val dtMetrics = Seq(dtModel).map { model =>
       val scoreAndLabels = data.map { point =>
         val score = model.predict(point.features)
@@ -231,7 +236,8 @@ object AppScala5 {
       val metrics = new BinaryClassificationMetrics(scoreAndLabels)
       (model.getClass.getSimpleName, metrics.areaUnderPR, metrics.areaUnderROC)
     }
-    val allMetrics = metrics ++ nbMetrics ++ dtMetrics
+    //val allMetrics: Seq[(String, Double, Double)]
+    val allMetrics = metrics ++ nbMetrics ++ dtMetrics  
     allMetrics.foreach {
       case (m, pr, roc) =>
         println(f"$m, Area under PR: ${pr * 100.0}%2.4f%%, Area under ROC: ${roc * 100.0}%2.4f%%")
@@ -286,6 +292,7 @@ object AppScala5 {
     println(scaledData.first.features)
     // [1.1376439023494747,-0.08193556218743517,1.025134766284205,-0.0558631837375738,
     //可以看出第一个特征已经应用标准差公式被转换,验证第一个特征值,第一特征值减去均值,然后除以标准差(方差的平方根)
+    //0.789131特征值,0.41225805299526636平均值,0.1097424416755897标准差
     println((0.789131 - 0.41225805299526636) / math.sqrt(0.1097424416755897))
     // 1.137647336497682
     /***标准化数据重新训练模型,这里只训练逻辑回归(决策树和朴素贝叶斯不受特征标准话的影响),并说明特征标准化的影响***/
@@ -304,17 +311,19 @@ object AppScala5 {
       (lrModelScaled.predict(point.features), point.label)
     }
     val lrMetricsScaled = new BinaryClassificationMetrics(lrPredictionsVsTrue)
-    //准确率和召回率
+    //准确率和召回率,areaUnderPR为1等价于一个完美模型,其准确率和召回率达到100%
     val lrPr = lrMetricsScaled.areaUnderPR
-    //
+    //AUC下的面积表示平均准确率,平均准确率等于训练样本中被正确分类的数目除以样本总数
     val lrRoc = lrMetricsScaled.areaUnderROC
     println(f"${lrModelScaled.getClass.getSimpleName}\n 正确率Accuracy: ${lrAccuracyScaled * 100}%2.4f%%\nArea under PR: ${lrPr * 100.0}%2.4f%%\nArea under ROC(平均准确率): ${lrRoc * 100.0}%2.4f%%")
 
-    /*
+    /**
            从结果可以看出,通过简单的特征标准化,就提高了逻辑回归的准确率,并将平均准确率AUC从随机50%,提升到62%
     LogisticRegressionModel
-    Accuracy: 62.0419%
+    Accuracy(准确率): 62.0419%
+         计算PR(准确率-召回率)曲线下面积
     Area under PR: 72.7254%
+    ROC(受试者工作特征曲线， 真阳性率-假阳性率)曲线下面积即AUC
     Area under ROC: 61.9663%
     */
 
@@ -323,10 +332,10 @@ object AppScala5 {
     // Investigate the impact of adding in the 'category' feature
     //每个类别做一个去重索引映射,这里索引可以用于类别特征做1-of-K编码
     val categories = records.map(r => r(3)).distinct.collect.zipWithIndex.toMap
-    // categories: scala.collection.immutable.Map[String,Int] = Map("weather" -> 0, "sports" -> 6, 
-    //	"unknown" -> 4, "computer_internet" -> 12, "?" -> 11, "culture_politics" -> 3, "religion" -> 8,
-    // "recreation" -> 2, "arts_entertainment" -> 9, "health" -> 5, "law_crime" -> 10, "gaming" -> 13, 
-    // "business" -> 1, "science_technology" -> 7)
+    /** categories: scala.collection.immutable.Map[String,Int] = Map("weather" -> 0, "sports" -> 6, 
+    	"unknown" -> 4, "computer_internet" -> 12, "?" -> 11, "culture_politics" -> 3, "religion" -> 8,
+      "recreation" -> 2, "arts_entertainment" -> 9, "health" -> 5, "law_crime" -> 10, "gaming" -> 13, 
+      "business" -> 1, "science_technology" -> 7)**/
 
     val numCategories = categories.size
     // numCategories: Int = 14
@@ -338,7 +347,7 @@ object AppScala5 {
       val label = trimmed(r.size - 1).toInt
       //根据每个样本所属类别索引,对应相应的维度赋值为1,其他为0
       val categoryIdx = categories(r(3))
-      //ofDim创建几行几列二维数组
+      //ofDim创建一维数组14
       val categoryFeatures = Array.ofDim[Double](numCategories)
       categoryFeatures(categoryIdx) = 1.0
       //创建一个迭代器返回由这个迭代器所产生的值区间,取子集set(1,4为元素位置, 从0开始),从位置4开始,到数组的长度     
@@ -538,6 +547,7 @@ object AppScala5 {
     // investigate tree depth impact for Gini impurity
     //通过使用Gini不纯度并改变树的深度训练模型
     val dtResultsGini = Seq(1, 2, 3, 4, 5, 10, 20).map { param =>
+      //param:最大深度
       val model = trainDTWithParams(data, param, Gini)
       val scoreAndLabels = data.map { point =>
         val score = model.predict(point.features)

@@ -210,6 +210,8 @@ object AppScala6 {
         (model.predict(point.features), point.label)
       }
       val metrics = new BinaryClassificationMetrics(scoreAndLabels)
+      //AUC下的面积表示平均准确率,平均准确率等于训练样本中被正确分类的数目除以样本总数
+      //PR准确率和召回率,areaUnderPR为1等价于一个完美模型,其准确率和召回率达到100%
       (model.getClass.getSimpleName, metrics.areaUnderPR, metrics.areaUnderROC)
     }
     // again, we need to use the special nbData for the naive Bayes metrics 
@@ -219,6 +221,8 @@ object AppScala6 {
         (if (score > 0.5) 1.0 else 0.0, point.label)
       }
       val metrics = new BinaryClassificationMetrics(scoreAndLabels)
+       //AUC下的面积表示平均准确率,平均准确率等于训练样本中被正确分类的数目除以样本总数
+      //PR准确率和召回率,areaUnderPR为1等价于一个完美模型,其准确率和召回率达到100%
       (model.getClass.getSimpleName, metrics.areaUnderPR, metrics.areaUnderROC)
     }
     // here we need to compute for decision tree separately since it does 
@@ -229,6 +233,8 @@ object AppScala6 {
         (if (score > 0.5) 1.0 else 0.0, point.label)
       }
       val metrics = new BinaryClassificationMetrics(scoreAndLabels)
+       //AUC下的面积表示平均准确率,平均准确率等于训练样本中被正确分类的数目除以样本总数
+      //PR准确率和召回率,areaUnderPR为1等价于一个完美模型,其准确率和召回率达到100%
       (model.getClass.getSimpleName, metrics.areaUnderPR, metrics.areaUnderROC)
     }
     val allMetrics = metrics ++ nbMetrics ++ dtMetrics
@@ -303,9 +309,9 @@ object AppScala6 {
       (lrModelScaled.predict(point.features), point.label)
     }
     val lrMetricsScaled = new BinaryClassificationMetrics(lrPredictionsVsTrue)
-    //准确率和召回率
+    //PR准确率和召回率,areaUnderPR为1等价于一个完美模型,其准确率和召回率达到100%
     val lrPr = lrMetricsScaled.areaUnderPR
-    //
+    //AUC下的面积表示平均准确率,平均准确率等于训练样本中被正确分类的数目除以样本总数      
     val lrRoc = lrMetricsScaled.areaUnderROC
     println(f"${lrModelScaled.getClass.getSimpleName}\n 正确率Accuracy: ${lrAccuracyScaled * 100}%2.4f%%\nArea under PR: ${lrPr * 100.0}%2.4f%%\nArea under ROC: ${lrRoc * 100.0}%2.4f%%")
 

@@ -157,13 +157,15 @@ object ScalaApp4 {
     val ratingsAndPredictions = ratings.map {
       case Rating(user, product, rating) => ((user, product), rating)
     }.join(predictions)
-    //均方差
+    //均方差==需要对每一条记录都计算该平均误差,然后求和,再除以总的评级次数
     val MSE = ratingsAndPredictions.map {
-      //各个平方误差的和与总数目的商,其中平方误差是指预测到的评级与真实评级的差值的平方
+      //各个平方误差的和与总数目的商,其中平方误差是指预测到的评级与真实评级的差值的次方
+      //actual实际值,predicted预测值,x的2次方
       case ((user, product), (actual, predicted)) => math.pow((actual - predicted), 2)
     }.reduce(_ + _) / ratingsAndPredictions.count
     //
     println("均方差:Mean Squared Error = " + MSE)
+    //相同于求预计评级和实际评级的差值的标准差
     val RMSE = math.sqrt(MSE) //均方根误差
     println("Root Mean Squared Error = " + RMSE)
     val actualMovies = moviesForUser.map(_.product)//
@@ -243,8 +245,8 @@ object ScalaApp4 {
     //使用RankingMetrics类计算基于排名的评估指标,需要向我们之前平均率函数传入一个健值对类型的RDD
     //其键为给定用户预测的推荐物品的ID数组,而值则实际的物品ID数组
     val rankingMetrics = new RankingMetrics(predictedAndTrueForRanking)
-    //平均正确率值 meanAveragePrecision
-    println("平均正确率值:Mean Average Precision = " + rankingMetrics.meanAveragePrecision)
+    //K值平均准确率meanAveragePrecision
+    println("平均准确率:Mean Average Precision = " + rankingMetrics.meanAveragePrecision)
     // Mean Average Precision = 0.07171412913757183
 
     // Compare to our implementation, using K = 2000 to approximate the overall MAP
@@ -261,13 +263,19 @@ object ScalaApp4 {
     println("Mean Average Precision = " + MAPK2000)
     // Mean Average Precision = 0.07171412913757186
   }
-  //输出指定K值时的平均准确度
+  //输出指定K值时的平均准确度,APK它用于衡量针对某个查询返回的"前K个"文档的平均相关性
+  //如果结果中文档的实际相关性越高且排名也更靠前,那APK分值也就越高,适合评估的好坏,因为推荐系统
+  //也会计算前K个推荐物,然后呈现给用户,APK和其他基于排名的指标同样适合评估隐式数据集上的推荐
+  //这里用MSE相对就不那么适合,APK平均准确率
   def avgPrecisionK(actual: Seq[Int], predicted: Seq[Int], k: Int): Double = {
     val predK = predicted.take(k)
     var score = 0.0
     var numHits = 0.0
-    //
-    for ((p, i) <- predK.zipWithIndex) {
+    //zipWithIndex 将RDD中的元素和这个元素在RDD中的ID(索引号)组合成键/值对
+    val zip=predK.zipWithIndex
+    //p值,i索引号
+    for ((p, i) <- zip) {
+      //println("p:"+p+"=="+i)
       if (actual.contains(p)) {
         numHits += 1.0
         score += numHits / (i.toDouble + 1.0)
