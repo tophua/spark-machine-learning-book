@@ -10,7 +10,7 @@ import scala.util.Random
 
 /**
  * A producer application that generates random linear regression data.
- * ²úÉúËæ»úÏßĞÔ»Ø¹éÊı¾İµÄÉú²úÕß³ÌĞò
+ * äº§ç”Ÿéšæœºçº¿æ€§å›å½’æ•°æ®çš„ç”Ÿäº§è€…ç¨‹åº
  */
 object StreamingModelProducer {
   import breeze.linalg._
@@ -18,7 +18,7 @@ object StreamingModelProducer {
   def main(args: Array[String]) {
 
     // Maximum number of events per second
-    //Ã¿ÃëÊÂ¼şµÄ×î´óÊıÁ¿
+    //æ¯ç§’äº‹ä»¶çš„æœ€å¤§æ•°é‡
     val MaxEvents = 100
     val NumFeatures = 100
 
@@ -26,18 +26,18 @@ object StreamingModelProducer {
 
     /** 
      *  Function to generate a normally distributed dense vector 
-     *  Éú³ÉÕıÌ¬·Ö²¼³íÃÜÏòÁ¿µÄº¯Êı
+     *  ç”Ÿæˆæ­£æ€åˆ†å¸ƒç¨ å¯†å‘é‡çš„å‡½æ•°
      *  */
     def generateRandomArray(n: Int) = Array.tabulate(n)(_ => random.nextGaussian())
 
     // Generate a fixed random model weight vector
-    //Éú³É¹Ì¶¨Ëæ»úÄ£ĞÍÈ¨ÖµÏòÁ¿
+    //ç”Ÿæˆå›ºå®šéšæœºæ¨¡å‹æƒå€¼å‘é‡
     val w = new DenseVector(generateRandomArray(NumFeatures))
     val intercept = random.nextGaussian() * 10
 
     /** 
      *  Generate a number of random product events 
-     *  ²úÉú¶àÏîËæ»ú²úÆ·ÊÂ¼ş
+     *  äº§ç”Ÿå¤šé¡¹éšæœºäº§å“äº‹ä»¶
      *  */
     def generateNoisyData(n: Int) = {
       (1 to n).map { i =>
@@ -49,7 +49,7 @@ object StreamingModelProducer {
     }
 
     // create a network producer
-    //´´½¨ÍøÂçÉú²úÕß
+    //åˆ›å»ºç½‘ç»œç”Ÿäº§è€…
     val listener = new ServerSocket(9999)
     println("Listening on port: 9999")
 
@@ -82,7 +82,7 @@ object StreamingModelProducer {
 
 /**
  * A simple streaming linear regression that prints out predicted value for each batch
- * Ò»¸ö¼òµ¥µÄÁ÷ÏßĞÔ»Ø¹é´òÓ¡³öÃ¿ÅúÔ¤²âÖµ
+ * ä¸€ä¸ªç®€å•çš„æµçº¿æ€§å›å½’æ‰“å°å‡ºæ¯æ‰¹é¢„æµ‹å€¼
  */
 object SimpleStreamingModel {
 
@@ -99,7 +99,7 @@ object SimpleStreamingModel {
       .setStepSize(0.01)
 
     // create a stream of labeled points
-    //´´½¨Ò»¸öÁ÷µÄ±ê¼Çµã
+    //åˆ›å»ºä¸€ä¸ªæµçš„æ ‡è®°ç‚¹
     val labeledStream = stream.map { event =>
       val split = event.split("\t")
       val y = split(0).toDouble
@@ -108,7 +108,7 @@ object SimpleStreamingModel {
     }
 
     // train and test model on the stream, and print predictions for illustrative purposes
-    //ÔÚÁ÷ÉÏÑµÁ·ºÍ²âÊÔÄ£ĞÍ,²¢´òÓ¡ÓÃÓÚËµÃ÷Ä¿µÄµÄÔ¤²â
+    //åœ¨æµä¸Šè®­ç»ƒå’Œæµ‹è¯•æ¨¡å‹,å¹¶æ‰“å°ç”¨äºè¯´æ˜ç›®çš„çš„é¢„æµ‹
     model.trainOn(labeledStream)
     model.predictOnValues(labeledStream.map(x =>{
         println(x.label+"\t"+x.features)  
@@ -125,7 +125,7 @@ object SimpleStreamingModel {
 /**
  * A streaming regression model that compares the model performance of two models, printing out metrics for
  * each batch
- * Á÷»Ø¹éÄ£ĞÍ,±È½ÏÁ½¸öÄ£ĞÍµÄÄ£ĞÍĞÔÄÜ,´òÓ¡³öÃ¿ÅúµÄ¶ÈÁ¿
+ * æµå›å½’æ¨¡å‹,æ¯”è¾ƒä¸¤ä¸ªæ¨¡å‹çš„æ¨¡å‹æ€§èƒ½,æ‰“å°å‡ºæ¯æ‰¹çš„åº¦é‡
  */
 object MonitoringStreamingModel {
   import org.apache.spark.SparkContext._
@@ -148,7 +148,7 @@ object MonitoringStreamingModel {
       .setStepSize(1.0)
 
     // create a stream of labeled points
-    //´´½¨Ò»¸öÁ÷µÄ±ê¼Çµã
+    //åˆ›å»ºä¸€ä¸ªæµçš„æ ‡è®°ç‚¹
     val labeledStream = stream.map { event =>
       val split = event.split("\t")
       val y = split(0).toDouble
@@ -157,12 +157,12 @@ object MonitoringStreamingModel {
     }
 
     // train both models on the same stream
-    //ÔÚÍ¬Ò»ÌõÁ÷ÉÏÑµÁ·Á½¸öÄ£ĞÍ
+    //åœ¨åŒä¸€æ¡æµä¸Šè®­ç»ƒä¸¤ä¸ªæ¨¡å‹
     model1.trainOn(labeledStream)
     model2.trainOn(labeledStream)
 
     // use transform to create a stream with model error rates
-    //Ê¹ÓÃ±ä»»´´½¨¾ßÓĞÄ£ĞÍ´íÎóÂÊµÄÁ÷
+    //ä½¿ç”¨å˜æ¢åˆ›å»ºå…·æœ‰æ¨¡å‹é”™è¯¯ç‡çš„æµ
     val predsAndTrue = labeledStream.transform { rdd =>
       val latest1 = model1.latestModel()
       val latest2 = model2.latestModel()
@@ -174,7 +174,7 @@ object MonitoringStreamingModel {
     }
 
     // print out the MSE and RMSE metrics for each model per batch
-    //´òÓ¡³ö¸÷Ä£ĞÍµÄÃ¿ÅúMSEºÍ¾ù·½¸ùÎó²î¶ÈÁ¿
+    //æ‰“å°å‡ºå„æ¨¡å‹çš„æ¯æ‰¹MSEå’Œå‡æ–¹æ ¹è¯¯å·®åº¦é‡
     predsAndTrue.foreachRDD { (rdd, time) =>
       val mse1 = rdd.map { case (err1, err2) => err1 * err1 }.mean()
       val rmse1 = math.sqrt(mse1)

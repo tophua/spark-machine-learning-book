@@ -15,82 +15,82 @@ object ALSSQL {
 
     import sqlContext.implicits._
         import sqlContext._
-    //ÆÀ¼¶Êı¾İ
+    //è¯„çº§æ•°æ®
     val rawData = sc.textFile("ml-100k/u.data")
-    //ÓÃ»§ID  | Ó°Æ¬ID   | ĞÇ¼¶   | Ê±¼ä´Á	
+    //ç”¨æˆ·ID  | å½±ç‰‡ID   | æ˜Ÿçº§   | æ—¶é—´æˆ³	
     //196	    | 242	    |  3   |	881250949
-    /*ÌáÈ¡Ç°Èı¸ö×Ö¶Î¼´ ÓÃ»§ID  | Ó°Æ¬ID   | ĞÇ¼¶ */
-    val rawRatings = rawData.map(_.split("\t").take(3))//È¡³öÇ°Èı¸ö×Ö¶Î,µÚËÄÁĞÊ±¼äÔİÊ±²»ĞèÒª
-    //RatingÆÀ¼¶Àà²ÎÊı¶ÔÓ¦ÓÃ»§ID,²úÆ·(¼´Ó°Æ¬ID),Êµ¼ÊĞÇ¼¶
-    //map·½·¨½«Ô­À´user ID,movie ID,ĞÇ¼¶µÄÊı×é×ª»»Îª¶ÔÓ¦µÄ¶ÔÏó,´Ó¶ø´´½¨ËùĞèµÄÆÀ¼¶µÄÊı×é¼¯
+    /*æå–å‰ä¸‰ä¸ªå­—æ®µå³ ç”¨æˆ·ID  | å½±ç‰‡ID   | æ˜Ÿçº§ */
+    val rawRatings = rawData.map(_.split("\t").take(3))//å–å‡ºå‰ä¸‰ä¸ªå­—æ®µ,ç¬¬å››åˆ—æ—¶é—´æš‚æ—¶ä¸éœ€è¦
+    //Ratingè¯„çº§ç±»å‚æ•°å¯¹åº”ç”¨æˆ·ID,äº§å“(å³å½±ç‰‡ID),å®é™…æ˜Ÿçº§
+    //mapæ–¹æ³•å°†åŸæ¥user ID,movie ID,æ˜Ÿçº§çš„æ•°ç»„è½¬æ¢ä¸ºå¯¹åº”çš„å¯¹è±¡,ä»è€Œåˆ›å»ºæ‰€éœ€çš„è¯„çº§çš„æ•°ç»„é›†
     val ratings = rawRatings.map { case Array(user, movie, rating) => Rating(user.toInt, movie.toInt, rating.toDouble) }
-    /**===================¹¹½¨Êı¾İÄ£ĞÍÍÆ¼ö=====================================**/
+    /**===================æ„å»ºæ•°æ®æ¨¡å‹æ¨è=====================================**/
     //ratings.first()
-    //¹¹½¨ÑµÁ·ÍÆ¼öÄ£ĞÍ
-    //²ÎÊıËµÃ÷:rank¶ÔÓ¦ALSÄ£ĞÍÖĞµÄÒò×Ó¸öÊı,Í¨³£ºÏÀíÈ¡ÖµÎª10---200
-    //iterations:¶ÔÓ¦ÔËĞĞÊ±µü´ú´ÎÊı,10´Î×óÓÒÒ»°ã¾ÍÍ¦ºÃ
-    //lambda:¸Ã²ÎÊı¿ØÖÆÄ£ĞÍµÄÕıÔò»¯¹ı³Ì,´Ó¶ø¿ØÖÆÄ£ĞÍµÄ¹ıÄâºÏÇé¿ö0.01 
-    val model = ALS.train(ratings, 50, 10, 0.01) //·µ»ØMatrFactorizationModel¶ÔÏó¾ØÕó·Ö½âÄ£ĞÍ
-    model.userFeatures //ÓÃ»§Òò×Ó
+    //æ„å»ºè®­ç»ƒæ¨èæ¨¡å‹
+    //å‚æ•°è¯´æ˜:rankå¯¹åº”ALSæ¨¡å‹ä¸­çš„å› å­ä¸ªæ•°,é€šå¸¸åˆç†å–å€¼ä¸º10---200
+    //iterations:å¯¹åº”è¿è¡Œæ—¶è¿­ä»£æ¬¡æ•°,10æ¬¡å·¦å³ä¸€èˆ¬å°±æŒºå¥½
+    //lambda:è¯¥å‚æ•°æ§åˆ¶æ¨¡å‹çš„æ­£åˆ™åŒ–è¿‡ç¨‹,ä»è€Œæ§åˆ¶æ¨¡å‹çš„è¿‡æ‹Ÿåˆæƒ…å†µ0.01 
+    val model = ALS.train(ratings, 50, 10, 0.01) //è¿”å›MatrFactorizationModelå¯¹è±¡çŸ©é˜µåˆ†è§£æ¨¡å‹
+    model.userFeatures //ç”¨æˆ·å› å­
     model.userFeatures.count
-    model.productFeatures.count //ÎïÆ·Òò×Ó 
-    /**=================Ê¹ÓÃÍÆ¼öÄ£ĞÍ==============================**/
-    //¸ÃÄ£ĞÍÔ¤²âÓÃ»§789¶ÔµçÓ°123µÄÆÀ¼¶Îª3.12 
-    //Ê¹ÓÃÍÆ¼öÄ£ĞÍÔ¤¶ÔÓÃ»§ºÍÉÌÆ·½øĞĞÆÀ·Ö£¬µÃµ½Ô¤²âÆÀ·ÖµÄÊı¾İ¼¯  
-    //predict·½·¨¿ÉÒÔÓÃÀ´¶ÔĞÂµÄÊı¾İµã»òÊı¾İµã×é³ÉµÄRDDÓ¦ÓÃ¸ÃÄ£ĞÍ½øĞĞÔ¤²â¡£
-    val predictedRating = model.predict(789, 123) //¼ÆËã¸ø¶¨ÓÃ»§¶Ô¸ø¶¨ÎïÆ·µÄÔ¤ÆÚµÃ·Ö
-    println("Ô¤²âÓÃ»§789¶ÔµçÓ°123µÄÆÀ¼¶Îª:" + predictedRating)
+    model.productFeatures.count //ç‰©å“å› å­ 
+    /**=================ä½¿ç”¨æ¨èæ¨¡å‹==============================**/
+    //è¯¥æ¨¡å‹é¢„æµ‹ç”¨æˆ·789å¯¹ç”µå½±123çš„è¯„çº§ä¸º3.12 
+    //ä½¿ç”¨æ¨èæ¨¡å‹é¢„å¯¹ç”¨æˆ·å’Œå•†å“è¿›è¡Œè¯„åˆ†ï¼Œå¾—åˆ°é¢„æµ‹è¯„åˆ†çš„æ•°æ®é›†  
+    //predictæ–¹æ³•å¯ä»¥ç”¨æ¥å¯¹æ–°çš„æ•°æ®ç‚¹æˆ–æ•°æ®ç‚¹ç»„æˆçš„RDDåº”ç”¨è¯¥æ¨¡å‹è¿›è¡Œé¢„æµ‹ã€‚
+    val predictedRating = model.predict(789, 123) //è®¡ç®—ç»™å®šç”¨æˆ·å¯¹ç»™å®šç‰©å“çš„é¢„æœŸå¾—åˆ†
+    println("é¢„æµ‹ç”¨æˆ·789å¯¹ç”µå½±123çš„è¯„çº§ä¸º:" + predictedRating)
     val userId = 789
     val K = 10
-    //ËãÏÂ¸øÓÃ»§789ÍÆ¼öµÄÇ°10¸öÎïÆ· 
-    val topKRecs = model.recommendProducts(userId, K) //²ÎÊıÊÇÄ£ĞÍÓÃ»§ID,num²ÎÊıÒªÍÆ¼öµÄÎïÆ·¸öÊı 
+    //ç®—ä¸‹ç»™ç”¨æˆ·789æ¨èçš„å‰10ä¸ªç‰©å“ 
+    val topKRecs = model.recommendProducts(userId, K) //å‚æ•°æ˜¯æ¨¡å‹ç”¨æˆ·ID,numå‚æ•°è¦æ¨èçš„ç‰©å“ä¸ªæ•° 
 
-    println("ÓÃ»§789ÍÆ¼öµÄÇ°10¸öÎïÆ·\t" + topKRecs.mkString("\n"))
+    println("ç”¨æˆ·789æ¨èçš„å‰10ä¸ªç‰©å“\t" + topKRecs.mkString("\n"))
 
-    /*****¼ìÑéÍÆ¼öÄÚÈİ*******/
+    /*****æ£€éªŒæ¨èå†…å®¹*******/
     val movies = sc.textFile("ml-100k/u.item")
-    //µçÓ°ID|µçÓ°±êÌâ                       |·¢ĞĞÊ±¼ä          |
+    //ç”µå½±ID|ç”µå½±æ ‡é¢˜                       |å‘è¡Œæ—¶é—´          |
     //1     |Toy Story (1995)|01-Jan-1995||http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0
 
-    //»ñÈ¡Ç°¶şÁĞÊı¾İ ,´ÓµçÓ°IDºÍ±êÌâ,·µ»ØMapĞÎÊ½
+    //è·å–å‰äºŒåˆ—æ•°æ® ,ä»ç”µå½±IDå’Œæ ‡é¢˜,è¿”å›Mapå½¢å¼
     val titles = movies.map(line => line.split("\\|").take(2)).map(array => (array(0).toInt, array(1))).collectAsMap()
-    topKRecs.foreach { x => println("Ç°10¸öÎïÆ·Ãû³Æ:" + titles(x.product.intValue()) + "\tÆÀ¼¶:" + x.rating.doubleValue()) }
-    println("µçÓ°ID 123Ãû³Æ:" + titles(123))
-    //ÕÒ³öÓÃ»§789Ëù½Ó´¥¹ıµÄµçÓ°
+    topKRecs.foreach { x => println("å‰10ä¸ªç‰©å“åç§°:" + titles(x.product.intValue()) + "\tè¯„çº§:" + x.rating.doubleValue()) }
+    println("ç”µå½±ID 123åç§°:" + titles(123))
+    //æ‰¾å‡ºç”¨æˆ·789æ‰€æ¥è§¦è¿‡çš„ç”µå½±
     val moviesForUser = ratings.keyBy(_.user).lookup(789)
-    //²é¿´Õâ¸öÓÃ»§ÆÀ¼ÛÁË¶àÉÙµçÓ°
-    println("ÓÃ»§789ÆÀ¼ÛÁË¶àÉÙµçÓ°:" + moviesForUser.size)
-    //ÓÃ»§789¶ÔµçÓ°×ö¹ıÆÀ¼¶½øĞĞ½µĞòÅÅĞò,¸ø³ö×î¸ßÆÀ¼¶µÄÇ°10²¿µçÓ°¼°Ãû³Æ
+    //æŸ¥çœ‹è¿™ä¸ªç”¨æˆ·è¯„ä»·äº†å¤šå°‘ç”µå½±
+    println("ç”¨æˆ·789è¯„ä»·äº†å¤šå°‘ç”µå½±:" + moviesForUser.size)
+    //ç”¨æˆ·789å¯¹ç”µå½±åšè¿‡è¯„çº§è¿›è¡Œé™åºæ’åº,ç»™å‡ºæœ€é«˜è¯„çº§çš„å‰10éƒ¨ç”µå½±åŠåç§°
     moviesForUser.sortBy(-_.rating).take(10).map(rating => (titles(rating.product), rating.rating)).foreach(println)
-    //¿´Ò»ÏÂÇ°10¸öÍÆ¼ö
-    println("=========¿´Ò»ÏÂÇ°10¸öÍÆ¼ö=============")
+    //çœ‹ä¸€ä¸‹å‰10ä¸ªæ¨è
+    println("=========çœ‹ä¸€ä¸‹å‰10ä¸ªæ¨è=============")
     topKRecs.map(rating => (titles(rating.product), rating.rating)).foreach(println)
 
-    /***********ÎïÆ·ÍÆ¼öÄ£ĞÍĞ§¹û*******************/
-    //´ÓMovieLens 100KÊı¾İ¼¯Éú³ÉÏàËÆµçÓ°
+    /***********ç‰©å“æ¨èæ¨¡å‹æ•ˆæœ*******************/
+    //ä»MovieLens 100Kæ•°æ®é›†ç”Ÿæˆç›¸ä¼¼ç”µå½±
     val aMatrix = new DoubleMatrix(Array(1.0, 2.0, 3.0))
-    //¶¨ÒåÒ»¸öº¯ÊıÀ´¼ÆËãÁ½¸öÏòÁ¿Ö®¼äµÄÓàÏÒÏàËÆ¶È,
+    //å®šä¹‰ä¸€ä¸ªå‡½æ•°æ¥è®¡ç®—ä¸¤ä¸ªå‘é‡ä¹‹é—´çš„ä½™å¼¦ç›¸ä¼¼åº¦,
     def cosineSimilarity(vec1: DoubleMatrix, vec2: DoubleMatrix): Double = {
-      //ÓàÏÒÏàËÆ¶È:Á½¸öÏòÁ¿µÄµã»ıÓë¸÷ÏòÁ¿·¶ÊıµÄ³Ë»ıµÄÉÌ,ÏàËÆ¶ÈµÄÈ¡ÖµÔÚ-1ºÍ1Ö®¼ä
-      //ÏàËÆ¶ÈÈ¡ÖµÔÚ-1ºÍ1Ö®¼ä,1±íÊ¾Íê È«ÏàËÆ,0±íÊ¾Á½Õß²»Ïà¹Ø(¼´ÎŞÏàËÆĞÔ)
+      //ä½™å¼¦ç›¸ä¼¼åº¦:ä¸¤ä¸ªå‘é‡çš„ç‚¹ç§¯ä¸å„å‘é‡èŒƒæ•°çš„ä¹˜ç§¯çš„å•†,ç›¸ä¼¼åº¦çš„å–å€¼åœ¨-1å’Œ1ä¹‹é—´
+      //ç›¸ä¼¼åº¦å–å€¼åœ¨-1å’Œ1ä¹‹é—´,1è¡¨ç¤ºå®Œ å…¨ç›¸ä¼¼,0è¡¨ç¤ºä¸¤è€…ä¸ç›¸å…³(å³æ— ç›¸ä¼¼æ€§)
       vec1.dot(vec2) / (vec1.norm2() * vec2.norm2())
     }
-    //ÒÔÎïÆ·567ÎªÀı´ÓÄ£ĞÍÖĞÈ¡»ØÆä¶ÔÓ¦µÄÒò×Ó,
+    //ä»¥ç‰©å“567ä¸ºä¾‹ä»æ¨¡å‹ä¸­å–å›å…¶å¯¹åº”çš„å› å­,
     val itemId = 567
-    //·µ»ØµÚÒ»¸öÊı×é¶øÎÒÃÇÖ»ĞèµÚÒ»¸öÖµ(Êµ¼ÊÉÏ,Êı×éÀïÒ²Ö»»áÓĞÒ»¸öÖµ,Ò²¾ÍÊÇ¸ÃÎïÆ·µÄÒò×ÓÏòÁ¿)
+    //è¿”å›ç¬¬ä¸€ä¸ªæ•°ç»„è€Œæˆ‘ä»¬åªéœ€ç¬¬ä¸€ä¸ªå€¼(å®é™…ä¸Š,æ•°ç»„é‡Œä¹Ÿåªä¼šæœ‰ä¸€ä¸ªå€¼,ä¹Ÿå°±æ˜¯è¯¥ç‰©å“çš„å› å­å‘é‡)
     val itemFactor = model.productFeatures.lookup(itemId).head
-    //´´½¨Ò»¸öDoubleMatrix¶ÔÏó,È»ºóÔÙÓÃ¸Ã¶ÔÏóÀ´¼ÆËãËüÓë×Ô¼ºµÄÏàËÆ¶È
+    //åˆ›å»ºä¸€ä¸ªDoubleMatrixå¯¹è±¡,ç„¶åå†ç”¨è¯¥å¯¹è±¡æ¥è®¡ç®—å®ƒä¸è‡ªå·±çš„ç›¸ä¼¼åº¦
     val itemVector = new DoubleMatrix(itemFactor)
     cosineSimilarity(itemVector, itemVector)
-    //ÏÖÔÚÇó¸÷¸öÎïÆ·µÄÓàÏÒÏàËÆ¶È
+    //ç°åœ¨æ±‚å„ä¸ªç‰©å“çš„ä½™å¼¦ç›¸ä¼¼åº¦
     val sims = model.productFeatures.map {
       case (id, factor) =>
         val factorVector = new DoubleMatrix(factor)
         val sim = cosineSimilarity(factorVector, itemVector)
         (id, sim)
     }
-    //¶ÔÎïÆ·°´ÕÕÏàËÆ¶ÈÅÅĞò,È»ºóÈ¡³öÓëÎïÆ·567×îÏàËÆµÄÇ°10¸öÎïÆ·, 
-    //top´«ÈëOrdering¶ÔÏó,Ëü»á¸æËßSpark¸ù¾İ¼üÖµ¶ÔÀïµÄÖµÅÅĞò(Ò²¾ÍÊÇÓÃsimilarityÅÅĞò)
+    //å¯¹ç‰©å“æŒ‰ç…§ç›¸ä¼¼åº¦æ’åº,ç„¶åå–å‡ºä¸ç‰©å“567æœ€ç›¸ä¼¼çš„å‰10ä¸ªç‰©å“, 
+    //topä¼ å…¥Orderingå¯¹è±¡,å®ƒä¼šå‘Šè¯‰Sparkæ ¹æ®é”®å€¼å¯¹é‡Œçš„å€¼æ’åº(ä¹Ÿå°±æ˜¯ç”¨similarityæ’åº)
     val sortedSims = sims.top(K)(Ordering.by[(Int, Double), Double] { case (id, similarity) => similarity })
     println(sortedSims.mkString("\n"))
     /* 
@@ -105,12 +105,12 @@ object ALSSQL {
     (670,0.7118086627261311)
     (853,0.7014903255601453)
 		*/
-    /**¼ì²éÍÆ¼öµÄÏàËÆÎïÆ·**/
-    //¶ÔÎïÆ·ÏàËÆ¶ÈÅÅĞò,È»ºóÈ¡³öÓëÎïÆ·567×îÏàËÆµÄÇ°10¸öÎïÆ·
-    //´«ÈëOrdering¶ÔÏó,Ëü»á¸æËßSpark¸ù¾İ¼üÖµ¶ÔÀïµÄÖµÅÅĞò(Ò²¾ÍÊÇÓÃsimilarityÅÅĞò)
+    /**æ£€æŸ¥æ¨èçš„ç›¸ä¼¼ç‰©å“**/
+    //å¯¹ç‰©å“ç›¸ä¼¼åº¦æ’åº,ç„¶åå–å‡ºä¸ç‰©å“567æœ€ç›¸ä¼¼çš„å‰10ä¸ªç‰©å“
+    //ä¼ å…¥Orderingå¯¹è±¡,å®ƒä¼šå‘Šè¯‰Sparkæ ¹æ®é”®å€¼å¯¹é‡Œçš„å€¼æ’åº(ä¹Ÿå°±æ˜¯ç”¨similarityæ’åº)
     println(titles(itemId)) //Wes Craven's New Nightmare (1994)
     val sortedSims2 = sims.top(K + 1)(Ordering.by[(Int, Double), Double] { case (id, similarity) => similarity })
-    //sliceÌáÈ¡µÚ1ÁĞ¿ªÊ¼µ½11ÁĞµÄÌØÕ÷¾ØÕó
+    //sliceæå–ç¬¬1åˆ—å¼€å§‹åˆ°11åˆ—çš„ç‰¹å¾çŸ©é˜µ
     sortedSims2.slice(1, 11).map { case (id, sim) => (titles(id), sim) }.mkString("\n" + ">>>>>")
     /* 
     (Hideaway (1995),0.6932331537649621)
@@ -126,31 +126,31 @@ object ALSSQL {
     */
     
 
-    /**ÍÆ¼öÄ£ĞÍĞ§¹ûµÄÆÀ¹À***/
-    //ÓÃ»§789ÕÒ³öµÚÒ»¸öÆÀ¼¶
+    /**æ¨èæ¨¡å‹æ•ˆæœçš„è¯„ä¼°***/
+    //ç”¨æˆ·789æ‰¾å‡ºç¬¬ä¸€ä¸ªè¯„çº§
     val actualRating = moviesForUser.take(1)(0) //
-    //È»ºóÇóÄ£ĞÍµÄÔ¤¼ÆÆÀ¼¶
+    //ç„¶åæ±‚æ¨¡å‹çš„é¢„è®¡è¯„çº§
     val predictedRatingR = model.predict(789, actualRating.product)
-    //¼ÆËãÊµ¼ÊÆÀ¼¶ºÍÔ¤¼ÆÆÀ¼¶µÄÆ½·½Îó²î
+    //è®¡ç®—å®é™…è¯„çº§å’Œé¢„è®¡è¯„çº§çš„å¹³æ–¹è¯¯å·®
     val squaredError = math.pow(predictedRatingR - actualRating.rating, 2.0)
-    //Ê×ÏÈ´ÓratingsÌáÈ¡ÓÃ»§ºÍÎïÆ·ID
+    //é¦–å…ˆä»ratingsæå–ç”¨æˆ·å’Œç‰©å“ID
     val usersProducts = ratings.map { case Rating(user, product, rating) => (user, product) }
-    //¶Ô¸÷¸ö"ÓÃ»§-ÎïÆ·"¶Ô×öÔ¤²â,ËùµÃµÄRDDÒÔ"ÓÃ»§ºÍÎïÆ·ID"¶Ô×÷ÎªÖ÷¼ü,¶ÔÓ¦µÄÔ¤¼ÆÆÀ¼¶×÷ÎªÖµ
+    //å¯¹å„ä¸ª"ç”¨æˆ·-ç‰©å“"å¯¹åšé¢„æµ‹,æ‰€å¾—çš„RDDä»¥"ç”¨æˆ·å’Œç‰©å“ID"å¯¹ä½œä¸ºä¸»é”®,å¯¹åº”çš„é¢„è®¡è¯„çº§ä½œä¸ºå€¼
     val predictions = model.predict(usersProducts).map {
       case Rating(user, product, rating) => ((user, product), rating)
     }
-    //Ìá³öÕæÊµµÄÆÀ¼¶,Í¬Ê±¶ÔratingsRDD×öÓ³ÉäÒÔÈÃ"ÓÃ»§-ÎïÆ·"¶ÔÎªÖ÷¼ü,Êµ¼ÊÆÀ¼¶Îª¶ÔÓ¦µÄÖµ,¾ÍµÃµ½Á½¸öÖ÷¼ü×éÖ¯ÏàÍ¬µÄRDD,
-    //½«Á½¸öÁ¬½ÓÆğÀ´,ÒÔ´´½¨Ò»¸öĞÂµÄRDD
+    //æå‡ºçœŸå®çš„è¯„çº§,åŒæ—¶å¯¹ratingsRDDåšæ˜ å°„ä»¥è®©"ç”¨æˆ·-ç‰©å“"å¯¹ä¸ºä¸»é”®,å®é™…è¯„çº§ä¸ºå¯¹åº”çš„å€¼,å°±å¾—åˆ°ä¸¤ä¸ªä¸»é”®ç»„ç»‡ç›¸åŒçš„RDD,
+    //å°†ä¸¤ä¸ªè¿æ¥èµ·æ¥,ä»¥åˆ›å»ºä¸€ä¸ªæ–°çš„RDD
     val ratingsAndPredictions = ratings.map {
       case Rating(user, product, rating) => ((user, product), rating)
     }.join(predictions)
-    //¾ù·½²î
+    //å‡æ–¹å·®
     val MSE = ratingsAndPredictions.map {
       case ((user, product), (actual, predicted)) => math.pow((actual - predicted), 2)
     }.reduce(_ + _) / ratingsAndPredictions.count
     //
-    println("¾ù·½²î:Mean Squared Error = " + MSE)
-    val RMSE = math.sqrt(MSE) //¾ù·½¸ùÎó²î
+    println("å‡æ–¹å·®:Mean Squared Error = " + MSE)
+    val RMSE = math.sqrt(MSE) //å‡æ–¹æ ¹è¯¯å·®
     println("Root Mean Squared Error = " + RMSE)
     val actualMovies = moviesForUser.map(_.product)
     val predictedMovies = topKRecs.map(_.product)
@@ -170,37 +170,37 @@ object ALSSQL {
     }
     
     
-    /**MLibÄÚÖÃµÄÆÀ¹Àº¯Êı**/
+    /**MLibå†…ç½®çš„è¯„ä¼°å‡½æ•°**/
     // MSE, RMSE and MAE
     import org.apache.spark.mllib.evaluation.RegressionMetrics
     /**
-     * ±ê×¼Îó²î(Standard error)Îª¸÷²âÁ¿ÖµÎó²îµÄÆ½·½ºÍµÄÆ½¾ùÖµµÄÆ½·½¸ù,
-     * ¹ÊÒ²³Æ¾ù·½¸ùÎó²î(Root mean squared error)¡£ÔÚÏàÍ¬²âÁ¿Ìõ¼şÏÂ½øĞĞµÄ²âÁ¿³ÆÎªµÈ¾«¶È²âÁ¿
+     * æ ‡å‡†è¯¯å·®(Standard error)ä¸ºå„æµ‹é‡å€¼è¯¯å·®çš„å¹³æ–¹å’Œçš„å¹³å‡å€¼çš„å¹³æ–¹æ ¹,
+     * æ•…ä¹Ÿç§°å‡æ–¹æ ¹è¯¯å·®(Root mean squared error)ã€‚åœ¨ç›¸åŒæµ‹é‡æ¡ä»¶ä¸‹è¿›è¡Œçš„æµ‹é‡ç§°ä¸ºç­‰ç²¾åº¦æµ‹é‡
      */
     // next get all the movie ids per user, grouped by user id
     val userMovies = ratings.map { case Rating(user, product, rating) => (user, product) }.groupBy(_._1)
     val predictedAndTrue = ratingsAndPredictions.map { case ((user, product), (actual, predicted)) => (actual, predicted) }
-    //ÊµÀı»¯Ò»¸öRegressionMetrics¶ÔÏóĞèÒªÒ»¸ö¼üÖµ¶ÔÀàĞÍµÄRDD,ÆäÃ¿Ò»Ìõ¼ÇÂ¼¶ÔÓ¦Ã¿¸öÊı¾İµãÉÏÏàÓ¦µÄÔ¤²âÖµÓëÊµ¼ÊÖµ
+    //å®ä¾‹åŒ–ä¸€ä¸ªRegressionMetricså¯¹è±¡éœ€è¦ä¸€ä¸ªé”®å€¼å¯¹ç±»å‹çš„RDD,å…¶æ¯ä¸€æ¡è®°å½•å¯¹åº”æ¯ä¸ªæ•°æ®ç‚¹ä¸Šç›¸åº”çš„é¢„æµ‹å€¼ä¸å®é™…å€¼
     val regressionMetrics = new RegressionMetrics(predictedAndTrue)
-    //¾ù·½²î
+    //å‡æ–¹å·®
     println("Mean Squared Error = " + regressionMetrics.meanSquaredError)
-    //¾ù·½¸ùÎó²î
+    //å‡æ–¹æ ¹è¯¯å·®
     println("Root Mean Squared Error = " + regressionMetrics.rootMeanSquaredError)
     // Mean Squared Error = 0.08231947642632852
     // Root Mean Squared Error = 0.2869137090247319
 
-    // MAPK ×¼È·ÂÊ
+    // MAPK å‡†ç¡®ç‡
     import org.apache.spark.mllib.evaluation.RankingMetrics
     val predictedAndTrueForRanking = allRecs.join(userMovies).map {
       case (userId, (predicted, actualWithIds)) =>
         val actual = actualWithIds.map(_._2)
         (predicted.toArray, actual.toArray)
     }
-    //Ê¹ÓÃRankingMetricsÀà¼ÆËã»ùÓÚÅÅÃûµÄÆÀ¹ÀÖ¸±ê,ĞèÒªÏòÎÒÃÇÖ®Ç°Æ½¾ùÂÊº¯Êı´«ÈëÒ»¸ö½¡Öµ¶ÔÀàĞÍµÄRDD
-    //Æä¼üÎª¸ø¶¨ÓÃ»§Ô¤²âµÄÍÆ¼öÎïÆ·µÄIDÊı×é,¶øÖµÔòÊµ¼ÊµÄÎïÆ·IDÊı×é
+    //ä½¿ç”¨RankingMetricsç±»è®¡ç®—åŸºäºæ’åçš„è¯„ä¼°æŒ‡æ ‡,éœ€è¦å‘æˆ‘ä»¬ä¹‹å‰å¹³å‡ç‡å‡½æ•°ä¼ å…¥ä¸€ä¸ªå¥å€¼å¯¹ç±»å‹çš„RDD
+    //å…¶é”®ä¸ºç»™å®šç”¨æˆ·é¢„æµ‹çš„æ¨èç‰©å“çš„IDæ•°ç»„,è€Œå€¼åˆ™å®é™…çš„ç‰©å“IDæ•°ç»„
     val rankingMetrics = new RankingMetrics(predictedAndTrueForRanking)
-    //KÖµÆ½¾ù×¼È·ÂÊ meanAveragePrecision
-    println("Æ½¾ùÕıÈ·ÂÊÖµ:Mean Average Precision = " + rankingMetrics.meanAveragePrecision)
+    //Kå€¼å¹³å‡å‡†ç¡®ç‡ meanAveragePrecision
+    println("å¹³å‡æ­£ç¡®ç‡å€¼:Mean Average Precision = " + rankingMetrics.meanAveragePrecision)
     // Mean Average Precision = 0.07171412913757183
 
     // Compare to our implementation, using K = 2000 to approximate the overall MAP

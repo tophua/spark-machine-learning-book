@@ -14,21 +14,21 @@ object rowmatri_test01 {
     val sc = new SparkContext(conf)
     Logger.getRootLogger.setLevel(Level.WARN)
 
-    // 3.6 ·Ö²¼Ê½¾ØÕó
-    // 3.6.2 ĞĞ¾ØÕó£¨RowMatrix£©
+    // 3.6 åˆ†å¸ƒå¼çŸ©é˜µ
+    // 3.6.2 è¡ŒçŸ©é˜µï¼ˆRowMatrixï¼‰
     val rdd1 = sc.parallelize(Array(Array(1.0, 2.0, 3.0, 4.0), Array(2.0, 3.0, 4.0, 5.0), Array(3.0, 4.0, 5.0, 6.0))).map(f => Vectors.dense(f))
-    //·Ö²¼Ê½ĞĞ¾ØÕó
-    val RM = new RowMatrix(rdd1)//²ÎÊıÊÇĞĞ
-    val simic1 = RM.columnSimilarities(0.5)//¼ÆËãÃ¿ÁĞÖ®¼äµÄÏàËÆ¶È
-    val simic2 = RM.columnSimilarities()//¼ÆËãÃ¿ÁĞÖ®¼äµÄÏàËÆ¶È
-    val simic3 = RM.computeColumnSummaryStatistics()//¼ÆËãÃ¿ÁĞµÄ»ã×ÜÍ³¼Æ
-    simic3.max //×î´óÖµ
-    simic3.min//×îĞ¡Öµ
-    simic3.mean//Æ½¾ùÖµ
-    val cc1 = RM.computeCovariance//¼ÆËãÃ¿ÁĞÖ®¼äµÄĞ­·½²î
-    val cc2 = RM.computeGramianMatrix//¼ÆËã¸ñÀ­Ä·¾ØÕó
+    //åˆ†å¸ƒå¼è¡ŒçŸ©é˜µ
+    val RM = new RowMatrix(rdd1)//å‚æ•°æ˜¯è¡Œ
+    val simic1 = RM.columnSimilarities(0.5)//è®¡ç®—æ¯åˆ—ä¹‹é—´çš„ç›¸ä¼¼åº¦
+    val simic2 = RM.columnSimilarities()//è®¡ç®—æ¯åˆ—ä¹‹é—´çš„ç›¸ä¼¼åº¦
+    val simic3 = RM.computeColumnSummaryStatistics()//è®¡ç®—æ¯åˆ—çš„æ±‡æ€»ç»Ÿè®¡
+    simic3.max //æœ€å¤§å€¼
+    simic3.min//æœ€å°å€¼
+    simic3.mean//å¹³å‡å€¼
+    val cc1 = RM.computeCovariance//è®¡ç®—æ¯åˆ—ä¹‹é—´çš„åæ–¹å·®
+    val cc2 = RM.computeGramianMatrix//è®¡ç®—æ ¼æ‹‰å§†çŸ©é˜µ
     val pc1 = RM.computePrincipalComponents(3)
-    val svd = RM.computeSVD(4, true)//¼ÆËã¾ØÕóÆæÒì·Ö½â
+    val svd = RM.computeSVD(4, true)//è®¡ç®—çŸ©é˜µå¥‡å¼‚åˆ†è§£
     val U = svd.U
     U.rows.foreach(println)
     val s = svd.s

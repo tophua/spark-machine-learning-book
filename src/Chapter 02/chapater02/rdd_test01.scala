@@ -10,17 +10,17 @@ object rdd_test01 {
     val sc = new SparkContext(conf)
     Logger.getRootLogger.setLevel(Level.WARN)
 
-    // 2.1½Ú
-    // 2.1.1 RDD ´´½¨²Ù×÷
+    // 2.1èŠ‚
+    // 2.1.1 RDD åˆ›å»ºæ“ä½œ
     val data = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)
     val distData = sc.parallelize(data, 3)
 
-    val distFile1 = sc.textFile("data.txt") // ±¾µØµ±Ç°Ä¿Â¼ÏÂµÄÎÄ¼ş
-    val distFile2 = sc.textFile("hdfs://192.168.1.100:9000/input/data.txt") // HDFS ÎÄ¼ş
-    val distFile3 = sc.textFile("file:/input/data.txt") // ±¾µØÖ¸¶¨Ä¿Â¼ÏÂµÄÎÄ¼ş
-    val distFile4 = sc.textFile("/input/data.txt") // ±¾µØÖ¸¶¨Ä¿Â¼ÏÂµÄÎÄ¼ş
+    val distFile1 = sc.textFile("data.txt") // æœ¬åœ°å½“å‰ç›®å½•ä¸‹çš„æ–‡ä»¶
+    val distFile2 = sc.textFile("hdfs://192.168.1.100:9000/input/data.txt") // HDFS æ–‡ä»¶
+    val distFile3 = sc.textFile("file:/input/data.txt") // æœ¬åœ°æŒ‡å®šç›®å½•ä¸‹çš„æ–‡ä»¶
+    val distFile4 = sc.textFile("/input/data.txt") // æœ¬åœ°æŒ‡å®šç›®å½•ä¸‹çš„æ–‡ä»¶
 
-    // 2.1.2 RDD ×ª»»²Ù×÷
+    // 2.1.2 RDD è½¬æ¢æ“ä½œ
     val rdd1 = sc.parallelize(1 to 9, 3)
     val rdd2 = rdd1.map(x => x * 2)
     rdd2.collect
@@ -101,7 +101,7 @@ object rdd_test01 {
       combOp = (u1, u2) => (u1._1 + u2._1, u1._2 + u2._2),
       depth = 2)
 
-    // 2.1.3 RDD ĞĞ¶¯²Ù×÷
+    // 2.1.3 RDD è¡ŒåŠ¨æ“ä½œ
     val rdd3_1 = sc.parallelize(1 to 9, 3)
     val rdd3_2 = rdd3_1.reduce(_ + _)
     rdd3_1.collect()

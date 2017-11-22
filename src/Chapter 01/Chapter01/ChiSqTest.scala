@@ -4,7 +4,7 @@ import org.apache.spark.mllib.stat.test.ChiSqTestResult
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.stat.Statistics
 /**
- * ¿¨·½¼ìÑé²âÊÔ
+ * å¡æ–¹æ£€éªŒæµ‹è¯•
  */
 object ChiSqTest {
   def main(args: Array[String]): Unit = {
@@ -16,14 +16,14 @@ object ChiSqTest {
     System.out.println(goodnessOfFitTestResult2);
     
     /**
-     * ¼ÆËã¹ı³Ì:
-     * 1)¶ÔÓÚ1.0,7.0,2.0,3.0,18.0ÓĞ Ei=6.2(1.0,7.0,2.0,3.0,18.0) Ïà¼Ó³ıÒÔ/(¼´¸öÊı)5
+     * è®¡ç®—è¿‡ç¨‹:
+     * 1)å¯¹äº1.0,7.0,2.0,3.0,18.0æœ‰ Ei=6.2(1.0,7.0,2.0,3.0,18.0) ç›¸åŠ é™¤ä»¥/(å³ä¸ªæ•°)5
      * 2)
      * Chi squared test summary:
       method: pearson
-      degrees of freedom = 4 (×ÔÓÉ¶È)
-      statistic = 31.41935483870968(¼ÆËã¿¨·½¼ìÑéµÄÍ³¼ÆÖµ)
-      //¸ÅÂÊ
+      degrees of freedom = 4 (è‡ªç”±åº¦)
+      statistic = 31.41935483870968(è®¡ç®—å¡æ–¹æ£€éªŒçš„ç»Ÿè®¡å€¼)
+      //æ¦‚ç‡
       pValue = 2.513864414077638E-6 
       Very strong presumption against null hypothesis: observed follows the same distribution as expected..
       Chi squared test summary:

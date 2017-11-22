@@ -4,36 +4,36 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.SparkContext._
 
   /**
-   * ÓÃ»§ÍÆ¼ö¼ÆËã.
-   * ¸ù¾ÝÎïÆ·ÏàËÆ¶È¡¢ÓÃ»§ÆÀ·Ö¡¢Ö¸¶¨×î´óÍÆ¼öÊýÁ¿½øÐÐÓÃ»§ÍÆ¼ö
+   * ç”¨æˆ·æŽ¨èè®¡ç®—.
+   * æ ¹æ®ç‰©å“ç›¸ä¼¼åº¦ã€ç”¨æˆ·è¯„åˆ†ã€æŒ‡å®šæœ€å¤§æŽ¨èæ•°é‡è¿›è¡Œç”¨æˆ·æŽ¨è
    */
 
 class RecommendedItem {
   /**
-   * ÓÃ»§ÍÆ¼ö¼ÆËã.
-   * @param items_similar ÎïÆ·ÏàËÆ¶È
-   * @param user_prefer ÓÃ»§ÆÀ·Ö
-   * @param r_number ÍÆ¼öÊýÁ¿
-   * @param RDD[UserRecomm] ·µ»ØÓÃ»§ÍÆ¼öÎïÆ·
+   * ç”¨æˆ·æŽ¨èè®¡ç®—.
+   * @param items_similar ç‰©å“ç›¸ä¼¼åº¦
+   * @param user_prefer ç”¨æˆ·è¯„åˆ†
+   * @param r_number æŽ¨èæ•°é‡
+   * @param RDD[UserRecomm] è¿”å›žç”¨æˆ·æŽ¨èç‰©å“
    *
    */
   def Recommend(items_similar: RDD[ItemSimi],
     user_prefer: RDD[ItemPref],
     r_number: Int): (RDD[UserRecomm]) = {
-    //   0 Êý¾Ý×¼±¸  
+    //   0 æ•°æ®å‡†å¤‡  
     val rdd_app1_R1 = items_similar.map(f => (f.itemid1, f.itemid2, f.similar))
     val user_prefer1 = user_prefer.map(f => (f.userid, f.itemid, f.pref))
-    //   1 ¾ØÕó¼ÆËã¡ª¡ªiÐÐÓëjÁÐjoin
+    //   1 çŸ©é˜µè®¡ç®—â€”â€”iè¡Œä¸Žjåˆ—join
     val rdd_app1_R2 = rdd_app1_R1.map(f => (f._1, (f._2, f._3))).
       join(user_prefer1.map(f => (f._2, (f._1, f._3))))
-    //   2 ¾ØÕó¼ÆËã¡ª¡ªiÐÐÓëjÁÐÔªËØÏà³Ë
+    //   2 çŸ©é˜µè®¡ç®—â€”â€”iè¡Œä¸Žjåˆ—å…ƒç´ ç›¸ä¹˜
     val rdd_app1_R3 = rdd_app1_R2.map(f => ((f._2._2._1, f._2._1._1), f._2._2._2 * f._2._1._2))
-    //   3 ¾ØÕó¼ÆËã¡ª¡ªÓÃ»§£ºÔªËØÀÛ¼ÓÇóºÍ
+    //   3 çŸ©é˜µè®¡ç®—â€”â€”ç”¨æˆ·ï¼šå…ƒç´ ç´¯åŠ æ±‚å’Œ
     val rdd_app1_R4 = rdd_app1_R3.reduceByKey((x, y) => x + y)
-    //   4 ¾ØÕó¼ÆËã¡ª¡ªÓÃ»§£º¶Ô½á¹û¹ýÂËÒÑÓÐI2
+    //   4 çŸ©é˜µè®¡ç®—â€”â€”ç”¨æˆ·ï¼šå¯¹ç»“æžœè¿‡æ»¤å·²æœ‰I2
     val rdd_app1_R5 = rdd_app1_R4.leftOuterJoin(user_prefer1.map(f => ((f._1, f._2), 1))).
       filter(f => f._2._2.isEmpty).map(f => (f._1._1, (f._1._2, f._2._1)))
-    //   5 ¾ØÕó¼ÆËã¡ª¡ªÓÃ»§£ºÓÃ»§¶Ô½á¹ûÅÅÐò£¬¹ýÂË
+    //   5 çŸ©é˜µè®¡ç®—â€”â€”ç”¨æˆ·ï¼šç”¨æˆ·å¯¹ç»“æžœæŽ’åºï¼Œè¿‡æ»¤
     val rdd_app1_R6 = rdd_app1_R5.groupByKey()
     val rdd_app1_R7 = rdd_app1_R6.map(f => {
       val i2 = f._2.toBuffer
@@ -49,28 +49,28 @@ class RecommendedItem {
   }
 
   /**
-   * ÓÃ»§ÍÆ¼ö¼ÆËã.
-   * @param items_similar ÎïÆ·ÏàËÆ¶È
-   * @param user_prefer ÓÃ»§ÆÀ·Ö
-   * @param RDD[UserRecomm] ·µ»ØÓÃ»§ÍÆ¼öÎïÆ·
+   * ç”¨æˆ·æŽ¨èè®¡ç®—.
+   * @param items_similar ç‰©å“ç›¸ä¼¼åº¦
+   * @param user_prefer ç”¨æˆ·è¯„åˆ†
+   * @param RDD[UserRecomm] è¿”å›žç”¨æˆ·æŽ¨èç‰©å“
    *
    */
   def Recommend(items_similar: RDD[ItemSimi],
     user_prefer: RDD[ItemPref]): (RDD[UserRecomm]) = {
-    //   0 Êý¾Ý×¼±¸  
+    //   0 æ•°æ®å‡†å¤‡  
     val rdd_app1_R1 = items_similar.map(f => (f.itemid1, f.itemid2, f.similar))
     val user_prefer1 = user_prefer.map(f => (f.userid, f.itemid, f.pref))
-    //   1 ¾ØÕó¼ÆËã¡ª¡ªiÐÐÓëjÁÐjoin
+    //   1 çŸ©é˜µè®¡ç®—â€”â€”iè¡Œä¸Žjåˆ—join
     val rdd_app1_R2 = rdd_app1_R1.map(f => (f._1, (f._2, f._3))).
       join(user_prefer1.map(f => (f._2, (f._1, f._3))))
-    //   2 ¾ØÕó¼ÆËã¡ª¡ªiÐÐÓëjÁÐÔªËØÏà³Ë
+    //   2 çŸ©é˜µè®¡ç®—â€”â€”iè¡Œä¸Žjåˆ—å…ƒç´ ç›¸ä¹˜
     val rdd_app1_R3 = rdd_app1_R2.map(f => ((f._2._2._1, f._2._1._1), f._2._2._2 * f._2._1._2))
-    //   3 ¾ØÕó¼ÆËã¡ª¡ªÓÃ»§£ºÔªËØÀÛ¼ÓÇóºÍ
+    //   3 çŸ©é˜µè®¡ç®—â€”â€”ç”¨æˆ·ï¼šå…ƒç´ ç´¯åŠ æ±‚å’Œ
     val rdd_app1_R4 = rdd_app1_R3.reduceByKey((x, y) => x + y)
-    //   4 ¾ØÕó¼ÆËã¡ª¡ªÓÃ»§£º¶Ô½á¹û¹ýÂËÒÑÓÐI2
+    //   4 çŸ©é˜µè®¡ç®—â€”â€”ç”¨æˆ·ï¼šå¯¹ç»“æžœè¿‡æ»¤å·²æœ‰I2
     val rdd_app1_R5 = rdd_app1_R4.leftOuterJoin(user_prefer1.map(f => ((f._1, f._2), 1))).
       filter(f => f._2._2.isEmpty).map(f => (f._1._1, (f._1._2, f._2._1)))
-    //   5 ¾ØÕó¼ÆËã¡ª¡ªÓÃ»§£ºÓÃ»§¶Ô½á¹ûÅÅÐò£¬¹ýÂË
+    //   5 çŸ©é˜µè®¡ç®—â€”â€”ç”¨æˆ·ï¼šç”¨æˆ·å¯¹ç»“æžœæŽ’åºï¼Œè¿‡æ»¤
     val rdd_app1_R6 = rdd_app1_R5.map(f => (f._1, f._2._1, f._2._2)).
       sortBy(f => (f._1, f._3))
     rdd_app1_R6.map(f => UserRecomm(f._1, f._2, f._3))

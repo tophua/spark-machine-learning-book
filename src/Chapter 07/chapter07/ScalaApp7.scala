@@ -14,149 +14,149 @@ import org.apache.spark.mllib.tree.impurity.Entropy
 import org.apache.spark.mllib.tree.impurity.Impurity
 import org.apache.spark.rdd.RDD
 /**
- * ¾ÛÀà
+ * èšç±»
  */
 object ScalaApp7 {
   def main(args: Array[String]) {
     val sparkConf = new SparkConf().setMaster("local[2]").setAppName("SparkHdfsLR")
     val sc = new SparkContext(sparkConf)
-    /**µçÓ°Êı¾İ***/
+    /**ç”µå½±æ•°æ®***/
     val movies = sc.textFile("ml-100k/u.item")
     println(movies.first())
-    //µçÓ°ID|µçÓ°±êÌâ                       |·¢ĞĞÊ±¼ä          |
+    //ç”µå½±ID|ç”µå½±æ ‡é¢˜                       |å‘è¡Œæ—¶é—´          |
     //1     |Toy Story (1995)|01-Jan-1995||http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0
-    //µçÓ°Ìâ²Ä 
+    //ç”µå½±é¢˜æ 
     val genres = sc.textFile("ml-100k/u.genre")
     genres.take(5).foreach(println)
     /**
-     * Êı×Ö±íÊ¾Ïà¹ØÌâ²ÄµÄË÷Òı,Ë÷Òı¶ÔÓ¦ÁËÃ¿²¿µçÓ°¹ØÓÚÌâ²Ä
-     *  unknown|0  Î´Öª
-     *  Action|1   ¶¯×÷
-     *  Adventure|2  Ã°ÏÕ
-     *  Animation|3  ¶¯»­Æ¬
-     *  Children's|4 ¶ùÍ¯Æ¬
-     *  Comedy|5     Ï²¾ç
-     *  Crime|6      ·¸×ïÆ¬
-     *  Documentary|7  ¼ÇÂ¼
-     *  Drama|8        ¾çÇé
-     *  Fantasy|9      »ÃÏë
-     *  Film-Noir|10   ºÚÉ«µçÓ°
-     *  Horror|11      ¿Ö²À
-     *  Musical|12     ÒôÀÖ
-     *  Mystery|13     ĞüÄî
-     *  Romance|14		  °®Çé
-     *  Sci-Fi|15      ¿Æ»Ã
-     *  Thriller|16    ¾ªã¤
-     *  War|17         Õ½Õù
-     *  Western|18     Î÷²¿
+     * æ•°å­—è¡¨ç¤ºç›¸å…³é¢˜æçš„ç´¢å¼•,ç´¢å¼•å¯¹åº”äº†æ¯éƒ¨ç”µå½±å…³äºé¢˜æ
+     *  unknown|0  æœªçŸ¥
+     *  Action|1   åŠ¨ä½œ
+     *  Adventure|2  å†’é™©
+     *  Animation|3  åŠ¨ç”»ç‰‡
+     *  Children's|4 å„¿ç«¥ç‰‡
+     *  Comedy|5     å–œå‰§
+     *  Crime|6      çŠ¯ç½ªç‰‡
+     *  Documentary|7  è®°å½•
+     *  Drama|8        å‰§æƒ…
+     *  Fantasy|9      å¹»æƒ³
+     *  Film-Noir|10   é»‘è‰²ç”µå½±
+     *  Horror|11      ææ€–
+     *  Musical|12     éŸ³ä¹
+     *  Mystery|13     æ‚¬å¿µ
+     *  Romance|14		  çˆ±æƒ…
+     *  Sci-Fi|15      ç§‘å¹»
+     *  Thriller|16    æƒŠæ‚š
+     *  War|17         æˆ˜äº‰
+     *  Western|18     è¥¿éƒ¨
      */
-    //¶ÔµçÓ°Ìâ²ÄÁÏÃ¿Ò»ĞĞ½øĞĞ·Ö¸ô,µÃµ½¾ßÌåµÄ<Ë÷Òı,Ìâ²Ä>¼üÖµ¶Ô
-    //´¦Àí×îºó¿Õ,MapÁĞ½øĞĞµ÷»»(array(1), array(0))
+    //å¯¹ç”µå½±é¢˜ææ–™æ¯ä¸€è¡Œè¿›è¡Œåˆ†éš”,å¾—åˆ°å…·ä½“çš„<ç´¢å¼•,é¢˜æ>é”®å€¼å¯¹
+    //å¤„ç†æœ€åç©º,Mapåˆ—è¿›è¡Œè°ƒæ¢(array(1), array(0))
     val genreMap = genres.filter(!_.isEmpty).map(line => line.split("\\|")).map(array => (array(1), array(0))).collectAsMap()
     //genreMap:Map[String,String] = Map(2 -> Adventure, 5 -> Comedy, 12 -> Musical, 15 -> Sci-Fi, 
     //8 -> Drama, 18 -> Western, 7 -> Documentary, 17 -> War, 1 -> Action, 4 -> Children's, 11 -> Horror, 14 -> Romance,
     //6 -> Crime, 0 -> unknown, 9 -> Fantasy, 16 -> Thriller, 3 -> Animation, 10 -> Film-Noir, 13 ->Mystery)
     println(genreMap)
     /**
-     * µçÓ°Êı¾İºÍÌâ²ÄÓ³Éä¹ØÏµ´´½¨ĞÂµÄRDD,ÆäÖĞ°üº¬µçÓ°ID,±êÌâºÍÌâ²Ä
+     * ç”µå½±æ•°æ®å’Œé¢˜ææ˜ å°„å…³ç³»åˆ›å»ºæ–°çš„RDD,å…¶ä¸­åŒ…å«ç”µå½±ID,æ ‡é¢˜å’Œé¢˜æ
      */
     val titlesAndGenres = movies.map(_.split("\\|")).map { array =>
-      //slice½ØÈ¡Êı¾İ,ÌáÈ¡µÚ5ÁĞ¿ªÊ¼µ½×îºó1ÁĞ      
+      //sliceæˆªå–æ•°æ®,æå–ç¬¬5åˆ—å¼€å§‹åˆ°æœ€å1åˆ—      
       val genres = array.toSeq.slice(5, array.size)
       //WrappedArray(0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0)
       //println("genres>>>>>>>>>>>" + genres)
-         //zipWithIndex·½·¨Í³¼Æ°üº¬Ìâ²ÄË÷ÒıµÄ¼¯ºÏ(0,7), (0,8), (0,9), (0,10), (0,11), (0,12),
-      //println("zipWithIndex>>>>>>>>>>>" + genres.zipWithIndex) //·µ»Ø¶ÔÅ¼ÁĞ±í£¬µÚ¶ş¸ö×é³É²¿·ÖÊÇÔªËØÏÂ±ê ,´Ó0¿ªÊ¼
+         //zipWithIndexæ–¹æ³•ç»Ÿè®¡åŒ…å«é¢˜æç´¢å¼•çš„é›†åˆ(0,7), (0,8), (0,9), (0,10), (0,11), (0,12),
+      //println("zipWithIndex>>>>>>>>>>>" + genres.zipWithIndex) //è¿”å›å¯¹å¶åˆ—è¡¨ï¼Œç¬¬äºŒä¸ªç»„æˆéƒ¨åˆ†æ˜¯å…ƒç´ ä¸‹æ ‡ ,ä»0å¼€å§‹
       //zipWithIndex ArrayBuffer((0,0), (0,1), (0,2), (1,3), (1,4), (1,5), (0,6), (0,7), (0,8), (0,9), (0,10), (0,11), (0,12), (0,13), (0,14), (0,15), (0,16), (0,17), (0,18))
       val genresAssigned = genres.zipWithIndex.filter {
-        //KeyÖµ¹ıÂÇµôµÈÓÚ1,idxÊÇvalueÖµ
+        //Keyå€¼è¿‡è™‘æ‰ç­‰äº1,idxæ˜¯valueå€¼
         case (g, idx) =>
          //println("g:"+g)
           g == "1"          
       }.map {
-        //½«¼¯ºÏÖĞµÄË÷ÒıÓ³Éäµ½¶ÔÓ¦µÄÎÄ¼şĞÅÏ¢
+        //å°†é›†åˆä¸­çš„ç´¢å¼•æ˜ å°„åˆ°å¯¹åº”çš„æ–‡ä»¶ä¿¡æ¯
         case (g, idx) =>
           //println(idx + ">>>>>" + genreMap(idx.toString))
           genreMap(idx.toString)
       }
       //genresAssigned ArrayBuffer(Animation, Children's, Comedy)
-      //µçÓ°ID,±êÌâºÍÌâ²Ä
+      //ç”µå½±ID,æ ‡é¢˜å’Œé¢˜æ
       (array(0).toInt, (array(1), genresAssigned))
     }
     //
     println(titlesAndGenres.first)
-    // µçÓ°ID,±êÌâºÍÌâ²Ä
+    // ç”µå½±ID,æ ‡é¢˜å’Œé¢˜æ
     // (1,(Toy Story (1995),ArrayBuffer(Animation, Children's, Comedy)))
-    /***ÑµÍÆ¼öÄ£ĞÍ***/
+    /***è®­æ¨èæ¨¡å‹***/
     import org.apache.spark.mllib.recommendation.ALS
     import org.apache.spark.mllib.recommendation.Rating
-    //»ñÈ¡ÓÃ»§ºÍµçÓ°µÄÏòÁ¿
+    //è·å–ç”¨æˆ·å’Œç”µå½±çš„å‘é‡
     val rawData = sc.textFile("ml-100k/u.data")
-    //ÓÃ»§ID  | Ó°Æ¬ID   | ĞÇ¼¶   | Ê±¼ä´Á	
+    //ç”¨æˆ·ID  | å½±ç‰‡ID   | æ˜Ÿçº§   | æ—¶é—´æˆ³	
     //196	    | 242	    |  3   |	881250949
-    /*ÌáÈ¡Ç°Èı¸ö×Ö¶Î¼´ ÓÃ»§ID  | Ó°Æ¬ID   | ĞÇ¼¶ */
+    /*æå–å‰ä¸‰ä¸ªå­—æ®µå³ ç”¨æˆ·ID  | å½±ç‰‡ID   | æ˜Ÿçº§ */
     val rawRatings = rawData.map(_.split("\t").take(3))
     println(rawRatings.toArray())
-    //RatingÆÀ¼¶Àà²ÎÊı¶ÔÓ¦ÓÃ»§ID,²úÆ·(¼´Ó°Æ¬ID),Êµ¼ÊĞÇ¼¶
-    //map·½·¨½«Ô­À´user ID,movie ID,ĞÇ¼¶µÄÊı×é×ª»»Îª¶ÔÓ¦µÄ¶ÔÏó,´Ó¶ø´´½¨ËùĞèµÄÆÀ¼¶µÄÊı×é¼¯
+    //Ratingè¯„çº§ç±»å‚æ•°å¯¹åº”ç”¨æˆ·ID,äº§å“(å³å½±ç‰‡ID),å®é™…æ˜Ÿçº§
+    //mapæ–¹æ³•å°†åŸæ¥user ID,movie ID,æ˜Ÿçº§çš„æ•°ç»„è½¬æ¢ä¸ºå¯¹åº”çš„å¯¹è±¡,ä»è€Œåˆ›å»ºæ‰€éœ€çš„è¯„çº§çš„æ•°ç»„é›†
     val ratings = rawRatings.map { case Array(user, movie, rating) => Rating(user.toInt, movie.toInt, rating.toDouble) }
     ratings.cache
-    /**»ñÈ¡ÓÃ»§ºÍµçÓ°µÄÒòËØÏòÁ¿,ĞèÒªÑµÁ·Ò»¸öĞÂµÄÍÆ¼öÄ£ĞÍ**/   
-    //²ÎÊıËµÃ÷:rank¶ÔÓ¦ALSÄ£ĞÍÖĞµÄÒò×Ó¸öÊı,Í¨³£ºÏÀíÈ¡ÖµÎª10---200
-    //iterations:¶ÔÓ¦ÔËĞĞÊ±µü´ú´ÎÊı,10´Î×óÓÒÒ»°ã¾ÍÍ¦ºÃ
-    //lambda:¸Ã²ÎÊı¿ØÖÆÄ£ĞÍµÄÕıÔò»¯¹ı³Ì,´Ó¶ø¿ØÖÆÄ£ĞÍµÄ¹ıÄâºÏÇé¿ö0.01     
-    val alsModel = ALS.train(ratings, 50, 10, 0.1) //·µ»ØÁËÁ½¸ö¼üÖµRDD(userFeaturesºÍproductFeatures)
-    alsModel.userFeatures //ÕâÎªÓÃ»§IDºÍÒò×Ó
-    alsModel.productFeatures //Õâ¸öµçÓ°ID,ÖµÎªÏà¹ØÒòËØ
+    /**è·å–ç”¨æˆ·å’Œç”µå½±çš„å› ç´ å‘é‡,éœ€è¦è®­ç»ƒä¸€ä¸ªæ–°çš„æ¨èæ¨¡å‹**/   
+    //å‚æ•°è¯´æ˜:rankå¯¹åº”ALSæ¨¡å‹ä¸­çš„å› å­ä¸ªæ•°,é€šå¸¸åˆç†å–å€¼ä¸º10---200
+    //iterations:å¯¹åº”è¿è¡Œæ—¶è¿­ä»£æ¬¡æ•°,10æ¬¡å·¦å³ä¸€èˆ¬å°±æŒºå¥½
+    //lambda:è¯¥å‚æ•°æ§åˆ¶æ¨¡å‹çš„æ­£åˆ™åŒ–è¿‡ç¨‹,ä»è€Œæ§åˆ¶æ¨¡å‹çš„è¿‡æ‹Ÿåˆæƒ…å†µ0.01     
+    val alsModel = ALS.train(ratings, 50, 10, 0.1) //è¿”å›äº†ä¸¤ä¸ªé”®å€¼RDD(userFeatureså’ŒproductFeatures)
+    alsModel.userFeatures //è¿™ä¸ºç”¨æˆ·IDå’Œå› å­
+    alsModel.productFeatures //è¿™ä¸ªç”µå½±ID,å€¼ä¸ºç›¸å…³å› ç´ 
 
-    //ÌáÈ¡Ïà¹ØµÄÒòËØ²¢×ª»¯µ½MLlibµÄVectorÖĞ×÷Îª¾ÛÀàÄ£ĞÍµÄÑµÁ·ÊäÈë
+    //æå–ç›¸å…³çš„å› ç´ å¹¶è½¬åŒ–åˆ°MLlibçš„Vectorä¸­ä½œä¸ºèšç±»æ¨¡å‹çš„è®­ç»ƒè¾“å…¥
     import org.apache.spark.mllib.linalg.Vectors
-    //µçÓ°ID,ÖµÎªÏà¹ØÒòËØVectors
+    //ç”µå½±ID,å€¼ä¸ºç›¸å…³å› ç´ Vectors
     val movieFactors = alsModel.productFeatures.map { case (id, factor) => (id, Vectors.dense(factor)) }
-    val movieVectors = movieFactors.map(_._2) //ÌáÈ¡µçÓ°Ïà¹ØÒòËØ
-    //ÓÃ»§ID,ÖµÎªÏà¹ØÒòËØ
+    val movieVectors = movieFactors.map(_._2) //æå–ç”µå½±ç›¸å…³å› ç´ 
+    //ç”¨æˆ·ID,å€¼ä¸ºç›¸å…³å› ç´ 
     val userFactors = alsModel.userFeatures.map { case (id, factor) => (id, Vectors.dense(factor)) }
-    val userVectors = userFactors.map(_._2) //ÌáÈ¡ÓÃ»§Ïà¹ØÒòËØ
+    val userVectors = userFactors.map(_._2) //æå–ç”¨æˆ·ç›¸å…³å› ç´ 
 
     // investigate distribution of features   
     import org.apache.spark.mllib.linalg.distributed.RowMatrix
-    //Ïà¹ØÒòËØÌØÕ÷ÏòÁ¿µÄ·Ö²¼,RowMatrix½øĞĞ¸÷ÖÖÍ³¼Æ
+    //ç›¸å…³å› ç´ ç‰¹å¾å‘é‡çš„åˆ†å¸ƒ,RowMatrixè¿›è¡Œå„ç§ç»Ÿè®¡
     val movieMatrix = new RowMatrix(movieVectors)
     val movieMatrixSummary = movieMatrix.computeColumnSummaryStatistics()
     val userMatrix = new RowMatrix(userVectors)
     val userMatrixSummary = userMatrix.computeColumnSummaryStatistics()
-    println("Movie factors mean: " + movieMatrixSummary.mean)//Æ½¾ùÖµ
-    println("Movie factors variance: " + movieMatrixSummary.variance)//·½²î
-    println("User factors mean: " + userMatrixSummary.mean)//Æ½¾ùÖµ
-    println("User factors variance: " + userMatrixSummary.variance)//·½²î
+    println("Movie factors mean: " + movieMatrixSummary.mean)//å¹³å‡å€¼
+    println("Movie factors variance: " + movieMatrixSummary.variance)//æ–¹å·®
+    println("User factors mean: " + userMatrixSummary.mean)//å¹³å‡å€¼
+    println("User factors variance: " + userMatrixSummary.variance)//æ–¹å·®
     // Movie factors mean: [0.28047737659519767,0.26886479057520024,0.2935579964446398,0.27821738264113755, ... 
     // Movie factors variance: [0.038242041794064895,0.03742229118854288,0.044116961097355877,0.057116244055791986, ...
     // User factors mean: [0.2043520841572601,0.22135773814655782,0.2149706318418221,0.23647602029329481, ...
     // User factors variance: [0.037749421148850396,0.02831191551960241,0.032831876953314174,0.036775110657850954, ...
 
-    /***ÑµÁ·¾ÛÀàÄ£ĞÍ***/
+    /***è®­ç»ƒèšç±»æ¨¡å‹***/
     // run K-means model on movie factor vectors
     import org.apache.spark.mllib.clustering.KMeans
-    val numClusters = 5 //ÉèÖÃK
-    val numIterations = 10 //×î´óµü´ú´ÎÊı
-    val numRuns = 3 //ÑµÁ·´ÎÊı
-    //×¢Òâ¾ÛÀà²»ĞèÒª±êÇ©,ËùÒÔ²»ÓÃLablePointÊµÀı
+    val numClusters = 5 //è®¾ç½®K
+    val numIterations = 10 //æœ€å¤§è¿­ä»£æ¬¡æ•°
+    val numRuns = 3 //è®­ç»ƒæ¬¡æ•°
+    //æ³¨æ„èšç±»ä¸éœ€è¦æ ‡ç­¾,æ‰€ä»¥ä¸ç”¨LablePointå®ä¾‹
     val movieClusterModel = KMeans.train(movieVectors, numClusters, numIterations, numRuns)
-    //¸ü¸Ä×î´óµü´ú´ÎÊı
+    //æ›´æ”¹æœ€å¤§è¿­ä»£æ¬¡æ•°
     val movieClusterModelConverged = KMeans.train(movieVectors, numClusters, 100)
 
-    /**Ê¹ÓÃ¾ÛÀàÄ£ĞÍ½øĞĞÔ¤²â**/
+    /**ä½¿ç”¨èšç±»æ¨¡å‹è¿›è¡Œé¢„æµ‹**/
     // train user model
     val userClusterModel = KMeans.train(userVectors, numClusters, numIterations, numRuns)
     // predict a movie cluster for movie 1
     val movie1 = movieVectors.first
     //[0.033130496740341187,0.26705870032310486,-0.06470431387424469,-0.27620309591293335,-0.5579972863197327,-0.36105620861053467,0.2515413761138916,0.503909707069397,-0.18813224136829376,0.19052250683307648,-0.12899400293827057,-0.34381452202796936,-0.05027823895215988,-0.03820587322115898,0.3110596537590027,0.05205772444605827,0.2201911360025406,-0.3292890787124634,0.3878093957901001,0.3220963180065155,-0.34360307455062866,-0.3125258982181549,-0.03509145975112915,0.04936598241329193,0.050676699727773666,0.2289056032896042,-0.13943906128406525,0.0679071769118309,-0.178903266787529,0.16504788398742676,0.6243731379508972,-0.35920676589012146,-0.07185130566358566,0.357896089553833,-0.14195860922336578,-0.17070387303829193,-0.18561360239982605,0.0018937239656224847,0.1121269091963768,0.11422386020421982,0.28339502215385437,-0.2074926495552063,-0.3413117527961731,0.11888174712657928,0.19513817131519318,-0.18359383940696716,-0.0384325347840786,0.018584446981549263,-0.0346914604306221,-0.16087883710861206]
     //println(">>>>>>>>>>>>"+movie1)
-    //µ¥¶ÀÑù×ÓÔ¤²â
+    //å•ç‹¬æ ·å­é¢„æµ‹
     val movieCluster = movieClusterModel.predict(movie1)
     println(movieCluster)
-    // ¾ÛÀàÔ¤²â  4
-    // predict clusters for all movies,´«ÈëÒ»¸öRDDÊı×é¶Ô¶à¸öÊäÈëÑù±¾½øĞĞÔ¤²â
+    // èšç±»é¢„æµ‹  4
+    // predict clusters for all movies,ä¼ å…¥ä¸€ä¸ªRDDæ•°ç»„å¯¹å¤šä¸ªè¾“å…¥æ ·æœ¬è¿›è¡Œé¢„æµ‹
     val predictions = movieClusterModel.predict(movieVectors)
     println(predictions.take(10).mkString(","))
     // 0,0,1,1,2,1,0,1,1,1   
@@ -164,11 +164,11 @@ object ScalaApp7 {
     /**=======================**/
     import breeze.linalg._
     import breeze.numerics.pow
-    //¼ÆËãÀàÖĞĞÄµÄ¾àÀë,¶¨ÒåÅ·À­¾àÀëÖ®ºÍ,¾ØÕóÆ½·½²îÖ®ºÍ,v1ÖĞĞÄµã,v2Ô¤²âÖµ
-    //¹«Ê½:¼ÆËãÃ¿¸öÀà´ØÖĞÑù±¾ÓëÀàÖĞĞÄµÄÆ½·½²î,²¢×îºóÇóºÍ,µÈ¼ÛÓÚ½«Ã¿¸öÑù±¾·ÖÅäµ½Å·À­¾àÀë×î½üµÄÀàÖĞĞÄ
-    def computeDistance(v1: DenseVector[Double], v2: DenseVector[Double]): Double = pow(v1 - v2, 2).sum //Æ½·½²îÖ®ºÍ
+    //è®¡ç®—ç±»ä¸­å¿ƒçš„è·ç¦»,å®šä¹‰æ¬§æ‹‰è·ç¦»ä¹‹å’Œ,çŸ©é˜µå¹³æ–¹å·®ä¹‹å’Œ,v1ä¸­å¿ƒç‚¹,v2é¢„æµ‹å€¼
+    //å…¬å¼:è®¡ç®—æ¯ä¸ªç±»ç°‡ä¸­æ ·æœ¬ä¸ç±»ä¸­å¿ƒçš„å¹³æ–¹å·®,å¹¶æœ€åæ±‚å’Œ,ç­‰ä»·äºå°†æ¯ä¸ªæ ·æœ¬åˆ†é…åˆ°æ¬§æ‹‰è·ç¦»æœ€è¿‘çš„ç±»ä¸­å¿ƒ
+    def computeDistance(v1: DenseVector[Double], v2: DenseVector[Double]): Double = pow(v1 - v2, 2).sum //å¹³æ–¹å·®ä¹‹å’Œ
     // join titles with the factor vectors, and compute the distance of each vector from the assigned cluster center
-    // movieFactors:µçÓ°ID,ÖµÎªÏà¹ØÒòËØVectors titlesAndGenres:µçÓ°ID,±êÌâºÍÌâ²Ä   
+    // movieFactors:ç”µå½±ID,å€¼ä¸ºç›¸å…³å› ç´ Vectors titlesAndGenres:ç”µå½±ID,æ ‡é¢˜å’Œé¢˜æ   
     val titlesWithFactors = titlesAndGenres.join(movieFactors)
     //org.apache.spark.rdd.RDD[(Int, ((String, Seq[String]),Vector))]
     /**
@@ -183,26 +183,26 @@ object ScalaApp7 {
       856925845146179,0.41255903244018555,-0.26579615473747253,-0.00452867476269602...
      */
     val moviesAssigned = titlesWithFactors.map {
-      //id µçÓ°ID,title µçÓ°±êÌâ,genres µçÓ°Ìâ²Ä·ÖÀà,vector Ô¤²âÑù±¾ÏòÁ¿
+      //id ç”µå½±ID,title ç”µå½±æ ‡é¢˜,genres ç”µå½±é¢˜æåˆ†ç±»,vector é¢„æµ‹æ ·æœ¬å‘é‡
       case (id, ((title, genres), vector)) =>
         println("id:"+id+"\t title:"+title+"\t genres:"+genres+"\t vector:"+vector)
-        //Ô¤²â¾ÛÀàvector
+        //é¢„æµ‹èšç±»vector
         val pred = movieClusterModel.predict(vector)
-        //¸ù¾İÔ¤²â·ÖÀà,·µ»Ø¾ÛÀàÖĞĞÄµã
+        //æ ¹æ®é¢„æµ‹åˆ†ç±»,è¿”å›èšç±»ä¸­å¿ƒç‚¹
         val clusterCentre = movieClusterModel.clusterCenters(pred)
-      //¼ÆËã ÀàÖĞĞÄµÄ¾àÀë
+      //è®¡ç®— ç±»ä¸­å¿ƒçš„è·ç¦»
         val dist = computeDistance(DenseVector(clusterCentre.toArray), DenseVector(vector.toArray))
-        //id µçÓ°ID,title µçÓ°±êÌâ,genres µçÓ°Ìâ²Ä·ÖÀà,cluster Àà±ğË÷Òı,dist ÀàÖĞĞÄµÄ¾àÀë
+        //id ç”µå½±ID,title ç”µå½±æ ‡é¢˜,genres ç”µå½±é¢˜æåˆ†ç±»,cluster ç±»åˆ«ç´¢å¼•,dist ç±»ä¸­å¿ƒçš„è·ç¦»
         //id:384   title:Naked Gun 33 1/3: The Final Insult (1994)  genres:Comedy cluster:4 dist:1.4373933940893153
         (id, title, genres.mkString(" "), pred, dist)
     }
-    //clusterAssignments ¼üÊÇÀà´ØµÄ±êÊ¶,ÖµÊÇµçÓ°ID,±êÌâ,Ìâ²Ä·ÖÀà,Àà±ğË÷Òı¼°ÀàÖĞĞÄµÄ¾àÀë
+    //clusterAssignments é”®æ˜¯ç±»ç°‡çš„æ ‡è¯†,å€¼æ˜¯ç”µå½±ID,æ ‡é¢˜,é¢˜æåˆ†ç±»,ç±»åˆ«ç´¢å¼•åŠç±»ä¸­å¿ƒçš„è·ç¦»
     val clusterAssignments = moviesAssigned.groupBy { 
-         //id µçÓ°ID,title µçÓ°±êÌâ,genres µçÓ°Ìâ²Ä·ÖÀà,cluster Àà±ğË÷Òı,dist ÀàÖĞĞÄµÄ¾àÀë
+         //id ç”µå½±ID,title ç”µå½±æ ‡é¢˜,genres ç”µå½±é¢˜æåˆ†ç±»,cluster ç±»åˆ«ç´¢å¼•,dist ç±»ä¸­å¿ƒçš„è·ç¦»
           case (id, title, genres, cluster, dist) => 
             //id:384   title:Naked Gun 33 1/3: The Final Insult (1994)  genres:Comedy cluster:4 dist:1.4373933940893153           
             cluster 
-          }.collectAsMap //collectAsMap ·µ»ØhashMap°üº¬ËùÓĞRDDÖĞµÄ·ÖÆ¬£¬keyÈç¹ûÖØ¸´£¬ºó±ßµÄÔªËØ»á¸²¸ÇÇ°ÃæµÄÔªËØ
+          }.collectAsMap //collectAsMap è¿”å›hashMapåŒ…å«æ‰€æœ‰RDDä¸­çš„åˆ†ç‰‡ï¼Œkeyå¦‚æœé‡å¤ï¼Œåè¾¹çš„å…ƒç´ ä¼šè¦†ç›–å‰é¢çš„å…ƒç´ 
      
       /***
        *Map(2 -> CompactBuffer((752,Replacement Killers, The (1998),A
@@ -224,12 +224,12 @@ object ScalaApp7 {
        * Way (1993),Crime Drama,2,1.1133138026316973)       
        */
        println("clusterAssignments:"+clusterAssignments)
-    //Ã¶¾ÙÃ¿¸öÀà´Ø²¢Êä³ö¾àÀëÀàÖĞĞÄ×î½üµÄÇ°20²¿µçÓ°,ÒÔÀà±ğË÷ÒıÉıĞòÅÅĞò
+    //æšä¸¾æ¯ä¸ªç±»ç°‡å¹¶è¾“å‡ºè·ç¦»ç±»ä¸­å¿ƒæœ€è¿‘çš„å‰20éƒ¨ç”µå½±,ä»¥ç±»åˆ«ç´¢å¼•å‡åºæ’åº
     for ((k, v) <- clusterAssignments.toSeq.sortBy(_._1)) {
       //
       println(s"Cluster $k:")
-      //id µçÓ°ID,title µçÓ°±êÌâ,genres µçÓ°Ìâ²Ä·ÖÀà,cluster Àà±ğË÷Òı,dist ÀàÖĞĞÄµÄ¾àÀë
-      val m = v.toSeq.sortBy(_._5)//ÒÔÀàÖĞĞÄµÄ¾àÀëÉıĞòÅÅĞò
+      //id ç”µå½±ID,title ç”µå½±æ ‡é¢˜,genres ç”µå½±é¢˜æåˆ†ç±»,cluster ç±»åˆ«ç´¢å¼•,dist ç±»ä¸­å¿ƒçš„è·ç¦»
+      val m = v.toSeq.sortBy(_._5)//ä»¥ç±»ä¸­å¿ƒçš„è·ç¦»å‡åºæ’åº
       println(m.take(20).map { case (_, title, genres, _, d) => (title, genres, d) }.mkString("\n"))
       println("=====\n")
     }
@@ -351,9 +351,9 @@ object ScalaApp7 {
         =====
      **/
           
-    /**ÆÀ¹À¾ÛÀàÄ£ĞÍ clustering mathematical evaluation**/
-    //computeCost ·½·¨£¬¸Ã·½·¨Í¨¹ı¼ÆËãËùÓĞÊı¾İµãµ½Æä×î½üµÄÖĞĞÄµãµÄÆ½·½ºÍÀ´ÆÀ¹À¾ÛÀàµÄĞ§¹û
-    //Ò»°ãÀ´Ëµ£¬Í¬ÑùµÄµü´ú´ÎÊıºÍËã·¨ÅÜµÄ´ÎÊı£¬Õâ¸öÖµÔ½Ğ¡´ú±í¾ÛÀàµÄĞ§¹ûÔ½ºÃ
+    /**è¯„ä¼°èšç±»æ¨¡å‹ clustering mathematical evaluation**/
+    //computeCost æ–¹æ³•ï¼Œè¯¥æ–¹æ³•é€šè¿‡è®¡ç®—æ‰€æœ‰æ•°æ®ç‚¹åˆ°å…¶æœ€è¿‘çš„ä¸­å¿ƒç‚¹çš„å¹³æ–¹å’Œæ¥è¯„ä¼°èšç±»çš„æ•ˆæœ
+    //ä¸€èˆ¬æ¥è¯´ï¼ŒåŒæ ·çš„è¿­ä»£æ¬¡æ•°å’Œç®—æ³•è·‘çš„æ¬¡æ•°ï¼Œè¿™ä¸ªå€¼è¶Šå°ä»£è¡¨èšç±»çš„æ•ˆæœè¶Šå¥½
     // compute the cost (WCSS) on for movie and user clustering
     val movieCost = movieClusterModel.computeCost(movieVectors)
     //movieCost: Double = 2249.222165045774

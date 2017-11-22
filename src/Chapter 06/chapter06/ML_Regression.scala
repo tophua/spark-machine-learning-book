@@ -17,62 +17,62 @@ object ML_Regression {
     Logger.getLogger("org.eclipse.jetty.server").setLevel(Level.OFF)
     val conf = new SparkConf().setAppName("regression").setMaster("local[1]")
     val sc = new SparkContext(conf)
-    /**Ã¿¸öĞ¡Ê±×ÔĞĞ³µ³ö×â´ÎÊı****/
+    /**æ¯ä¸ªå°æ—¶è‡ªè¡Œè½¦å‡ºç§Ÿæ¬¡æ•°****/
     val records = sc.textFile("BikeSharingDataset/hour_noheader.csv").map(_.split(",")).cache()
     records.count
     //res1: Long = 17379
     records.first()
     //res0: Array[String] = Array(1, 2011-1-1, 1, 0, 1, 0, 0, 6, 0, 1, 0.24, 0.2879, 0.81, 0, 3, 13, 16)
-    //½«²ÎÊıidxÁĞÖµÈ¥ÖØ,È»ºó¶ÔÃ¿¸öÖµÊ¹ÓÃzipWithIndexº¯ÊıÓ³Éäµ½Ò»¸öÎ¨Ò»µÄË÷Òı,ÕâÑù×é³ÉÁËÒ»¸öRDDµÄ¼üÖµÓ³Éä,¼üÊÇ±äÁ¿,ÖµÊÇË÷Òı
-    //ËÄ¼¾½ÚĞÅÏ¢(´º,ÏÄ,Çï,¶¬)
+    //å°†å‚æ•°idxåˆ—å€¼å»é‡,ç„¶åå¯¹æ¯ä¸ªå€¼ä½¿ç”¨zipWithIndexå‡½æ•°æ˜ å°„åˆ°ä¸€ä¸ªå”¯ä¸€çš„ç´¢å¼•,è¿™æ ·ç»„æˆäº†ä¸€ä¸ªRDDçš„é”®å€¼æ˜ å°„,é”®æ˜¯å˜é‡,å€¼æ˜¯ç´¢å¼•
+    //å››å­£èŠ‚ä¿¡æ¯(æ˜¥,å¤,ç§‹,å†¬)
     records.map(fields => fields(2)).distinct().zipWithIndex().collectAsMap()
     //res9: scala.collection.Map[String,Long] = Map(2 -> 1, 1 -> 3, 4 -> 0, 3 -> 2)
-    //½«²ÎÊıidxÁĞÖµÈ¥ÖØ,È»ºó¶ÔÃ¿¸öÖµÊ¹ÓÃzipWithIndexº¯ÊıÓ³Éäµ½Ò»¸öÎ¨Ò»µÄË÷Òı,ÕâÑù×é³ÉÁËÒ»¸öRDDµÄ¼üÖµÓ³Éä,¼üÊÇ±äÁ¿,ÖµÊÇË÷Òı
+    //å°†å‚æ•°idxåˆ—å€¼å»é‡,ç„¶åå¯¹æ¯ä¸ªå€¼ä½¿ç”¨zipWithIndexå‡½æ•°æ˜ å°„åˆ°ä¸€ä¸ªå”¯ä¸€çš„ç´¢å¼•,è¿™æ ·ç»„æˆäº†ä¸€ä¸ªRDDçš„é”®å€¼æ˜ å°„,é”®æ˜¯å˜é‡,å€¼æ˜¯ç´¢å¼•
     def get_mapping(rdd: RDD[Array[String]], idx: Int): scala.collection.Map[String, Long] = {
       rdd.map(fields => fields(idx)).distinct().zipWithIndex().collectAsMap()
     }
-    //¶ÔÊÇÀàĞÍ±äÁ¿µÄÁĞ(µÚ2-9ÁĞ)Ó¦ÓÃ¸Ãº¯Êı
+    //å¯¹æ˜¯ç±»å‹å˜é‡çš„åˆ—(ç¬¬2-9åˆ—)åº”ç”¨è¯¥å‡½æ•°
     val mappings = for (i <- Range(2, 10)) yield get_mapping(records, i)
     /**
      * mappings: scala.collection.immutable.IndexedSeq[scala.collection.Map[String,Long]] =
      * Vector
-     * ´ºÏÄÇï¶¬(Map(2 -> 1, 1 -> 3, 4 -> 0, 3 -> 2),  Äê·İ(0 2011 1 2012 )Map(1 -> 1, 0 -> 0),
-     * ÔÂ·İ Map(2 -> 3, 12 -> 9, 5 -> 6, 8 -> 1, 7 -> 5, 1 -> 10, 11 -> 4, 4 -> 0, 6 -> 2, 9 -> 7, 10-> 11, 3 -> 8),
-     * Ğ¡Ê± Map(2 -> 7, 5 -> 15, 12 -> 20, 8 -> 1, 15 -> 4, 21 -> 13, 18 ->16, 7 -> 14, 1 -> 21, 17 -> 9, 23 -> 23, 4 -> 0, 11 -> 11, 14 -> 12, 20 -> 2, 6
+     * æ˜¥å¤ç§‹å†¬(Map(2 -> 1, 1 -> 3, 4 -> 0, 3 -> 2),  å¹´ä»½(0 2011 1 2012 )Map(1 -> 1, 0 -> 0),
+     * æœˆä»½ Map(2 -> 3, 12 -> 9, 5 -> 6, 8 -> 1, 7 -> 5, 1 -> 10, 11 -> 4, 4 -> 0, 6 -> 2, 9 -> 7, 10-> 11, 3 -> 8),
+     * å°æ—¶ Map(2 -> 7, 5 -> 15, 12 -> 20, 8 -> 1, 15 -> 4, 21 -> 13, 18 ->16, 7 -> 14, 1 -> 21, 17 -> 9, 23 -> 23, 4 -> 0, 11 -> 11, 14 -> 12, 20 -> 2, 6
      * -> 5, 9 -> 18, 0 -> 6, 22 -> 8, 16 -> 17, 10 -> 22, 3 -> 19, 19 -> 3, 13 -> 10),
-     * ÊÇ·ñ½Ú¼ÙÈÕ Map(1 -> 1, 0 -> 0),
-     * ÖÜ¼¸ Map(2 -> 3, 5 -> 4, 1 -> 6, 4 -> 0, 6 -> 1, 0 -> 2, 3 -> 5),
-     * ÊÇ·ñ¹¤×÷ÈÕ Map(1 -> 1, 0 -> 0),
-     * ÌìÆøÀàĞÍ    Map(2 -> 1, 1 -> 3, 4 -> 0, 3 -> 2)) ÇçÌì,ÒõÌì,Ñ©Ìì,ÓêÌì
+     * æ˜¯å¦èŠ‚å‡æ—¥ Map(1 -> 1, 0 -> 0),
+     * å‘¨å‡  Map(2 -> 3, 5 -> 4, 1 -> 6, 4 -> 0, 6 -> 1, 0 -> 2, 3 -> 5),
+     * æ˜¯å¦å·¥ä½œæ—¥ Map(1 -> 1, 0 -> 0),
+     * å¤©æ°”ç±»å‹    Map(2 -> 1, 1 -> 3, 4 -> 0, 3 -> 2)) æ™´å¤©,é˜´å¤©,é›ªå¤©,é›¨å¤©
      */
-    val cat_len = sum(mappings.map(_.size)) //ºÏ¼ÆÃ¿ÁĞ
+    val cat_len = sum(mappings.map(_.size)) //åˆè®¡æ¯åˆ—
     //res8: = mappings.map(_.size)==Vector(4, 2, 12, 24, 2, 7, 2,4) sum(mappings.map(_.size)==57
-    val num_len = records.first().slice(10, 14).size //È¡³öµÚ10ÁĞµ½14ÁĞ ³¤¶ÈÎª4
+    val num_len = records.first().slice(10, 14).size //å–å‡ºç¬¬10åˆ—åˆ°14åˆ— é•¿åº¦ä¸º4
     //res2: Array[String] = Array(0.24, 0.2879, 0.81, 0)
     val total_len = cat_len + num_len
     println("Feature vector Length for categorical features:" + cat_len) //57
     println("Feature vector Length for numerical features:" + num_len) //4
     println("Total feature vector Length:" + total_len) // 61
-    //linear regression data ´Ë²¿·Ö´úÂë×îÖØÒª£¬Ö÷ÒªÓÃÓÚ²úÉúÑµÁ·Êı¾İ¼¯£¬°´ÕÕÇ°ÎÄËùÊö´¦ÀíÀà±ğÌØÕ÷ºÍÊµÊıÌØÕ÷¡£
-    //½«Ô­Ê¼Êı¾İ×ª³É¶şÔªÀàĞÍÌØÕ÷ºÍÊµÊıÌØÕ÷,²¢Á¬½Ó³É³¤¶È61µÄÌØÕ÷ÏòÁ¿
+    //linear regression data æ­¤éƒ¨åˆ†ä»£ç æœ€é‡è¦ï¼Œä¸»è¦ç”¨äºäº§ç”Ÿè®­ç»ƒæ•°æ®é›†ï¼ŒæŒ‰ç…§å‰æ–‡æ‰€è¿°å¤„ç†ç±»åˆ«ç‰¹å¾å’Œå®æ•°ç‰¹å¾ã€‚
+    //å°†åŸå§‹æ•°æ®è½¬æˆäºŒå…ƒç±»å‹ç‰¹å¾å’Œå®æ•°ç‰¹å¾,å¹¶è¿æ¥æˆé•¿åº¦61çš„ç‰¹å¾å‘é‡
     val data = records.map { record =>
-      val cat_vec = Array.ofDim[Double](cat_len) //´´½¨61³¤¶ÈÊı×é,Ä¬ÈÏ¶¼0
+      val cat_vec = Array.ofDim[Double](cat_len) //åˆ›å»º61é•¿åº¦æ•°ç»„,é»˜è®¤éƒ½0
       var i = 0
-      var step = 0 //È·±£Õû¸öÊı×éÌØÕ÷ÏòÁ¿Î»ÓÚÕıÈ·µÄÎ»ÖÃ
-      for (filed <- record.slice(2, 10)) { //»ñÈ¡µÚ3ÁĞÖÁ10ÁĞµÄÖµ
-        val m = mappings(i) //Map 0Öµ´ú±í    ´ºÏÄÇï¶¬  
-        val idx = m(filed) // filedÁĞµÄÖµ »ñ¶ÔÓ¦MapÊı¾İ·ÖÀà
+      var step = 0 //ç¡®ä¿æ•´ä¸ªæ•°ç»„ç‰¹å¾å‘é‡ä½äºæ­£ç¡®çš„ä½ç½®
+      for (filed <- record.slice(2, 10)) { //è·å–ç¬¬3åˆ—è‡³10åˆ—çš„å€¼
+        val m = mappings(i) //Map 0å€¼ä»£è¡¨    æ˜¥å¤ç§‹å†¬  
+        val idx = m(filed) // filedåˆ—çš„å€¼ è·å¯¹åº”Mapæ•°æ®åˆ†ç±»
         cat_vec(idx.toInt + step) = 1.0 //
         // println("i:"+i+"\t m:"+m+"\t filed:"+filed+"\t idx:"+idx+"\t step:"+ step+"\t idx.toInt+step:"+(idx.toInt + step)+"\t m.size:"+m.size)
-        i = i + 1 //»ñÈ¡Êı¾İ·ÖÀàµİÔö1ÁĞ       
-        step = step + m.size //ÏÂÒ»ÁĞÌøµ½Êı×é¿ªÊ¼Î»ÖÃ         
+        i = i + 1 //è·å–æ•°æ®åˆ†ç±»é€’å¢1åˆ—       
+        step = step + m.size //ä¸‹ä¸€åˆ—è·³åˆ°æ•°ç»„å¼€å§‹ä½ç½®         
       }
-      val num_vec = record.slice(10, 14).map(x => x.toDouble) //»ñÈ¡µÚ11ÁĞµ½14ÁĞÖµ 
-      val features = cat_vec ++ num_vec //Êı×éÏà¼Ó
-      val label = record(record.size - 1).toInt //×îºóÁĞÖµÎª±êÇ©Öµ 
+      val num_vec = record.slice(10, 14).map(x => x.toDouble) //è·å–ç¬¬11åˆ—åˆ°14åˆ—å€¼ 
+      val features = cat_vec ++ num_vec //æ•°ç»„ç›¸åŠ 
+      val label = record(record.size - 1).toInt //æœ€ååˆ—å€¼ä¸ºæ ‡ç­¾å€¼ 
       LabeledPoint(label, Vectors.dense(features))
     }
-    //¹Û²ìµÚÒ»Ìõ¼ÇÂ¼
+    //è§‚å¯Ÿç¬¬ä¸€æ¡è®°å½•
     val first_point = data.first()
     /**
      * first_point: org.apache.spark.mllib.regression.LabeledPoint = (16.0,[0.0,0.0,0.0
@@ -92,30 +92,30 @@ object ML_Regression {
      */
     println("Lebel Model feature Vector length:" + first_point.features.size) //61 
 
-    //¾ö²ßÊ÷²»ĞèÒª½«ÀàĞÍÊı¾İÓÃ¶şÔªÏòÁ¿±íÊ¾,¿ÉÒÔÖ±½ÓÊ¹ÓÃÔ­Ê¼Êı¾İ 
+    //å†³ç­–æ ‘ä¸éœ€è¦å°†ç±»å‹æ•°æ®ç”¨äºŒå…ƒå‘é‡è¡¨ç¤º,å¯ä»¥ç›´æ¥ä½¿ç”¨åŸå§‹æ•°æ® 
     val data_dt = records.map { record =>
-      val num_vec = record.slice(2, 14).map(x => x.toDouble) //»ñÈ¡µÚ3ÁĞµ½14ÁĞÖµ        
-      val label = record(record.size - 1).toInt //×îºóÁĞÖµÎª±êÇ©Öµ 
+      val num_vec = record.slice(2, 14).map(x => x.toDouble) //è·å–ç¬¬3åˆ—åˆ°14åˆ—å€¼        
+      val label = record(record.size - 1).toInt //æœ€ååˆ—å€¼ä¸ºæ ‡ç­¾å€¼ 
       LabeledPoint(label, Vectors.dense(num_vec))
     }
-    //¹Û²ìµÚÒ»Ìõ¼ÇÂ¼
+    //è§‚å¯Ÿç¬¬ä¸€æ¡è®°å½•
     val first_point_dt = data_dt.first()
     println("Decision Tree feature Vector:" + first_point_dt.features)
     //Decision Tree feature Vector:[1.0,0.0,1.0,0.0,0.0,6.0,0.0,1.0,0.24,0.2879,0.81,0.0]
     println("Decision Tree feature Vector length:" + first_point_dt.features.size) //Lebel:12.0
 
-    /***´´½¨ÏßĞÔ»Ø¹éÄ£ĞÍ***/
+    /***åˆ›å»ºçº¿æ€§å›å½’æ¨¡å‹***/
 
     val linear_model = LinearRegressionWithSGD.train(data, 10, 0.1)
     val true_vs_predicted = data.map(p => (p.label, linear_model.predict(p.features)))
-    //Êä³öÇ°Îå¸öÕæÊµÖµÓëÔ¤²âÖµ
+    //è¾“å‡ºå‰äº”ä¸ªçœŸå®å€¼ä¸é¢„æµ‹å€¼
     println(true_vs_predicted.take(5).toVector.toString())
     /*Vector((16.0,57.63078035304174), (40.0,55.65738194101726), (32.0,55.65738194101726),
      (13.0,55.069157795540086), (1.0,55.069157795540086))*/
 
-    /***¾ö²ßÊ÷»Ø¹éÄ£ĞÍ***/
-    //algo:·ÖÀàClassification»òÕß»Ø¹éRegression
-    //´¿¶È Variance
+    /***å†³ç­–æ ‘å›å½’æ¨¡å‹***/
+    //algo:åˆ†ç±»Classificationæˆ–è€…å›å½’Regression
+    //çº¯åº¦ Variance
     val dt_model = DecisionTree.train(data_dt, Algo.Regression, Variance, 5)
     val preds = dt_model.predict(data_dt.map { x => x.features })
     val actual = data_dt.map { x => x.label }
@@ -125,82 +125,82 @@ object ML_Regression {
     (32.0,53.171052631578945), (13.0,14.284023668639053), (1.0,14.284023668639053))*/
     println("Decision Tree depth:" + dt_model.depth) //5
     println("Decision Tree number of nodes:" + dt_model.numNodes) //63
-    /**ÆÀ¹À»Ø¹éÄ£ĞÍĞÔÄÜ**/
+    /**è¯„ä¼°å›å½’æ¨¡å‹æ€§èƒ½**/
 
-    //Æ½¾ù·½Îó²î
+    //å¹³å‡æ–¹è¯¯å·®
     def squared_error(actual: Double, pred: Double) = {
       math.pow((actual - pred), 2)
     }
-    //Æ½¾ù¾ø¶ÔÎó²î
+    //å¹³å‡ç»å¯¹è¯¯å·®
     def abs_error(actual: Double, pred: Double) = {
       math.abs(actual - pred)
     }
-    //¾ù·½¸ù¶ÔÊıÎó²î
+    //å‡æ–¹æ ¹å¯¹æ•°è¯¯å·®
     def squared_log_error(actual: Double, pred: Double) = {
-      //math.log·µ»Ø×ÔÈ»¶ÔÊı£¨ÒÔeÎªµ×£©µÄÒ»¸ödoubleÖµ
+      //math.logè¿”å›è‡ªç„¶å¯¹æ•°ï¼ˆä»¥eä¸ºåº•ï¼‰çš„ä¸€ä¸ªdoubleå€¼
       math.pow((math.log(pred - 1) - math.log(actual - 1)), 2)
     }
-    /**¼ÆËã²»Í¬¶ÈÁ¿ÏÂµÄĞÔÄÜ **/
-    //ÏßĞÔÄ£ĞÍ¶ÈÁ¿
-    //Ê×ÏÈÔ¤²âRDDÊµÀıLabledPointÖĞÃ¿¸öÌØÕ÷ÏòÁ¿,È»ºó¼ÆËãÔ¤²âÖµÓëÊµ¼ÊÖµµÄÎó²î²¢×é³ÉÒ»¸ödoubleÊı×éµÄRDD
-    //×îºóÊ¹ÓÃmean·½·¨¼ÆËãËùÓĞDoubleÖµµÄÆ½¾ùÖµ
+    /**è®¡ç®—ä¸åŒåº¦é‡ä¸‹çš„æ€§èƒ½ **/
+    //çº¿æ€§æ¨¡å‹åº¦é‡
+    //é¦–å…ˆé¢„æµ‹RDDå®ä¾‹LabledPointä¸­æ¯ä¸ªç‰¹å¾å‘é‡,ç„¶åè®¡ç®—é¢„æµ‹å€¼ä¸å®é™…å€¼çš„è¯¯å·®å¹¶ç»„æˆä¸€ä¸ªdoubleæ•°ç»„çš„RDD
+    //æœ€åä½¿ç”¨meanæ–¹æ³•è®¡ç®—æ‰€æœ‰Doubleå€¼çš„å¹³å‡å€¼
     val mse = true_vs_predicted.map { case (t, p) => squared_error(t, p) }.mean()
     //mse: Double = 45466.55394096602
     val mae = true_vs_predicted.map { case (t, p) => abs_error(t, p) }.mean()
     //mae: Double = 146.96298391737974
     val rmsle = math.sqrt(true_vs_predicted.map { case (t, p) => squared_log_error(t, p) }.mean())
 
-    val mse2 = true_vs_predicted.map { case (v, p) => math.pow((v - p), 2) }.mean() //ÇóÆ½¾ùÖµ
-    //Ê¹ÓÃÄÚÖÃ¶ÈÁ¿¹¤¾ß
+    val mse2 = true_vs_predicted.map { case (v, p) => math.pow((v - p), 2) }.mean() //æ±‚å¹³å‡å€¼
+    //ä½¿ç”¨å†…ç½®åº¦é‡å·¥å…·
     val metrics = new RegressionMetrics(true_vs_predicted)
     //rmsle: Double = NaN
     println("Linear Model - Mean Squared Error: %2.4f".format(mse))
-    //¾ù·½²î
+    //å‡æ–¹å·®
     println("Linear Model - Mean Squared Error: %2.4f".format(metrics.meanSquaredError))
     //Linear Model - Mean Squared Error: 45466.5539
     println("Linear Model - Mean Absolute Error: %2.4f".format(mae))
-    //Æ½¾ù¾ø¶ÔÎó²î
+    //å¹³å‡ç»å¯¹è¯¯å·®
     println("Linear Model - Mean Absolute Error: %2.4f".format(metrics.meanAbsoluteError))
     //Linear Model - Mean Absolute Error: 146.9630
     println("Linear Model - Root Mean Squared Log Error: %2.4f".format(rmsle))
-    //¾ù·½¸ùÎó²î
+    //å‡æ–¹æ ¹è¯¯å·®
     println("Linear Model - Root Mean Squared Log Error: %2.4f".format(metrics.rootMeanSquaredError))
-    //R-Æ½·½ÏµÊı
+    //R-å¹³æ–¹ç³»æ•°
     println("Linear Model - R2: %2.4f".format(metrics.r2))
-    //Ê¹ÓÃÄÚÖÃ¶ÈÁ¿¹¤¾ß
+    //ä½¿ç”¨å†…ç½®åº¦é‡å·¥å…·
     val metrics_dt = new RegressionMetrics(true_vs_predicted_dt)
-    //¾ù·½²î
+    //å‡æ–¹å·®
     println("Decision Tree - Mean Squared Error: %2.4f".format(metrics_dt.meanSquaredError))
     //Decision Tree - Mean Squared Error: 11560.7978
-    //Æ½¾ù¾ø¶ÔÎó²î
+    //å¹³å‡ç»å¯¹è¯¯å·®
     println("Decision Tree - Mean Absolute Error: %2.4f".format(metrics_dt.meanAbsoluteError))
     //Decision Tree - Mean Absolute Error: 71.0969
-    //¾ù·½¸ùÎó²î
+    //å‡æ–¹æ ¹è¯¯å·®
     println("Decision Tree - Root Mean Squared Log Error: %2.4f".format(metrics_dt.rootMeanSquaredError))
     //Decision Tree - Root Mean Squared Log Error: 107.5212
-    //R-Æ½·½ÏµÊı
+    //R-å¹³æ–¹ç³»æ•°
     println("Decision Tree - R2: %2.4f".format(metrics.r2))
     //Decision Tree - R2: 0.9461
 
     /**
-     * ±ä»»Ä¿±ê±äÁ¿
+     * å˜æ¢ç›®æ ‡å˜é‡
      */
-    //Ê×ÏÈÊ¹ÓÃlogº¯ÊıÓ¦ÓÃµ½RDD LabeledPointÖĞµÄÃ¿¸ö±êÇ©Öµ
+    //é¦–å…ˆä½¿ç”¨logå‡½æ•°åº”ç”¨åˆ°RDD LabeledPointä¸­çš„æ¯ä¸ªæ ‡ç­¾å€¼
     val data_log = data.map(lp => LabeledPoint(math.log(lp.label), lp.features))
-    //×ª»»Êı¾İÉÏÑµÁ·ÏßĞÔ»Ø¹éÄ£ĞÍ
+    //è½¬æ¢æ•°æ®ä¸Šè®­ç»ƒçº¿æ€§å›å½’æ¨¡å‹
     val model_log = LinearRegressionWithSGD.train(data_log, 10, 0.1)
-    //ĞèÒª½«½øĞĞÖ¸ÊıÔËËã¼ÆËãµÃµ½Ô¤²âÖµ×ª»»»ØÔ­Ê¼ÖµÊ¹ÓÃexpº¯Êı
+    //éœ€è¦å°†è¿›è¡ŒæŒ‡æ•°è¿ç®—è®¡ç®—å¾—åˆ°é¢„æµ‹å€¼è½¬æ¢å›åŸå§‹å€¼ä½¿ç”¨expå‡½æ•°
     val true_vs_predicted_log = data_log.map(p => (math.exp(p.label), math.exp(model_log.predict(p.features))))
-    //Ê¹ÓÃÄÚÖÃ¶ÈÁ¿¹¤¾ß
+    //ä½¿ç”¨å†…ç½®åº¦é‡å·¥å…·
     val metrics_log = new RegressionMetrics(true_vs_predicted_log)
 
-    //¾ù·½²î
+    //å‡æ–¹å·®
     println("Mean Squared Error: %2.4f".format(metrics_log.meanSquaredError))
     //Mean Squared Error: 66501.5660   
-    //Æ½¾ù¾ø¶ÔÎó²î
+    //å¹³å‡ç»å¯¹è¯¯å·®
     println("Mean Absolute Error: %2.4f".format(metrics_log.meanAbsoluteError))
     //Mean Absolute Error: 183.9396
-    //¾ù·½¸ùÎó²î
+    //å‡æ–¹æ ¹è¯¯å·®
     println("Root Mean Squared Log Error: %2.4f".format(metrics_log.rootMeanSquaredError))
     //Root Mean Squared Log Error: 257.8790
 
@@ -209,22 +209,22 @@ object ML_Regression {
     println("Log-transformed predictions:\n" + true_vs_predicted_log.take(3))
     //res62:Array((15.999999999999998,4.063614487622041), (40.0,3.88642556430256),(32.0,3.88642556430256))
     /**
-     * ×Ü½á:½á¹ûºÍÔ­Ê¼Êı¾İÑµÁ·Ä£ĞÍĞÔÄÜ ±È½Ï,¿ÉÒÔ¿´µ½ÎÒÃÇÌáÉıÁËRMSLE(Æ½¾ù¾ø¶ÔÎó²î)µÄĞÔÄÜ,µ«ÊÇÈ´Ã»ÓĞÌáÉıMSEºÍMAEµÄĞÔÄÜ
+     * æ€»ç»“:ç»“æœå’ŒåŸå§‹æ•°æ®è®­ç»ƒæ¨¡å‹æ€§èƒ½ æ¯”è¾ƒ,å¯ä»¥çœ‹åˆ°æˆ‘ä»¬æå‡äº†RMSLE(å¹³å‡ç»å¯¹è¯¯å·®)çš„æ€§èƒ½,ä½†æ˜¯å´æ²¡æœ‰æå‡MSEå’ŒMAEçš„æ€§èƒ½
      */
-    //¾ö²ßÊ÷Ä£ĞÍĞÔÄÜ²âÊÔ
+    //å†³ç­–æ ‘æ¨¡å‹æ€§èƒ½æµ‹è¯•
     val data_dt_log = data_dt.map(lp => LabeledPoint(math.log(lp.label), lp.features))
     val dt_model_log = DecisionTree.train(data_dt_log, Algo.Regression, Variance, 5)
     val preds_log = dt_model_log.predict(data_dt_log.map(p => p.features))
     val actual_log = data_dt_log.map(p => p.label)
     val true_vs_predicted_dt_log = actual_log.zip(preds_log).map { case (t, p) => (math.exp(t), math.exp(p)) }
     val metrics_dt_log = new RegressionMetrics(true_vs_predicted_dt_log)
-    //¾ù·½²î
+    //å‡æ–¹å·®
     println("Mean Squared Error: %2.4f".format(metrics_dt_log.meanSquaredError))
     //Mean Squared Error: 14781.5760
-    //Æ½¾ù¾ø¶ÔÎó²î
+    //å¹³å‡ç»å¯¹è¯¯å·®
     println("Mean Absolute Error: %2.4f".format(metrics_dt_log.meanAbsoluteError))
     //Mean Absolute Error: 76.4131
-    //¾ù·½¸ùÎó²î
+    //å‡æ–¹æ ¹è¯¯å·®
     println("Root Mean Squared Log Error: %2.4f".format(metrics_dt_log.rootMeanSquaredError))
     //Root Mean Squared Log Error: 121.5795
     println("Non log-transformed predictions:\n" + true_vs_predicted_dt.take(3))
@@ -232,31 +232,31 @@ object ML_Regression {
     println("Log-transformed predictions:\n" + true_vs_predicted_dt_log.take(3))
     //res70:Array((15.999999999999998,37.53077978715452), (40.0,37.53077978715452), (32.0,7.279707099390729))
     /**
-     * ×Ü½á:±íÃ÷¾ö²ßÊ÷ÔÚ±ä»»ºóµÄĞÔÄÜÓĞËùÏÂ½µ
+     * æ€»ç»“:è¡¨æ˜å†³ç­–æ ‘åœ¨å˜æ¢åçš„æ€§èƒ½æœ‰æ‰€ä¸‹é™
      */
      val num_data = records.count()
-    //Ä£ĞÍ²ÎÊıµ÷ÓÅ
-     //ÔİÊ±ÎŞÓÃ
+    //æ¨¡å‹å‚æ•°è°ƒä¼˜
+     //æš‚æ—¶æ— ç”¨
     val data_with_idx = data.zipWithIndex().map{case(k, v)=> (v, k)}
     
   
     val trainTestSplit = data.randomSplit(Array(0.8, 0.2), 42)
     
-    //ÑµÁ·Êı¾İ¼¯
+    //è®­ç»ƒæ•°æ®é›†
     val train_data = trainTestSplit(0)
-    //²âÊÔÊı¾İ¼¯
+    //æµ‹è¯•æ•°æ®é›†
     val test_data = trainTestSplit(1)
     println("Training data size: %d".format(train_data.count))
     println("Test data size: %d".format(test_data.count))
     println("Total data size: %d ".format( num_data))
     println("Train + Test size : %d".format(train_data.count + test_data.count))
-    //Ê¹ÓÃÍ¬ÑùµÄ·½·¨ÌáÈ¡¾ö²ßÊ÷Ä£ĞÍËùĞèÌØÕ÷
+    //ä½¿ç”¨åŒæ ·çš„æ–¹æ³•æå–å†³ç­–æ ‘æ¨¡å‹æ‰€éœ€ç‰¹å¾
     
     val data_with_idx_dt = data_dt.zipWithIndex().map{case(k, v)=> (v, k)}
     val trainTestSplit_dt = data_with_idx_dt.randomSplit(Array(0.8, 0.2), 42)
-    //ÑµÁ·Êı¾İ¼¯
+    //è®­ç»ƒæ•°æ®é›†
     val train_data_dt = trainTestSplit_dt(0)
-    //²âÊÔÊı¾İ¼¯
+    //æµ‹è¯•æ•°æ®é›†
     val test_data_dt = trainTestSplit_dt(1)
     println("Training data size: %d".format(train_data_dt.count))
     println("Test data size: %d".format(test_data_dt.count))
@@ -265,13 +265,13 @@ object ML_Regression {
     
    def trainWithParams(train: RDD[LabeledPoint],test: RDD[LabeledPoint], regParam: Double,numIterations: Int,  stepSize: Double) = {
       val lr = new LinearRegressionWithSGD
-      //numIterationsµü´ú´ÎÊı,stepSize²½³¤,regParam
+      //numIterationsè¿­ä»£æ¬¡æ•°,stepSizeæ­¥é•¿,regParam
       lr.optimizer.setNumIterations(numIterations).setRegParam(regParam).setStepSize(stepSize)
       val model=lr.run(train)
       val tp=test.map { x => (x.label,model.predict(x.features))}
       val rmsle = math.sqrt(tp.map{case(t, p)=> squared_log_error(t, p)}.mean())
       // val metrics_dt_log = new RegressionMetrics(tp)
-       //Ê¹ÓÃ¾ù·½¸ù¶ÔÊıÆÀ¹ÀÖ¸±ê
+       //ä½¿ç”¨å‡æ–¹æ ¹å¯¹æ•°è¯„ä¼°æŒ‡æ ‡
       // println(">>>>>>>>>>>"+metrics_dt_log.rootMeanSquaredError)
        //metrics_dt_log.rootMeanSquaredError
       println(">>>>>>>>>>>"+rmsle)
@@ -279,7 +279,7 @@ object ML_Regression {
        
     }
     // num iterations
-    /**µü´ú´ÎÊı,(ĞÔÄÜ²âÊÔ)**/
+    /**è¿­ä»£æ¬¡æ•°,(æ€§èƒ½æµ‹è¯•)**/
     val iterResults = Seq(1, 5, 10, 50,10,100).map { param =>
        trainWithParams(train_data,test_data, 0.0, param,1.0)
     }
@@ -287,7 +287,7 @@ object ML_Regression {
 
   }
   
-  //½«²ÎÊıidxÁĞÖµÈ¥ÖØ,È»ºó¶ÔÃ¿¸öÖµÊ¹ÓÃzipWithIndexº¯ÊıÓ³Éäµ½Ò»¸öÎ¨Ò»µÄË÷Òı,ÕâÑù×é³ÉÁËÒ»¸öRDDµÄ¼üÖµÓ³Éä,¼üÊÇ±äÁ¿,ÖµÊÇË÷Òı
+  //å°†å‚æ•°idxåˆ—å€¼å»é‡,ç„¶åå¯¹æ¯ä¸ªå€¼ä½¿ç”¨zipWithIndexå‡½æ•°æ˜ å°„åˆ°ä¸€ä¸ªå”¯ä¸€çš„ç´¢å¼•,è¿™æ ·ç»„æˆäº†ä¸€ä¸ªRDDçš„é”®å€¼æ˜ å°„,é”®æ˜¯å˜é‡,å€¼æ˜¯ç´¢å¼•
   def get_mapping(rdd: RDD[Array[String]], idx: Int) =
     {
       rdd.map(filed => filed(idx)).distinct().zipWithIndex().collectAsMap()

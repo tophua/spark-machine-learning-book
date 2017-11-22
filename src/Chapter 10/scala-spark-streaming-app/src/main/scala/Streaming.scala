@@ -19,22 +19,22 @@ object StreamingProducer {
     val random = new Random()
 
     // Maximum number of events per second
-    //Ã¿ÃëÊÂ¼şµÄ×î´óÊıÁ¿
+    //æ¯ç§’äº‹ä»¶çš„æœ€å¤§æ•°é‡
     val MaxEvents = 6
 
     // Read the list of possible names
-    //¶ÁÈ¡¿ÉÄÜÃû³ÆµÄÁĞ±í,namesResource: InputStream
+    //è¯»å–å¯èƒ½åç§°çš„åˆ—è¡¨,namesResource: InputStream
     val namesResource = this.getClass.getResourceAsStream("/names.csv")
     //names: Seq[String]
     val names = scala.io.Source.fromInputStream(namesResource)
-      .getLines()//ĞĞ¶ÁÈ¡
-      .toList//×ª»»ÁĞ±í
-      .head//È¡³öµÚÒ»ĞĞ
-      .split(",")//·Ö¸ô¶ººÅÊı¾İ
+      .getLines()//è¡Œè¯»å–
+      .toList//è½¬æ¢åˆ—è¡¨
+      .head//å–å‡ºç¬¬ä¸€è¡Œ
+      .split(",")//åˆ†éš”é€—å·æ•°æ®
       .toSeq
 
     // Generate a sequence of possible products
-    //Éú³É¿ÉÄÜµÄ²úÆ·ĞòÁĞ
+    //ç”Ÿæˆå¯èƒ½çš„äº§å“åºåˆ—
     val products = Seq(
       "iPhone Cover" -> 9.99,
       "Headphones" -> 5.49,
@@ -44,27 +44,27 @@ object StreamingProducer {
 
     /** 
      *  Generate a number of random product events 
-     *  ²úÉú¶àÏîËæ»ú²úÆ·ÊÂ¼ş
+     *  äº§ç”Ÿå¤šé¡¹éšæœºäº§å“äº‹ä»¶
      *  */
     def generateProductEvents(n: Int) = {
       (1 to n).map { i =>
-        //Ëæ»ú²úÉúÒ»¸ö²úÆ·ºÍ¼Û¸ñ
+        //éšæœºäº§ç”Ÿä¸€ä¸ªäº§å“å’Œä»·æ ¼
         val (product, price) = products(random.nextInt(products.size))
-        //¸ù¾İSeqËæ»ú²úÉúshuffle
+        //æ ¹æ®Seqéšæœºäº§ç”Ÿshuffle
         val user = random.shuffle(names).head
         (user, product, price)
       }
     }
 
     // create a network producer
-    //´´½¨Ò»¸öÍøÂç·şÎñ,¼àÌı¶Ë¿Ú9999
+    //åˆ›å»ºä¸€ä¸ªç½‘ç»œæœåŠ¡,ç›‘å¬ç«¯å£9999
     val listener = new ServerSocket(9999)
     println("Listening on port: 9999")
 
     while (true) {
-      //½ÓÊÜ¼àÌı
+      //æ¥å—ç›‘å¬
       val socket = listener.accept()
-      //Æô¶¯Ïß³Ì
+      //å¯åŠ¨çº¿ç¨‹
       new Thread() {
         override def run = {
           println("Got client connected from: " + socket.getInetAddress)
@@ -73,7 +73,7 @@ object StreamingProducer {
 
           while (true) {
             Thread.sleep(1000)
-            //Ëæ»ú×î´óÖÖ×ÓÃë
+            //éšæœºæœ€å¤§ç§å­ç§’
             val num = random.nextInt(MaxEvents)            
             val productEvents = generateProductEvents(num)
             productEvents.foreach{ event =>
@@ -92,7 +92,7 @@ object StreamingProducer {
 
 /**
  * A simple Spark Streaming app in Scala
- * ¼òµ¥µÄSpark Streaming³ÌĞò
+ * ç®€å•çš„Spark Streamingç¨‹åº
  */
 object SimpleStreamingApp {
 
@@ -102,7 +102,7 @@ object SimpleStreamingApp {
     val stream = ssc.socketTextStream("localhost", 9999)
 
     // here we simply print out the first few elements of each batch
-    //ÔÚÕâÀï,ÎÒÃÇÖ»Ğè´òÓ¡³öÃ¿¸öÅú´ÎµÄÇ°¼¸¸öÔªËØ
+    //åœ¨è¿™é‡Œ,æˆ‘ä»¬åªéœ€æ‰“å°å‡ºæ¯ä¸ªæ‰¹æ¬¡çš„å‰å‡ ä¸ªå…ƒç´ 
     println("==================")
     stream.print()
     ssc.start()
@@ -113,7 +113,7 @@ object SimpleStreamingApp {
 
 /**
  * A more complex Streaming app, which computes statistics and prints the results for each batch in a DStream
- * ÅúÁ¿´òÓ¡
+ * æ‰¹é‡æ‰“å°
  */
 object StreamingAnalyticsApp {
 
@@ -123,7 +123,7 @@ object StreamingAnalyticsApp {
     val stream = ssc.socketTextStream("localhost", 9999)
 
     // create stream of events from raw text elements
-    //´ÓÔ­Ê¼ÎÄ±¾ÔªËØ´´½¨ÊÂ¼şÁ÷
+    //ä»åŸå§‹æ–‡æœ¬å…ƒç´ åˆ›å»ºäº‹ä»¶æµ
     val events = stream.map { record =>
       val event = record.split(",")
       (event(0), event(1), event(2))
@@ -133,27 +133,27 @@ object StreamingAnalyticsApp {
       We compute and print out stats for each batch.
       Since each batch is an RDD, we call forEeachRDD on the DStream, and apply the usual RDD functions
       we used in Chapter 1.
-      foreachRDDÀ´°ÑDstreamÖĞµÄÊı¾İ·¢ËÍµ½Íâ²¿µÄÎÄ¼şÏµÍ³ÖĞ,Íâ²¿ÎÄ¼şÏµÍ³Ö÷ÒªÊÇÊı¾İ¿â
+      foreachRDDæ¥æŠŠDstreamä¸­çš„æ•°æ®å‘é€åˆ°å¤–éƒ¨çš„æ–‡ä»¶ç³»ç»Ÿä¸­,å¤–éƒ¨æ–‡ä»¶ç³»ç»Ÿä¸»è¦æ˜¯æ•°æ®åº“
      */
     events.foreachRDD { (rdd, time) =>
-      val numPurchases = rdd.count()//×ÜÊı
+      val numPurchases = rdd.count()//æ€»æ•°
       val uniqueUsers = rdd.map { case (user, _, _) => user }.distinct().count()
-      val totalRevenue = rdd.map { case (_, _, price) => price.toDouble }.sum()//ºÏ¼Æ
+      val totalRevenue = rdd.map { case (_, _, price) => price.toDouble }.sum()//åˆè®¡
       val productsByPopularity = rdd
-        .map { case (user, product, price) => (product, 1) }//²úÆ·ºÏ¼Æ
+        .map { case (user, product, price) => (product, 1) }//äº§å“åˆè®¡
         .reduceByKey(_ + _)
         .collect()
-        .sortBy(-_._2)//µ¹Ğò
+        .sortBy(-_._2)//å€’åº
       val mostPopular = productsByPopularity(0)
 
       val formatter = new SimpleDateFormat
-      //ÅúÁ¿ÊÕµ½Êı¾İÊ±¼ä
+      //æ‰¹é‡æ”¶åˆ°æ•°æ®æ—¶é—´
       val dateStr = formatter.format(new Date(time.milliseconds))
       println(s"== Batch start time: $dateStr ==")
-      println("Total purchases: " + numPurchases)//¹ºÂò×ÜÊı
-      println("Unique users: " + uniqueUsers)//¹ºÂòÓÃ»§Êı
-      println("Total revenue: " + totalRevenue)//ÊÕÈë
-      //¹ºÂò¶àÓÃ»§ºÍ²úÆ·
+      println("Total purchases: " + numPurchases)//è´­ä¹°æ€»æ•°
+      println("Unique users: " + uniqueUsers)//è´­ä¹°ç”¨æˆ·æ•°
+      println("Total revenue: " + totalRevenue)//æ”¶å…¥
+      //è´­ä¹°å¤šç”¨æˆ·å’Œäº§å“
       println("Most popular product: %s with %d purchases".format(mostPopular._1, mostPopular._2))
     }
 
@@ -168,14 +168,14 @@ object StreamingAnalyticsApp {
 object StreamingStateApp {
   import org.apache.spark.streaming.StreamingContext._
   /**
-   * ×´Ì¬¸üĞÂ 
+   * çŠ¶æ€æ›´æ–° 
    */
   def updateState(prices: Seq[(String, Double)], currentTotal: Option[(Int, Double)]) = {
-    //Í¨¹ıSparkÄÚ²¿µÄreduceByKey°´key¹æÔ¼£¬È»ºóÕâÀï´«ÈëÄ³keyµ±Ç°Åú´ÎµÄSeq/List,ÔÙ¼ÆËãµ±Ç°Åú´ÎµÄ×ÜºÍ
+    //é€šè¿‡Sparkå†…éƒ¨çš„reduceByKeyæŒ‰keyè§„çº¦ï¼Œç„¶åè¿™é‡Œä¼ å…¥æŸkeyå½“å‰æ‰¹æ¬¡çš„Seq/List,å†è®¡ç®—å½“å‰æ‰¹æ¬¡çš„æ€»å’Œ
     val currentRevenue = prices.map(_._2).sum
  
     val currentNumberPurchases = prices.size
-    //ÒÑÀÛ¼ÓµÄÖµ
+    //å·²ç´¯åŠ çš„å€¼
     val state = currentTotal.getOrElse((0, 0.0))
     Some((currentNumberPurchases + state._1, currentRevenue + state._2))
   }
@@ -184,19 +184,19 @@ object StreamingStateApp {
 
     val ssc = new StreamingContext("local[2]", "First Streaming App", Seconds(10))
     // for stateful operations, we need to set a checkpoint location
-    //Ê¹ÓÃupdateStateByKeyÇ°ĞèÒªÉèÖÃcheckpoint
+    //ä½¿ç”¨updateStateByKeyå‰éœ€è¦è®¾ç½®checkpoint
     ssc.checkpoint("/tmp/sparkstreaming/")
     val stream = ssc.socketTextStream("localhost", 9999)
 
     // create stream of events from raw text elements
-    //´ÓÔ­Ê¼ÎÄ±¾ÔªËØ´´½¨ÊÂ¼şÁ÷
+    //ä»åŸå§‹æ–‡æœ¬å…ƒç´ åˆ›å»ºäº‹ä»¶æµ
     val events = stream.map { record =>
       val event = record.split(",")
       (event(0), event(1), event(2).toDouble)
     }
 
     val users = events.map{ case (user, product, price) => (user, (product, price)) }
-    //updateStateByKeyÔÚÓĞĞÂµÄÊı¾İĞÅÏ¢½øÈë»ò¸üĞÂÊ±£¬¿ÉÒÔÈÃÓÃ»§±£³ÖÏëÒªµÄÈÎºÎ×´
+    //updateStateByKeyåœ¨æœ‰æ–°çš„æ•°æ®ä¿¡æ¯è¿›å…¥æˆ–æ›´æ–°æ—¶ï¼Œå¯ä»¥è®©ç”¨æˆ·ä¿æŒæƒ³è¦çš„ä»»ä½•çŠ¶
     val revenuePerUser = users.updateStateByKey(updateState)
     revenuePerUser.print()
 

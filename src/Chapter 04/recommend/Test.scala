@@ -7,28 +7,28 @@ import org.apache.spark.rdd.RDD
 object ItemCF {
   def main(args: Array[String]) {
 
-    //0 ¹¹½¨Spark¶ÔÏó
+    //0 æž„å»ºSparkå¯¹è±¡
     val conf = new SparkConf().setAppName("ItemCF")
     val sc = new SparkContext(conf)
     Logger.getRootLogger.setLevel(Level.WARN)
 
-    //1 ¶ÁÈ¡Ñù±¾Êý¾Ý
+    //1 è¯»å–æ ·æœ¬æ•°æ®
     val data_path = "ml-100k/sample_itemcf2.txt"
     val data = sc.textFile(data_path)
     val userdata = data.map(_.split(",")).map(f => (ItemPref(f(0), f(1), f(2).toDouble))).cache()
 
-    //2 ½¨Á¢Ä£ÐÍ
+    //2 å»ºç«‹æ¨¡åž‹
     val mysimil = new ItemSimilarity()
     val simil_rdd1 = mysimil.Similarity(userdata, "cooccurrence")
     val recommd = new RecommendedItem
     val recommd_rdd1 = recommd.Recommend(simil_rdd1, userdata, 30)
 
-    //3 ´òÓ¡½á¹û
-    println(s"ÎïÆ·ÏàËÆ¶È¾ØÕó: ${simil_rdd1.count()}")
+    //3 æ‰“å°ç»“æžœ
+    println(s"ç‰©å“ç›¸ä¼¼åº¦çŸ©é˜µ: ${simil_rdd1.count()}")
     simil_rdd1.collect().foreach { ItemSimi =>
       println(ItemSimi.itemid1 + ", " + ItemSimi.itemid2 + ", " + ItemSimi.similar)
     }
-    println(s"ÓÃ‘ôÍÆ¼öÁÐ±í: ${recommd_rdd1.count()}")
+    println(s"ç”¨æˆ¶æŽ¨èåˆ—è¡¨: ${recommd_rdd1.count()}")
     recommd_rdd1.collect().foreach { UserRecomm =>
       println(UserRecomm.userid + ", " + UserRecomm.itemid + ", " + UserRecomm.pref)
     }    

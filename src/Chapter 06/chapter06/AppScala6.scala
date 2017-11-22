@@ -15,25 +15,25 @@ import org.apache.spark.mllib.tree.impurity.Entropy
 import org.apache.spark.mllib.tree.impurity.Impurity
 import org.apache.spark.rdd.RDD
 /**
- * ¹¹½¨»Ø¹éÄ£ĞÍ----Á¬ĞøĞÍµÄÊı¾İ
+ * æ„å»ºå›å½’æ¨¡å‹----è¿ç»­å‹çš„æ•°æ®
  */
 object AppScala6 {
 
   def main(args: Array[String]) {
     val sparkConf = new SparkConf().setMaster("local[2]").setAppName("SparkHdfsLR")
     val sc = new SparkContext(sparkConf)
-    /**Ã¿¸öĞ¡Ê±×ÔĞĞ³µ³ö×â´ÎÊı****/
+    /**æ¯ä¸ªå°æ—¶è‡ªè¡Œè½¦å‡ºç§Ÿæ¬¡æ•°****/
     val rawData = sc.textFile("BikeSharingDataset/hour_noheader.csv")
     val records = rawData.map(line => line.split(","))
     records.count
     //res1: Long = 17379
     records.first()
     //res0: Array[String] = Array(1, 2011-1-1, 1, 0, 1, 0, 0, 6, 0, 1, 0.24, 0.2879, 0.81, 0, 3, 13, 16)
-    //½«²ÎÊıidxÁĞÖµÈ¥ÖØ,È»ºó¶ÔÃ¿¸öÖµÊ¹ÓÃzipWithIndexº¯ÊıÓ³Éäµ½Ò»¸öÎ¨Ò»µÄË÷Òı,ÕâÑù×é³ÉÁËÒ»¸öRDDµÄ¼üÖµÓ³Éä,¼üÊÇ±äÁ¿,ÖµÊÇË÷Òı
-    //ËÄ¼¾½ÚĞÅÏ¢(´º,ÏÄ,Çï,¶¬)
+    //å°†å‚æ•°idxåˆ—å€¼å»é‡,ç„¶åå¯¹æ¯ä¸ªå€¼ä½¿ç”¨zipWithIndexå‡½æ•°æ˜ å°„åˆ°ä¸€ä¸ªå”¯ä¸€çš„ç´¢å¼•,è¿™æ ·ç»„æˆäº†ä¸€ä¸ªRDDçš„é”®å€¼æ˜ å°„,é”®æ˜¯å˜é‡,å€¼æ˜¯ç´¢å¼•
+    //å››å­£èŠ‚ä¿¡æ¯(æ˜¥,å¤,ç§‹,å†¬)
     records.map(fields => fields(2)).distinct().zipWithIndex().collectAsMap()
     //res9: scala.collection.Map[String,Long] = Map(2 -> 1, 1 -> 3, 4 -> 0, 3 -> 2)
-    //½«²ÎÊıidxÁĞÖµÈ¥ÖØ,È»ºó¶ÔÃ¿¸öÖµÊ¹ÓÃzipWithIndexº¯ÊıÓ³Éäµ½Ò»¸öÎ¨Ò»µÄË÷Òı,ÕâÑù×é³ÉÁËÒ»¸öRDDµÄ¼üÖµÓ³Éä,¼üÊÇ±äÁ¿,ÖµÊÇË÷Òı
+    //å°†å‚æ•°idxåˆ—å€¼å»é‡,ç„¶åå¯¹æ¯ä¸ªå€¼ä½¿ç”¨zipWithIndexå‡½æ•°æ˜ å°„åˆ°ä¸€ä¸ªå”¯ä¸€çš„ç´¢å¼•,è¿™æ ·ç»„æˆäº†ä¸€ä¸ªRDDçš„é”®å€¼æ˜ å°„,é”®æ˜¯å˜é‡,å€¼æ˜¯ç´¢å¼•
     def get_mapping(rdd: RDD[Array[String]], idx: Int): scala.collection.Map[String, Long] = {
       rdd.map(fields => fields(idx)).distinct().zipWithIndex().collectAsMap()
     }
@@ -43,14 +43,14 @@ object AppScala6 {
     }
 
 
-    /***´ÓÊı¾İÖĞ³éÈ¡ºÏÊÊµÄÌØÕ÷**/
+    /***ä»æ•°æ®ä¸­æŠ½å–åˆé€‚çš„ç‰¹å¾**/
     // val records = rawData.map(line => line.split("\t"))
-    //¿ªÊ¼ËÄÁĞ·Ö±ğ°üº¬URL£¬Ò³ÃæµÄID£¬Ô­Ê¼µÄÎÄ±¾ÄÚÈİºÍ·ÖÅä¸øÒ³ÃæµÄÀà±ğ
+    //å¼€å§‹å››åˆ—åˆ†åˆ«åŒ…å«URLï¼Œé¡µé¢çš„IDï¼ŒåŸå§‹çš„æ–‡æœ¬å†…å®¹å’Œåˆ†é…ç»™é¡µé¢çš„ç±»åˆ«
     // records.first
     //Array[String] = Array("http://www.bloomberg.com/news/2010-12-23/ibm-predicts-holographic-calls-air-breathing-batteries-by-2015.html", "4042", ...
-    //ÓÉÓÚÊı¾İ¸ñÊ½µÄÎÊÌâ£¬ÎÒÃÇ×öÒ»Ğ©Êı¾İÇåÀíµÄ¹¤×÷£º°Ñ¶îÍâµÄ(¡°)È¥µô£¬¡£   
+    //ç”±äºæ•°æ®æ ¼å¼çš„é—®é¢˜ï¼Œæˆ‘ä»¬åšä¸€äº›æ•°æ®æ¸…ç†çš„å·¥ä½œï¼šæŠŠé¢å¤–çš„(â€œ)å»æ‰ï¼Œã€‚   
     val data = records.map { r =>
-      //°Ñ¶îÍâµÄ(¡°)È¥µô
+      //æŠŠé¢å¤–çš„(â€œ)å»æ‰
       val trimmed = r.map(_.replaceAll("\"", ""))
       /*  val trimmed = r.map { x =>
         //println("befor:" + x)
@@ -60,22 +60,22 @@ object AppScala6 {
       }*/
 
       //println("r:" + r.toList + "\t size:" + r.size)
-      //rÊÇArray[String] = Array("http://www.bloomberg.com/news/2010-12-23/ibm-predicts-holographic-calls-air-breathing-batteries-by-2015.html", "4042", ...
-      //Êı¾İÒ»ÌõÊı¾İÎª0¿ªÊ¼      
-      //println(r.size - 1 + ":\tµÚÒ»Ìõ:" + r(0) + ":\t×îºóÒ»¸öÊı¾İsize:" + r(r.size - 1))
+      //ræ˜¯Array[String] = Array("http://www.bloomberg.com/news/2010-12-23/ibm-predicts-holographic-calls-air-breathing-batteries-by-2015.html", "4042", ...
+      //æ•°æ®ä¸€æ¡æ•°æ®ä¸º0å¼€å§‹      
+      //println(r.size - 1 + ":\tç¬¬ä¸€æ¡:" + r(0) + ":\tæœ€åä¸€ä¸ªæ•°æ®size:" + r(r.size - 1))
       /* r.foreach {
         var i = 0
         x =>
           println(i + ">>>" + x)
           i += 1
       }*/
-      //r.size - 1°ÑËùÓĞÁĞ"\"",Ìæ»»³É ""    
-      //È¡³ö×îºóÒ»ÁĞÖµ×ª»»³ÉtoInt,Ò»°ã0ºÍ1
+      //r.size - 1æŠŠæ‰€æœ‰åˆ—"\"",æ›¿æ¢æˆ ""    
+      //å–å‡ºæœ€åä¸€åˆ—å€¼è½¬æ¢æˆtoInt,ä¸€èˆ¬0å’Œ1
       val label = trimmed(r.size - 1).toInt
-      println("(×îºóÒ»ÁĞÖµ)label:" + label)
-      //´´½¨Ò»¸öµü´úÆ÷·µ»ØÓÉÕâ¸öµü´úÆ÷Ëù²úÉúµÄÖµÇø¼ä,È¡×Ó¼¯set(1,4ÎªÔªËØÎ»ÖÃ, ´Ó0¿ªÊ¼),´ÓÎ»ÖÃ4¿ªÊ¼,µ½Êı×éµÄ³¤¶È     
-      //sliceÌáÈ¡µÚ5ÁĞ¿ªÊ¼µ½25ÁĞµÄÌØÕ÷¾ØÕó
-      //Êı¾İ¼¯ÖĞÈ±Ê§Êı¾İÎª?,Ö±½ÓÓÃ0Ìæ»»È±Ê§Êı¾İ
+      println("(æœ€åä¸€åˆ—å€¼)label:" + label)
+      //åˆ›å»ºä¸€ä¸ªè¿­ä»£å™¨è¿”å›ç”±è¿™ä¸ªè¿­ä»£å™¨æ‰€äº§ç”Ÿçš„å€¼åŒºé—´,å–å­é›†set(1,4ä¸ºå…ƒç´ ä½ç½®, ä»0å¼€å§‹),ä»ä½ç½®4å¼€å§‹,åˆ°æ•°ç»„çš„é•¿åº¦     
+      //sliceæå–ç¬¬5åˆ—å¼€å§‹åˆ°25åˆ—çš„ç‰¹å¾çŸ©é˜µ
+      //æ•°æ®é›†ä¸­ç¼ºå¤±æ•°æ®ä¸º?,ç›´æ¥ç”¨0æ›¿æ¢ç¼ºå¤±æ•°æ®
       val features = trimmed.slice(4, r.size - 1).map {
         d =>
           //println("" + d)
@@ -86,7 +86,7 @@ object AppScala6 {
             d.toDouble
           }
       }
-      //½«±êÇ©ºÍÌØÕ÷ÏòÁ¿×ª»»ÎªLabeledPointÎªÊµÀı,½«ÌØÕ÷ÏòÁ¿´æ´¢µ½MLibµÄVectorsÖĞ,labelÒ»°ãÊÇ0ºÍ1
+      //å°†æ ‡ç­¾å’Œç‰¹å¾å‘é‡è½¬æ¢ä¸ºLabeledPointä¸ºå®ä¾‹,å°†ç‰¹å¾å‘é‡å­˜å‚¨åˆ°MLibçš„Vectorsä¸­,labelä¸€èˆ¬æ˜¯0å’Œ1
       LabeledPoint(label, Vectors.dense(features))
     }
     data.cache
@@ -94,124 +94,124 @@ object AppScala6 {
     val numData = data.count
     // train a Logistic Regression model    
     // note that some of our data contains negative feature vaues. For naive Bayes we convert these to zeros
-    //´´½¨ÆÓËØ±´Ò¶Ë¹Ä£ĞÍ,ÒªÇóÌØÕ÷Öµ·Ç¸º,·ñÔòÅöµ½¸ºµÄÌØÕ÷Öµ³ÌĞò»áÅ×³ö´íÎó
+    //åˆ›å»ºæœ´ç´ è´å¶æ–¯æ¨¡å‹,è¦æ±‚ç‰¹å¾å€¼éè´Ÿ,å¦åˆ™ç¢°åˆ°è´Ÿçš„ç‰¹å¾å€¼ç¨‹åºä¼šæŠ›å‡ºé”™è¯¯
     val nbData = records.map { r =>
       val trimmed = r.map(_.replaceAll("\"", ""))
       val label = trimmed(r.size - 1).toInt
-      //Èç¹û×îºóÒ»ÁĞĞ¡ÓÚ0,ÔòÎª0
+      //å¦‚æœæœ€åä¸€åˆ—å°äº0,åˆ™ä¸º0
       val features = trimmed.slice(4, r.size - 1).map(d => if (d == "?") 0.0 else d.toDouble).map(d => if (d < 0) 0.0 else d)
       LabeledPoint(label, Vectors.dense(features))
     }
 
-    /***´´½¨ÑµÁ··ÖÀàÄ£ĞÍ**/
-    //ÉèÖÃÂß¼­»Ø¹éºÍSVMµü´ú´ÎÊı
+    /***åˆ›å»ºè®­ç»ƒåˆ†ç±»æ¨¡å‹**/
+    //è®¾ç½®é€»è¾‘å›å½’å’ŒSVMè¿­ä»£æ¬¡æ•°
     val numIterations = 10
-    //¾ö²ßÊ÷×î´óÉî¶È
+    //å†³ç­–æ ‘æœ€å¤§æ·±åº¦
     val maxTreeDepth = 5
-    //´´½¨Âß¼­»Ø¹éÄ£ĞÍ
+    //åˆ›å»ºé€»è¾‘å›å½’æ¨¡å‹
     val lrModel = LogisticRegressionWithSGD.train(data, numIterations)
-    //´´½¨ÑµÁ·SVMÄ£ĞÍ
+    //åˆ›å»ºè®­ç»ƒSVMæ¨¡å‹
     val svmModel = SVMWithSGD.train(data, numIterations)
-    //´´½¨ÆÓËØ±´Ò¶Ë¹Ä£ĞÍ,Ê¹ÓÃÃ»ÓĞ¸ºÌØÕ÷µÄÊı¾İ
+    //åˆ›å»ºæœ´ç´ è´å¶æ–¯æ¨¡å‹,ä½¿ç”¨æ²¡æœ‰è´Ÿç‰¹å¾çš„æ•°æ®
     // note we use nbData here for the NaiveBayes model training
     val nbModel = NaiveBayes.train(nbData)
-    //´´½¨¾ö²ßÊ÷
+    //åˆ›å»ºå†³ç­–æ ‘
     val dtModel = DecisionTree.train(data, Algo.Classification, Entropy, maxTreeDepth)
 
-    /***Ê¹ÓÃ·ÖÀàÄ£ĞÍÔ¤²â**/
+    /***ä½¿ç”¨åˆ†ç±»æ¨¡å‹é¢„æµ‹**/
     // make prediction on a single data point    
     val dataPoint = data.first
-    //Âß¼­Ä£ĞÍÔ¤²â
+    //é€»è¾‘æ¨¡å‹é¢„æµ‹
     // dataPoint: org.apache.spark.mllib.regression.LabeledPoint = LabeledPoint(0.0, [0.789131,2.055555556,0.676470588, ...
-    //ÑµÁ·Êı¾İÖĞµÚÒ»¸öÑù±¾,Ä£ĞÍÔ¤²âÖµÎª1,¼´³¤¾Ã
+    //è®­ç»ƒæ•°æ®ä¸­ç¬¬ä¸€ä¸ªæ ·æœ¬,æ¨¡å‹é¢„æµ‹å€¼ä¸º1,å³é•¿ä¹…
     val prediction = lrModel.predict(dataPoint.features)
-    //Ä£ĞÍÔ¤²â³ö´íÁË
+    //æ¨¡å‹é¢„æµ‹å‡ºé”™äº†
     // prediction: Double = 1.0
-    //¼ìÑéÒ»ÏÂÕâ¸öÑù±¾ÕæÕıµÄ±êÇ© 
+    //æ£€éªŒä¸€ä¸‹è¿™ä¸ªæ ·æœ¬çœŸæ­£çš„æ ‡ç­¾ 
     val trueLabel = dataPoint.label
     // trueLabel: Double = 0.0
-    //½«RDD[Vector]ÕûÌå×÷ÎªÊäÈë×öÔ¤²â
+    //å°†RDD[Vector]æ•´ä½“ä½œä¸ºè¾“å…¥åšé¢„æµ‹
     val predictions = lrModel.predict(data.map(lp => lp.features))
     predictions.take(5)
     // res1: Array[Double] = Array(1.0, 1.0, 1.0, 1.0, 1.0)
-    //SVMÄ£ĞÍ
+    //SVMæ¨¡å‹
     val predictionsSvmModel = svmModel.predict(data.map(lp => lp.features))
     predictionsSvmModel.take(5)
-    //NaiveBayesÄ£ĞÍÆÓËØ±´Ò¶Ë¹
+    //NaiveBayesæ¨¡å‹æœ´ç´ è´å¶æ–¯
     val predictionsNbModel = nbModel.predict(data.map(lp => lp.features))
     predictionsNbModel.take(5)
-    ///´´½¨¾ö²ßÊ÷
+    ///åˆ›å»ºå†³ç­–æ ‘
     val predictionsDtModel = dtModel.predict(data.map(lp => lp.features))
     predictionsDtModel.take(5)
 
-    /***ÆÀ¹À·ÖÀàÄ£ĞÍµÄĞÔÄÜ**/
+    /***è¯„ä¼°åˆ†ç±»æ¨¡å‹çš„æ€§èƒ½**/
     /**
-     * ¶ş·ÖÀàÖĞÊ¹ÓÃµÄÆÀ¹À·½·¨°üÀ¨
-     * 1)Ô¤²âÕıÈ·ÂÊºÍ´íÎóÂÊ
-     * 2)×¼È·ÂÊºÍÕÙ»ØÂÊ
-     * 3)×¼È·ÂÊÒ»ÕÙ»ØÂÊÇúÏßÏÂ·½µÄÃæ»ıROCÇúÏß
-     * 4)×¼È·ÂÊºÍÕÙ»ØÂÊ
+     * äºŒåˆ†ç±»ä¸­ä½¿ç”¨çš„è¯„ä¼°æ–¹æ³•åŒ…æ‹¬
+     * 1)é¢„æµ‹æ­£ç¡®ç‡å’Œé”™è¯¯ç‡
+     * 2)å‡†ç¡®ç‡å’Œå¬å›ç‡
+     * 3)å‡†ç¡®ç‡ä¸€å¬å›ç‡æ›²çº¿ä¸‹æ–¹çš„é¢ç§¯ROCæ›²çº¿
+     * 4)å‡†ç¡®ç‡å’Œå¬å›ç‡
      *
      */
-    //Ô¤²âµÄÕıÈ·ÂÊºÍ´íÎóÂÊ
-    //ÕıÈ·ÂÊ=ÑµÁ·Ñù±¾ÖĞ±»ÕıÈ··ÖÀàµÄÊıÄ¿/×ÜÑù±¾Êı
-    //´íÎóÂÊ=ÑµÁ·Ñù±¾ÖĞ±»´íÎó·ÖÀàµÄÑù±¾ÊıÄ¿/×ÜÑù±¾Êı
+    //é¢„æµ‹çš„æ­£ç¡®ç‡å’Œé”™è¯¯ç‡
+    //æ­£ç¡®ç‡=è®­ç»ƒæ ·æœ¬ä¸­è¢«æ­£ç¡®åˆ†ç±»çš„æ•°ç›®/æ€»æ ·æœ¬æ•°
+    //é”™è¯¯ç‡=è®­ç»ƒæ ·æœ¬ä¸­è¢«é”™è¯¯åˆ†ç±»çš„æ ·æœ¬æ•°ç›®/æ€»æ ·æœ¬æ•°
 
-    //Âß¼­»Ø¹éÄ£ĞÍ¶ÔÊäÈëÌØÕ÷Ô¤²âÖµÓëÊµ¼Ê±êÇ©½øĞĞ±È½ÏÇóºÍ
+    //é€»è¾‘å›å½’æ¨¡å‹å¯¹è¾“å…¥ç‰¹å¾é¢„æµ‹å€¼ä¸å®é™…æ ‡ç­¾è¿›è¡Œæ¯”è¾ƒæ±‚å’Œ
     val lrTotalCorrect = data.map { point =>
-      //point.labelÊµ¼Ê±êÇ©½øĞĞ±È½Ï
+      //point.labelå®é™…æ ‡ç­¾è¿›è¡Œæ¯”è¾ƒ
       if (lrModel.predict(point.features) == point.label) 1 else 0
     }.sum
     // lrTotalCorrect: Double = 3806.0
-    /**ÕıÈ·ÂÊ ½«¶ÔÕıÈ··ÖÀàµÄÑù±¾ÊıÄ¿ÇóºÍ²¢³ıÒÔÑù±¾×ÜÊı,Âß¼­»Ø¹éÄ£ĞÍµÃµ½ÕıÈ·ÂÊ51.5%**/
+    /**æ­£ç¡®ç‡ å°†å¯¹æ­£ç¡®åˆ†ç±»çš„æ ·æœ¬æ•°ç›®æ±‚å’Œå¹¶é™¤ä»¥æ ·æœ¬æ€»æ•°,é€»è¾‘å›å½’æ¨¡å‹å¾—åˆ°æ­£ç¡®ç‡51.5%**/
     val lrAccuracy = lrTotalCorrect / numData
     // lrAccuracy: Double = 0.5146720757268425       
 
-    //SVMÄ£ĞÍ¶ÔÊäÈëÌØÕ÷Ô¤²âÖµÓëÊµ¼Ê±êÇ©½øĞĞ±È½ÏÇóºÍ
+    //SVMæ¨¡å‹å¯¹è¾“å…¥ç‰¹å¾é¢„æµ‹å€¼ä¸å®é™…æ ‡ç­¾è¿›è¡Œæ¯”è¾ƒæ±‚å’Œ
     val svmTotalCorrect = data.map { point =>
-      //point.labelÊµ¼Ê±êÇ©½øĞĞ±È½Ï
+      //point.labelå®é™…æ ‡ç­¾è¿›è¡Œæ¯”è¾ƒ
       if (svmModel.predict(point.features) == point.label) 1 else 0
     }.sum
-    //ÆÓËØ±´Ò¶Ë¹Ä£ĞÍ¶ÔÊäÈëÌØÕ÷Ô¤²âÖµÓëÊµ¼Ê±êÇ©½øĞĞ±È½ÏÇóºÍ
+    //æœ´ç´ è´å¶æ–¯æ¨¡å‹å¯¹è¾“å…¥ç‰¹å¾é¢„æµ‹å€¼ä¸å®é™…æ ‡ç­¾è¿›è¡Œæ¯”è¾ƒæ±‚å’Œ
     val nbTotalCorrect = nbData.map { point =>
       if (nbModel.predict(point.features) == point.label) 1 else 0
     }.sum
-    //¾ö²ßÊ÷Ä£ĞÍ¶ÔÊäÈëÌØÕ÷Ô¤²âÖµÓëÊµ¼Ê±êÇ©½øĞĞ±È½ÏÇóºÍ
+    //å†³ç­–æ ‘æ¨¡å‹å¯¹è¾“å…¥ç‰¹å¾é¢„æµ‹å€¼ä¸å®é™…æ ‡ç­¾è¿›è¡Œæ¯”è¾ƒæ±‚å’Œ
     // decision tree threshold needs to be specified
     val dtTotalCorrect = data.map { point =>
       val score = dtModel.predict(point.features)
-      //¾ö²ßÊ÷µÄÔ¤²âãĞÖµĞèÒªÃ÷È·¸ø³ö 0.5
+      //å†³ç­–æ ‘çš„é¢„æµ‹é˜ˆå€¼éœ€è¦æ˜ç¡®ç»™å‡º 0.5
       val predicted = if (score > 0.5) 1 else 0
       if (predicted == point.label) 1 else 0
     }.sum
-    //Ô¤²âSVMÄ£ĞÍÕıÈ·ÂÊ,Âß¼­»Ø¹éÄ£ĞÍµÃµ½ÕıÈ·ÂÊ51.4%/
+    //é¢„æµ‹SVMæ¨¡å‹æ­£ç¡®ç‡,é€»è¾‘å›å½’æ¨¡å‹å¾—åˆ°æ­£ç¡®ç‡51.4%/
     val svmAccuracy = svmTotalCorrect / numData
     //svmAccuracy: Double = 0.5146720757268425
-    //Ô¤²âÆÓËØ±´Ò¶Ë¹Ä£ĞÍÕıÈ·ÂÊ58%
+    //é¢„æµ‹æœ´ç´ è´å¶æ–¯æ¨¡å‹æ­£ç¡®ç‡58%
     val nbAccuracy = nbTotalCorrect / numData
     // nbAccuracy: Double = 0.5803921568627451
-    //¾ö²ßÊ÷Ë¹Ä£ĞÍÕıÈ·ÂÊ 65%
+    //å†³ç­–æ ‘æ–¯æ¨¡å‹æ­£ç¡®ç‡ 65%
     val dtAccuracy = dtTotalCorrect / numData
     // dtAccuracy: Double = 0.6482758620689655
-    /***½áÂÛ SVMºÍÆÓËØ±´Ò¶Ë¹Ä£ĞÍĞÔÄÜ¶¼½Ï²î,¶ø¾ö²ßÊ÷Ä£ĞÍÕıÈ·ÂÊ65%,µ«»¹²»ÊÇºÜ¸ß***/
+    /***ç»“è®º SVMå’Œæœ´ç´ è´å¶æ–¯æ¨¡å‹æ€§èƒ½éƒ½è¾ƒå·®,è€Œå†³ç­–æ ‘æ¨¡å‹æ­£ç¡®ç‡65%,ä½†è¿˜ä¸æ˜¯å¾ˆé«˜***/
 
     /**
      * *
-     * ×¼È·ÂÊºÍÕÙ»ØÂÊ
-     * ×¼È·ÂÊÍ¨³£ÓÃÓÚÆÀ¼Û½á¹ûºÍÖÊÁ¿,ÕÙ»ØÂÊÓÃÀ´ÆÀ¼Û½á¹ûµÄÍêÕûĞÔ
-     * ¶ş·ÖÀà×¼È·ÂÊ=ÕæÑôĞÔµÄÊıÄ¿³ıÒÔÕæÑôĞÔºÍ¼ÙÑôĞÔµÄ×ÜÊı,
-     * ÕæÑôĞÔÊÇÖ¸±»ÕıÈ·Ô¤²âµÄÀà±ğÎª1µÄÑù±¾
-     * ¼ÙÑôĞÔÊÇÖ¸±»´íÎóÔ¤²âµÄÀà±ğÎª1µÄÑù±¾
+     * å‡†ç¡®ç‡å’Œå¬å›ç‡
+     * å‡†ç¡®ç‡é€šå¸¸ç”¨äºè¯„ä»·ç»“æœå’Œè´¨é‡,å¬å›ç‡ç”¨æ¥è¯„ä»·ç»“æœçš„å®Œæ•´æ€§
+     * äºŒåˆ†ç±»å‡†ç¡®ç‡=çœŸé˜³æ€§çš„æ•°ç›®é™¤ä»¥çœŸé˜³æ€§å’Œå‡é˜³æ€§çš„æ€»æ•°,
+     * çœŸé˜³æ€§æ˜¯æŒ‡è¢«æ­£ç¡®é¢„æµ‹çš„ç±»åˆ«ä¸º1çš„æ ·æœ¬
+     * å‡é˜³æ€§æ˜¯æŒ‡è¢«é”™è¯¯é¢„æµ‹çš„ç±»åˆ«ä¸º1çš„æ ·æœ¬
      * *
      */
-    //¼ÆËã¶ş·ÖÀàµÄPR(ÕÙ»ØÂÊ)ºÍROCÇúÏßÏÂµÄÃæ»ı
+    //è®¡ç®—äºŒåˆ†ç±»çš„PR(å¬å›ç‡)å’ŒROCæ›²çº¿ä¸‹çš„é¢ç§¯
     val metrics = Seq(lrModel, svmModel).map { model =>
       val scoreAndLabels = data.map { point =>
         (model.predict(point.features), point.label)
       }
       val metrics = new BinaryClassificationMetrics(scoreAndLabels)
-      //AUCÏÂµÄÃæ»ı±íÊ¾Æ½¾ù×¼È·ÂÊ,Æ½¾ù×¼È·ÂÊµÈÓÚÑµÁ·Ñù±¾ÖĞ±»ÕıÈ··ÖÀàµÄÊıÄ¿³ıÒÔÑù±¾×ÜÊı
-      //PR×¼È·ÂÊºÍÕÙ»ØÂÊ,areaUnderPRÎª1µÈ¼ÛÓÚÒ»¸öÍêÃÀÄ£ĞÍ,Æä×¼È·ÂÊºÍÕÙ»ØÂÊ´ïµ½100%
+      //AUCä¸‹çš„é¢ç§¯è¡¨ç¤ºå¹³å‡å‡†ç¡®ç‡,å¹³å‡å‡†ç¡®ç‡ç­‰äºè®­ç»ƒæ ·æœ¬ä¸­è¢«æ­£ç¡®åˆ†ç±»çš„æ•°ç›®é™¤ä»¥æ ·æœ¬æ€»æ•°
+      //PRå‡†ç¡®ç‡å’Œå¬å›ç‡,areaUnderPRä¸º1ç­‰ä»·äºä¸€ä¸ªå®Œç¾æ¨¡å‹,å…¶å‡†ç¡®ç‡å’Œå¬å›ç‡è¾¾åˆ°100%
       (model.getClass.getSimpleName, metrics.areaUnderPR, metrics.areaUnderROC)
     }
     // again, we need to use the special nbData for the naive Bayes metrics 
@@ -221,8 +221,8 @@ object AppScala6 {
         (if (score > 0.5) 1.0 else 0.0, point.label)
       }
       val metrics = new BinaryClassificationMetrics(scoreAndLabels)
-       //AUCÏÂµÄÃæ»ı±íÊ¾Æ½¾ù×¼È·ÂÊ,Æ½¾ù×¼È·ÂÊµÈÓÚÑµÁ·Ñù±¾ÖĞ±»ÕıÈ··ÖÀàµÄÊıÄ¿³ıÒÔÑù±¾×ÜÊı
-      //PR×¼È·ÂÊºÍÕÙ»ØÂÊ,areaUnderPRÎª1µÈ¼ÛÓÚÒ»¸öÍêÃÀÄ£ĞÍ,Æä×¼È·ÂÊºÍÕÙ»ØÂÊ´ïµ½100%
+       //AUCä¸‹çš„é¢ç§¯è¡¨ç¤ºå¹³å‡å‡†ç¡®ç‡,å¹³å‡å‡†ç¡®ç‡ç­‰äºè®­ç»ƒæ ·æœ¬ä¸­è¢«æ­£ç¡®åˆ†ç±»çš„æ•°ç›®é™¤ä»¥æ ·æœ¬æ€»æ•°
+      //PRå‡†ç¡®ç‡å’Œå¬å›ç‡,areaUnderPRä¸º1ç­‰ä»·äºä¸€ä¸ªå®Œç¾æ¨¡å‹,å…¶å‡†ç¡®ç‡å’Œå¬å›ç‡è¾¾åˆ°100%
       (model.getClass.getSimpleName, metrics.areaUnderPR, metrics.areaUnderROC)
     }
     // here we need to compute for decision tree separately since it does 
@@ -233,8 +233,8 @@ object AppScala6 {
         (if (score > 0.5) 1.0 else 0.0, point.label)
       }
       val metrics = new BinaryClassificationMetrics(scoreAndLabels)
-       //AUCÏÂµÄÃæ»ı±íÊ¾Æ½¾ù×¼È·ÂÊ,Æ½¾ù×¼È·ÂÊµÈÓÚÑµÁ·Ñù±¾ÖĞ±»ÕıÈ··ÖÀàµÄÊıÄ¿³ıÒÔÑù±¾×ÜÊı
-      //PR×¼È·ÂÊºÍÕÙ»ØÂÊ,areaUnderPRÎª1µÈ¼ÛÓÚÒ»¸öÍêÃÀÄ£ĞÍ,Æä×¼È·ÂÊºÍÕÙ»ØÂÊ´ïµ½100%
+       //AUCä¸‹çš„é¢ç§¯è¡¨ç¤ºå¹³å‡å‡†ç¡®ç‡,å¹³å‡å‡†ç¡®ç‡ç­‰äºè®­ç»ƒæ ·æœ¬ä¸­è¢«æ­£ç¡®åˆ†ç±»çš„æ•°ç›®é™¤ä»¥æ ·æœ¬æ€»æ•°
+      //PRå‡†ç¡®ç‡å’Œå¬å›ç‡,areaUnderPRä¸º1ç­‰ä»·äºä¸€ä¸ªå®Œç¾æ¨¡å‹,å…¶å‡†ç¡®ç‡å’Œå¬å›ç‡è¾¾åˆ°100%
       (model.getClass.getSimpleName, metrics.areaUnderPR, metrics.areaUnderROC)
     }
     val allMetrics = metrics ++ nbMetrics ++ dtMetrics
@@ -243,64 +243,64 @@ object AppScala6 {
         println(f"$m, Area under PR: ${pr * 100.0}%2.4f%%, Area under ROC: ${roc * 100.0}%2.4f%%")
     }
     /*
-          Æ½¾ù×¼È·ÂÊ,µÃµ½Ä£ĞÍµÄÆ½¾ùÂÊ¶¼²î²»¶à
+          å¹³å‡å‡†ç¡®ç‡,å¾—åˆ°æ¨¡å‹çš„å¹³å‡ç‡éƒ½å·®ä¸å¤š
     LogisticRegressionModel, Area under PR: 75.6759%, Area under ROC: 50.1418%
     SVMModel, Area under PR: 75.6759%, Area under ROC: 50.1418%
     NaiveBayesModel, Area under PR: 68.0851%, Area under ROC: 58.3559%
     DecisionTreeModel, Area under PR: 74.3081%, Area under ROC: 64.8837%
     */
 
-    /***ÌØÕ÷Êı¾İ±ê×¼»¯****/
+    /***ç‰¹å¾æ•°æ®æ ‡å‡†åŒ–****/
     import org.apache.spark.mllib.linalg.distributed.RowMatrix
-    /**½«ÌØÕ÷ÏòÁ¿ÓÃRowMatrixÀà±íÊ¾³ÉMLibÖĞµÄ·Ö²¼Ê½¾ØÕó,RowMatrixÊÇÒ»¸öÓÉÏòÁ¿×é³ÉµÄRDD,ÆäÖĞÃ¿¸öÏòÁ¿ÊÇ·Ö²¼¾ØÕóµÄÒ»ĞĞ**/
+    /**å°†ç‰¹å¾å‘é‡ç”¨RowMatrixç±»è¡¨ç¤ºæˆMLibä¸­çš„åˆ†å¸ƒå¼çŸ©é˜µ,RowMatrixæ˜¯ä¸€ä¸ªç”±å‘é‡ç»„æˆçš„RDD,å…¶ä¸­æ¯ä¸ªå‘é‡æ˜¯åˆ†å¸ƒçŸ©é˜µçš„ä¸€è¡Œ**/
     val vectors = data.map {
       lp =>
-        //Ã¿ÁĞµÄÌØÕ÷
+        //æ¯åˆ—çš„ç‰¹å¾
         println("lp.features:" + lp.features)
         lp.features
     }
     val matrix = new RowMatrix(vectors)
-    //¼ÆËã¾ØÕóÃ¿ÁĞµÄÍ³¼ÆÌØĞÔ 
+    //è®¡ç®—çŸ©é˜µæ¯åˆ—çš„ç»Ÿè®¡ç‰¹æ€§ 
     val matrixSummary = matrix.computeColumnSummaryStatistics()
-    //¾ØÕóÃ¿ÁĞµÄÆ½¾ùÖµ
+    //çŸ©é˜µæ¯åˆ—çš„å¹³å‡å€¼
     println(matrixSummary.mean)
     // [0.41225805299526636,2.761823191986623,0.46823047328614004, ...
-    //¾ØÕóÃ¿ÁĞµÄ×îĞ¡Öµ
+    //çŸ©é˜µæ¯åˆ—çš„æœ€å°å€¼
     println(matrixSummary.min)
     // [0.0,0.0,0.0,0.0,0.0,0.0,0.0,-1.0,0.0,0.0,0.0,0.045564223,-1.0, ...
-    //¾ØÕóÃ¿ÁĞµÄ×î´óÖµ
+    //çŸ©é˜µæ¯åˆ—çš„æœ€å¤§å€¼
     println(matrixSummary.max)
     // [0.999426,363.0,1.0,1.0,0.980392157,0.980392157,21.0,0.25,0.0,0.444444444, ...
-    //¾ØÕóÃ¿ÁĞµÄ·½²î,·¢ÏÖµÚÒ»¸ö·½²îºÍ¾ùÖµ¶¼±È½Ï¸ß,²»·ûºÏ±ê×¼µÄ¸ßË¹·Ö²¼
+    //çŸ©é˜µæ¯åˆ—çš„æ–¹å·®,å‘ç°ç¬¬ä¸€ä¸ªæ–¹å·®å’Œå‡å€¼éƒ½æ¯”è¾ƒé«˜,ä¸ç¬¦åˆæ ‡å‡†çš„é«˜æ–¯åˆ†å¸ƒ
     println(matrixSummary.variance)
     // [0.1097424416755897,74.30082476809638,0.04126316989120246, ...
-    //¾ØÕóÃ¿ÁĞÖĞµÄ·Ç0¼öµÄÊıÄ¿
+    //çŸ©é˜µæ¯åˆ—ä¸­çš„é0èçš„æ•°ç›®
     println(matrixSummary.numNonzeros)
-    //¶ÔÃ¿¸öÌØÕ÷½øĞĞ±ê×¼»¯,Ê¹µÃÃ¿¸öÌØÕ÷ÊÇ0¾ùÖµºÍµ¥Î»±ê×¼²î,¾ßÌå×ö·¨ÊÇ¶ÔÃ¿¸öÌØÕ÷Öµ¼õÈ¥ÁĞµÄ¾ùÖµ,È»ºó³ıÒÔÁĞµÄ±ê×¼²î
-    //½øĞĞËõ·Å
+    //å¯¹æ¯ä¸ªç‰¹å¾è¿›è¡Œæ ‡å‡†åŒ–,ä½¿å¾—æ¯ä¸ªç‰¹å¾æ˜¯0å‡å€¼å’Œå•ä½æ ‡å‡†å·®,å…·ä½“åšæ³•æ˜¯å¯¹æ¯ä¸ªç‰¹å¾å€¼å‡å»åˆ—çš„å‡å€¼,ç„¶åé™¤ä»¥åˆ—çš„æ ‡å‡†å·®
+    //è¿›è¡Œç¼©æ”¾
     import org.apache.spark.mllib.feature.StandardScaler
-    //µÚÒ»¸ö²ÎÊıÊÇ·ñ´ÓÊı¾İÖĞ¼õÈ¥¾ùÖµ,ÁíÒ»¸ö±íÊ¾ÊÇ·ñÓ¦ÓÃ±ê×¼²îËõ·Å,·µ»Ø¹éÒ»»¯µÄÏòÁ¿
+    //ç¬¬ä¸€ä¸ªå‚æ•°æ˜¯å¦ä»æ•°æ®ä¸­å‡å»å‡å€¼,å¦ä¸€ä¸ªè¡¨ç¤ºæ˜¯å¦åº”ç”¨æ ‡å‡†å·®ç¼©æ”¾,è¿”å›å½’ä¸€åŒ–çš„å‘é‡
     val scaler = new StandardScaler(withMean = true, withStd = true).fit(vectors)
-    //Ê¹ÓÃMap±£ÁôLabeledPointÊı¾İ¼¯µÄ±êÇ©,transformÊı¾İ±ê×¼»¯
+    //ä½¿ç”¨Mapä¿ç•™LabeledPointæ•°æ®é›†çš„æ ‡ç­¾,transformæ•°æ®æ ‡å‡†åŒ–
     val scaledData = data.map(lp => LabeledPoint(lp.label, scaler.transform(lp.features)))
     // compare the raw features with the scaled features
-    //±ê×¼»¯Ö®Ç°Êı¾İ
+    //æ ‡å‡†åŒ–ä¹‹å‰æ•°æ®
     println(data.first.features)
     // [0.789131,2.055555556,0.676470588,0.205882353,
-    //±ê×¼»¯Ö®ºóµÄÊı¾İ
+    //æ ‡å‡†åŒ–ä¹‹åçš„æ•°æ®
     println(scaledData.first.features)
     // [1.1376439023494747,-0.08193556218743517,1.025134766284205,-0.0558631837375738,
-    //¿ÉÒÔ¿´³öµÚÒ»¸öÌØÕ÷ÒÑ¾­Ó¦ÓÃ±ê×¼²î¹«Ê½±»×ª»»,ÑéÖ¤µÚÒ»¸öÌØÕ÷Öµ,µÚÒ»ÌØÕ÷Öµ¼õÈ¥¾ùÖµ,È»ºó³ıÒÔ±ê×¼²î(·½²îµÄÆ½·½¸ù)
+    //å¯ä»¥çœ‹å‡ºç¬¬ä¸€ä¸ªç‰¹å¾å·²ç»åº”ç”¨æ ‡å‡†å·®å…¬å¼è¢«è½¬æ¢,éªŒè¯ç¬¬ä¸€ä¸ªç‰¹å¾å€¼,ç¬¬ä¸€ç‰¹å¾å€¼å‡å»å‡å€¼,ç„¶åé™¤ä»¥æ ‡å‡†å·®(æ–¹å·®çš„å¹³æ–¹æ ¹)
     println((0.789131 - 0.41225805299526636) / math.sqrt(0.1097424416755897))
     // 1.137647336497682
-    /***±ê×¼»¯Êı¾İÖØĞÂÑµÁ·Ä£ĞÍ,ÕâÀïÖ»ÑµÁ·Âß¼­»Ø¹é(¾ö²ßÊ÷ºÍÆÓËØ±´Ò¶Ë¹²»ÊÜÌØÕ÷±ê×¼»°µÄÓ°Ïì),²¢ËµÃ÷ÌØÕ÷±ê×¼»¯µÄÓ°Ïì***/
-    //´´½¨Âß¼­»Ø¹éÄ£ĞÍ
+    /***æ ‡å‡†åŒ–æ•°æ®é‡æ–°è®­ç»ƒæ¨¡å‹,è¿™é‡Œåªè®­ç»ƒé€»è¾‘å›å½’(å†³ç­–æ ‘å’Œæœ´ç´ è´å¶æ–¯ä¸å—ç‰¹å¾æ ‡å‡†è¯çš„å½±å“),å¹¶è¯´æ˜ç‰¹å¾æ ‡å‡†åŒ–çš„å½±å“***/
+    //åˆ›å»ºé€»è¾‘å›å½’æ¨¡å‹
     val lrModelScaled = LogisticRegressionWithSGD.train(scaledData, numIterations)
-    //Âß¼­»Ø¹éÄ£ĞÍ¶ÔÊäÈëÌØÕ÷Ô¤²âÖµÓëÊµ¼Ê±êÇ©½øĞĞ±È½ÏÇóºÍ
+    //é€»è¾‘å›å½’æ¨¡å‹å¯¹è¾“å…¥ç‰¹å¾é¢„æµ‹å€¼ä¸å®é™…æ ‡ç­¾è¿›è¡Œæ¯”è¾ƒæ±‚å’Œ
     val lrTotalCorrectScaled = scaledData.map { point =>
       if (lrModelScaled.predict(point.features) == point.label) 1 else 0
     }.sum
-    /**ÕıÈ·ÂÊ ½«¶ÔÕıÈ··ÖÀàµÄÑù±¾ÊıÄ¿ÇóºÍ²¢³ıÒÔÑù±¾×ÜÊı,Âß¼­»Ø¹éÄ£ĞÍµÃµ½ÕıÈ·ÂÊ62%**/
+    /**æ­£ç¡®ç‡ å°†å¯¹æ­£ç¡®åˆ†ç±»çš„æ ·æœ¬æ•°ç›®æ±‚å’Œå¹¶é™¤ä»¥æ ·æœ¬æ€»æ•°,é€»è¾‘å›å½’æ¨¡å‹å¾—åˆ°æ­£ç¡®ç‡62%**/
     val lrAccuracyScaled = lrTotalCorrectScaled / numData
     // lrAccuracyScaled: Double = 0.6204192021636241
 
@@ -309,24 +309,24 @@ object AppScala6 {
       (lrModelScaled.predict(point.features), point.label)
     }
     val lrMetricsScaled = new BinaryClassificationMetrics(lrPredictionsVsTrue)
-    //PR×¼È·ÂÊºÍÕÙ»ØÂÊ,areaUnderPRÎª1µÈ¼ÛÓÚÒ»¸öÍêÃÀÄ£ĞÍ,Æä×¼È·ÂÊºÍÕÙ»ØÂÊ´ïµ½100%
+    //PRå‡†ç¡®ç‡å’Œå¬å›ç‡,areaUnderPRä¸º1ç­‰ä»·äºä¸€ä¸ªå®Œç¾æ¨¡å‹,å…¶å‡†ç¡®ç‡å’Œå¬å›ç‡è¾¾åˆ°100%
     val lrPr = lrMetricsScaled.areaUnderPR
-    //AUCÏÂµÄÃæ»ı±íÊ¾Æ½¾ù×¼È·ÂÊ,Æ½¾ù×¼È·ÂÊµÈÓÚÑµÁ·Ñù±¾ÖĞ±»ÕıÈ··ÖÀàµÄÊıÄ¿³ıÒÔÑù±¾×ÜÊı      
+    //AUCä¸‹çš„é¢ç§¯è¡¨ç¤ºå¹³å‡å‡†ç¡®ç‡,å¹³å‡å‡†ç¡®ç‡ç­‰äºè®­ç»ƒæ ·æœ¬ä¸­è¢«æ­£ç¡®åˆ†ç±»çš„æ•°ç›®é™¤ä»¥æ ·æœ¬æ€»æ•°      
     val lrRoc = lrMetricsScaled.areaUnderROC
-    println(f"${lrModelScaled.getClass.getSimpleName}\n ÕıÈ·ÂÊAccuracy: ${lrAccuracyScaled * 100}%2.4f%%\nArea under PR: ${lrPr * 100.0}%2.4f%%\nArea under ROC: ${lrRoc * 100.0}%2.4f%%")
+    println(f"${lrModelScaled.getClass.getSimpleName}\n æ­£ç¡®ç‡Accuracy: ${lrAccuracyScaled * 100}%2.4f%%\nArea under PR: ${lrPr * 100.0}%2.4f%%\nArea under ROC: ${lrRoc * 100.0}%2.4f%%")
 
     /*
-           ´Ó½á¹û¿ÉÒÔ¿´³ö,Í¨¹ı¼òµ¥µÄÌØÕ÷±ê×¼»¯,¾ÍÌá¸ßÁËÂß¼­»Ø¹éµÄ×¼È·ÂÊ,²¢½«AUC´ÓËæ»ú50%,ÌáÉıµ½62%
+           ä»ç»“æœå¯ä»¥çœ‹å‡º,é€šè¿‡ç®€å•çš„ç‰¹å¾æ ‡å‡†åŒ–,å°±æé«˜äº†é€»è¾‘å›å½’çš„å‡†ç¡®ç‡,å¹¶å°†AUCä»éšæœº50%,æå‡åˆ°62%
     LogisticRegressionModel
     Accuracy: 62.0419%
     Area under PR: 72.7254%
     Area under ROC: 61.9663%
     */
 
-    /**ÆäËûÊı¾İÌØÕ÷¶ÔÄ£ĞÍÓ°Ïì**/
+    /**å…¶ä»–æ•°æ®ç‰¹å¾å¯¹æ¨¡å‹å½±å“**/
 
     // Investigate the impact of adding in the 'category' feature
-    //Ã¿¸öÀà±ğ×öÒ»¸öÈ¥ÖØË÷ÒıÓ³Éä,ÕâÀïË÷Òı¿ÉÒÔÓÃÓÚÀà±ğÌØÕ÷×ö1-of-K±àÂë
+    //æ¯ä¸ªç±»åˆ«åšä¸€ä¸ªå»é‡ç´¢å¼•æ˜ å°„,è¿™é‡Œç´¢å¼•å¯ä»¥ç”¨äºç±»åˆ«ç‰¹å¾åš1-of-Kç¼–ç 
     val categories = records.map(r => r(3)).distinct.collect.zipWithIndex.toMap
     // categories: scala.collection.immutable.Map[String,Int] = Map("weather" -> 0, "sports" -> 6, 
     //	"unknown" -> 4, "computer_internet" -> 12, "?" -> 11, "culture_politics" -> 3, "religion" -> 8,
@@ -335,19 +335,19 @@ object AppScala6 {
 
     val numCategories = categories.size
     // numCategories: Int = 14
-    //ÎÒÃÇĞèÒª´´½¨Ò»¸ö³¤Îª14ÏòÁ¿À´±íÊ¾Àà±ğÌØÕ÷,È»ºó¸ù¾İÃ¿¸öÑù±¾ËùÊôÀà±ğË÷Òı,¶ÔÓ¦ÏàÓ¦µÄÎ¬¶È¸³ÖµÎª1,ÆäËûÎª0
+    //æˆ‘ä»¬éœ€è¦åˆ›å»ºä¸€ä¸ªé•¿ä¸º14å‘é‡æ¥è¡¨ç¤ºç±»åˆ«ç‰¹å¾,ç„¶åæ ¹æ®æ¯ä¸ªæ ·æœ¬æ‰€å±ç±»åˆ«ç´¢å¼•,å¯¹åº”ç›¸åº”çš„ç»´åº¦èµ‹å€¼ä¸º1,å…¶ä»–ä¸º0
     val dataCategories = records.map { r =>
-      //°Ñ¶îÍâµÄ(¡°)È¥µô
+      //æŠŠé¢å¤–çš„(â€œ)å»æ‰
       val trimmed = r.map(_.replaceAll("\"", ""))
-      //È¡³ö×îºóÒ»ÁĞÖµ×ª»»³ÉtoInt,Ò»°ã0ºÍ1
+      //å–å‡ºæœ€åä¸€åˆ—å€¼è½¬æ¢æˆtoInt,ä¸€èˆ¬0å’Œ1
       val label = trimmed(r.size - 1).toInt
-      //¸ù¾İÃ¿¸öÑù±¾ËùÊôÀà±ğË÷Òı,¶ÔÓ¦ÏàÓ¦µÄÎ¬¶È¸³ÖµÎª1,ÆäËûÎª0
+      //æ ¹æ®æ¯ä¸ªæ ·æœ¬æ‰€å±ç±»åˆ«ç´¢å¼•,å¯¹åº”ç›¸åº”çš„ç»´åº¦èµ‹å€¼ä¸º1,å…¶ä»–ä¸º0
       val categoryIdx = categories(r(3))
-      //ofDim´´½¨¼¸ĞĞ¼¸ÁĞ¶şÎ¬Êı×é
+      //ofDimåˆ›å»ºå‡ è¡Œå‡ åˆ—äºŒç»´æ•°ç»„
       val categoryFeatures = Array.ofDim[Double](numCategories)
       categoryFeatures(categoryIdx) = 1.0
-      //´´½¨Ò»¸öµü´úÆ÷·µ»ØÓÉÕâ¸öµü´úÆ÷Ëù²úÉúµÄÖµÇø¼ä,È¡×Ó¼¯set(1,4ÎªÔªËØÎ»ÖÃ, ´Ó0¿ªÊ¼),´ÓÎ»ÖÃ4¿ªÊ¼,µ½Êı×éµÄ³¤¶È     
-      //sliceÌáÈ¡µÚ5ÁĞ¿ªÊ¼µ½25ÁĞµÄÌØÕ÷¾ØÕó
+      //åˆ›å»ºä¸€ä¸ªè¿­ä»£å™¨è¿”å›ç”±è¿™ä¸ªè¿­ä»£å™¨æ‰€äº§ç”Ÿçš„å€¼åŒºé—´,å–å­é›†set(1,4ä¸ºå…ƒç´ ä½ç½®, ä»0å¼€å§‹),ä»ä½ç½®4å¼€å§‹,åˆ°æ•°ç»„çš„é•¿åº¦     
+      //sliceæå–ç¬¬5åˆ—å¼€å§‹åˆ°25åˆ—çš„ç‰¹å¾çŸ©é˜µ
       val otherFeatures = trimmed.slice(4, r.size - 1).map(d => if (d == "?") 0.0 else d.toDouble)
       val features = categoryFeatures ++ otherFeatures
       LabeledPoint(label, Vectors.dense(features))
@@ -356,7 +356,7 @@ object AppScala6 {
     // LabeledPoint(0.0, [0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.789131,2.055555556,
     //	0.676470588,0.205882353,0.047058824,0.023529412,0.443783175,0.0,0.0,0.09077381,0.0,0.245831182,
     // 0.003883495,1.0,1.0,24.0,0.0,5424.0,170.0,8.0,0.152941176,0.079129575])
-    // Ê¹ÓÃStandardScaler·½·¨½øĞĞ±ê×¼»¯×ª»»
+    // ä½¿ç”¨StandardScaleræ–¹æ³•è¿›è¡Œæ ‡å‡†åŒ–è½¬æ¢
     val scalerCats = new StandardScaler(withMean = true, withStd = true).fit(dataCategories.map(lp => lp.features))
     val scaledDataCats = dataCategories.map(lp => LabeledPoint(lp.label, scalerCats.transform(lp.features)))
     println(dataCategories.first.features)
@@ -373,13 +373,13 @@ object AppScala6 {
     -0.14162589530918376,0.7902364255801262,0.7171932152231301,-0.29799680188379124,-0.20346153667348232,
     -0.03296720969318916,-0.0487811294839849,0.9400696843533806,-0.10869789547344721,-0.2788172632659348]
     */
-    /***ÆÀ¹ÀĞÔÄÜ **/
+    /***è¯„ä¼°æ€§èƒ½ **/
     // train model on scaled data and evaluate metrics
     val lrModelScaledCats = LogisticRegressionWithSGD.train(scaledDataCats, numIterations)
     val lrTotalCorrectScaledCats = scaledDataCats.map { point =>
       if (lrModelScaledCats.predict(point.features) == point.label) 1 else 0
     }.sum
-    //×¼È·ÂÊ
+    //å‡†ç¡®ç‡
     val lrAccuracyScaledCats = lrTotalCorrectScaledCats / numData
     val lrPredictionsVsTrueCats = scaledDataCats.map { point =>
       (lrModelScaledCats.predict(point.features), point.label)
@@ -389,13 +389,13 @@ object AppScala6 {
     val lrRocCats = lrMetricsScaledCats.areaUnderROC
     println(f"${lrModelScaledCats.getClass.getSimpleName}\nAccuracy: ${lrAccuracyScaledCats * 100}%2.4f%%\nArea under PR: ${lrPrCats * 100.0}%2.4f%%\nArea under ROC: ${lrRocCats * 100.0}%2.4f%%")
     /*
-     * ×Ü½á¶ÔÊı¾İ±ê×¼»¯,Ä£ĞÍ×¼È·ÂÊµÃµ½ÌáÉı,½«50%ÌáÉıµ½62%,Ö®ºóÀà±ğÌØÕ÷,Ä£ĞÍĞÔÄÜ½øÒ»²½ÌáÉıµ½65%(ÆäÖĞĞÂÌí¼ÓµÄÌØÕ÷Ò²×öÁË±ê×¼»¯²Ù×÷)
+     * æ€»ç»“å¯¹æ•°æ®æ ‡å‡†åŒ–,æ¨¡å‹å‡†ç¡®ç‡å¾—åˆ°æå‡,å°†50%æå‡åˆ°62%,ä¹‹åç±»åˆ«ç‰¹å¾,æ¨¡å‹æ€§èƒ½è¿›ä¸€æ­¥æå‡åˆ°65%(å…¶ä¸­æ–°æ·»åŠ çš„ç‰¹å¾ä¹Ÿåšäº†æ ‡å‡†åŒ–æ“ä½œ)
     LogisticRegressionModel
     Accuracy: 66.5720%
     Area under PR: 75.7964%
     Area under ROC: 66.5483%
     */
-    /**ÖØĞÂÑµÁ·ÆÓËØ±´Ò¶Ë¹Ä£ĞÍ**/
+    /**é‡æ–°è®­ç»ƒæœ´ç´ è´å¶æ–¯æ¨¡å‹**/
     // train naive Bayes model with only categorical data
     val dataNB = records.map { r =>
       val trimmed = r.map(_.replaceAll("\"", ""))
@@ -406,7 +406,7 @@ object AppScala6 {
       LabeledPoint(label, Vectors.dense(categoryFeatures))
     }
     val nbModelCats = NaiveBayes.train(dataNB)
-    /**ÖØĞÂÑµÁ·ÆÓËØ±´Ò¶Ë¹Ä£ĞÍ¶ÔĞÔÄÜÆÀ¹À**/
+    /**é‡æ–°è®­ç»ƒæœ´ç´ è´å¶æ–¯æ¨¡å‹å¯¹æ€§èƒ½è¯„ä¼°**/
     val nbTotalCorrectCats = dataNB.map { point =>
       if (nbModelCats.predict(point.features) == point.label) 1 else 0
     }.sum
@@ -419,29 +419,29 @@ object AppScala6 {
     val nbRocCats = nbMetricsCats.areaUnderROC
     println(f"${nbModelCats.getClass.getSimpleName}\nAccuracy: ${nbAccuracyCats * 100}%2.4f%%\nArea under PR: ${nbPrCats * 100.0}%2.4f%%\nArea under ROC: ${nbRocCats * 100.0}%2.4f%%")
     /*
-     * Ê¹ÓÃ¸ñÊ½ÕıÈ·µÄÊäÈëÊı¾İºó,ÆÓËØ±´Ò¶Ë¹µÄĞÔÄÜ´Ó58%ÌáÉıµ½60% 
+     * ä½¿ç”¨æ ¼å¼æ­£ç¡®çš„è¾“å…¥æ•°æ®å,æœ´ç´ è´å¶æ–¯çš„æ€§èƒ½ä»58%æå‡åˆ°60% 
     NaiveBayesModel
     Accuracy: 60.9601%
     Area under PR: 74.0522%
     Area under ROC: 60.5138%
     */
-    /**Ä£ĞÍ²ÎÊıµ÷ÓÅ**/
+    /**æ¨¡å‹å‚æ•°è°ƒä¼˜**/
     import org.apache.spark.rdd.RDD
     import org.apache.spark.mllib.optimization.Updater
     import org.apache.spark.mllib.optimization.SimpleUpdater
     import org.apache.spark.mllib.optimization.L1Updater
     import org.apache.spark.mllib.optimization.SquaredL2Updater
     import org.apache.spark.mllib.classification.ClassificationModel
-    /**ÏßĞÔÄ£ĞÍ²ÎÊı**/
+    /**çº¿æ€§æ¨¡å‹å‚æ•°**/
     // helper function to train a logistic regresson model
-    //¸ø¶¨ÊäÈëÑµÁ·Ä£ĞÍ
+    //ç»™å®šè¾“å…¥è®­ç»ƒæ¨¡å‹
     def trainWithParams(input: RDD[LabeledPoint], regParam: Double, numIterations: Int, updater: Updater, stepSize: Double) = {
       val lr = new LogisticRegressionWithSGD
       lr.optimizer.setNumIterations(numIterations).setUpdater(updater).setRegParam(regParam).setStepSize(stepSize)
       lr.run(input)
     }
     // helper function to create AUC metric
-    //¶¨ÒåµÚ¶ş¸ö¸¨Öúº¯Êı²¢¸ù¾İÊäÈëÊı¾İºÍ·ÖÀàÄ£ĞÍ,¼ÆËãÏà¹ØµÄAUC
+    //å®šä¹‰ç¬¬äºŒä¸ªè¾…åŠ©å‡½æ•°å¹¶æ ¹æ®è¾“å…¥æ•°æ®å’Œåˆ†ç±»æ¨¡å‹,è®¡ç®—ç›¸å…³çš„AUC
     def createMetrics(label: String, data: RDD[LabeledPoint], model: ClassificationModel) = {
       val scoreAndLabels = data.map { point =>
         (model.predict(point.features), point.label)
@@ -449,24 +449,24 @@ object AppScala6 {
       val metrics = new BinaryClassificationMetrics(scoreAndLabels)
       (label, metrics.areaUnderROC)
     }
-    //»º´æ±ê×¼»¯Êı¾İ,¼Ó¿ì¶à´ÎÄ£ĞÍÑµÁ·µÄËÙ¶È
+    //ç¼“å­˜æ ‡å‡†åŒ–æ•°æ®,åŠ å¿«å¤šæ¬¡æ¨¡å‹è®­ç»ƒçš„é€Ÿåº¦
     // cache the data to increase speed of multiple runs agains the dataset
     scaledDataCats.cache
     // num iterations
-    /**µü´ú´ÎÊı,(ĞÔÄÜ²âÊÔ)**/
+    /**è¿­ä»£æ¬¡æ•°,(æ€§èƒ½æµ‹è¯•)**/
     val iterResults = Seq(1, 5, 10, 50).map { param =>
       val model = trainWithParams(scaledDataCats, 0.0, param, new SimpleUpdater, 1.0)
       createMetrics(s"$param iterations", scaledDataCats, model)
     }
     iterResults.foreach { case (param, auc) => println(f"$param, AUC = ${auc * 100}%2.2f%%") }
     /*
-     * Ò»µ©Íê³ÉÌØ¶¨´ÎÊıµÄµü´ú,ÔÙÔö´óµü´ú´ÎÊı¶Ô½á¹ûÓ°Ïì½ÏĞ¡
+     * ä¸€æ—¦å®Œæˆç‰¹å®šæ¬¡æ•°çš„è¿­ä»£,å†å¢å¤§è¿­ä»£æ¬¡æ•°å¯¹ç»“æœå½±å“è¾ƒå°
     1 iterations, AUC = 64.97%
     5 iterations, AUC = 66.62%
     10 iterations, AUC = 66.55%
     50 iterations, AUC = 66.81%
     */
-    /**²½³¤´ÎÊı,(ĞÔÄÜ²âÊÔ),²½³¤ÓÃÀ´¿ØÖÆËã·¨×î¶¸µÄÌİ¶È·½ÏòÉÏÓ¦¸ÃÇ°½ø¶àÔ¶**/
+    /**æ­¥é•¿æ¬¡æ•°,(æ€§èƒ½æµ‹è¯•),æ­¥é•¿ç”¨æ¥æ§åˆ¶ç®—æ³•æœ€é™¡çš„æ¢¯åº¦æ–¹å‘ä¸Šåº”è¯¥å‰è¿›å¤šè¿œ**/
     // step size
     val stepResults = Seq(0.001, 0.01, 0.1, 1.0, 10.0).map { param =>
       val model = trainWithParams(scaledDataCats, 0.0, numIterations, new SimpleUpdater, param)
@@ -474,21 +474,21 @@ object AppScala6 {
     }
     stepResults.foreach { case (param, auc) => println(f"$param, AUC = ${auc * 100}%2.2f%%") }
     /*
-     * ²½³¤Ôö³¤¹ı´ó¶ÔĞÔÄÜÓĞ¸ºÃæÓ°Ïì
+     * æ­¥é•¿å¢é•¿è¿‡å¤§å¯¹æ€§èƒ½æœ‰è´Ÿé¢å½±å“
     0.001 step size, AUC = 64.95%
     0.01 step size, AUC = 65.00%
     0.1 step size, AUC = 65.52%
     1.0 step size, AUC = 66.55%
     10.0 step size, AUC = 61.92%
     */
-    /**ÕıÔò»¯Í¨¹ıÏŞÖÆÄ£ĞÍµÄ¸´ÔÓ¶È±ÜÃâÄ£ĞÍÔÚÑµÁ·Êı¾İÖĞ¹ıÄâºÏregularization**/
+    /**æ­£åˆ™åŒ–é€šè¿‡é™åˆ¶æ¨¡å‹çš„å¤æ‚åº¦é¿å…æ¨¡å‹åœ¨è®­ç»ƒæ•°æ®ä¸­è¿‡æ‹Ÿåˆregularization**/
     val regResults = Seq(0.001, 0.01, 0.1, 1.0, 10.0).map { param =>
       val model = trainWithParams(scaledDataCats, param, numIterations, new SquaredL2Updater, 1.0)
       createMetrics(s"$param L2 regularization parameter", scaledDataCats, model)
     }
     regResults.foreach { case (param, auc) => println(f"$param, AUC = ${auc * 100}%2.2f%%") }
     /*
-     *½áÂÛ:µÈ¼¶µÍµÄÕı»¯¶ÔÄ£ĞÍµÄĞÔÄÜÓ°Ïì²»´ó,È»ºó,Ôö´óÕıÔò»¯¿ÉÒÔ¿´µ½Ç·ÄâºÏ»áµ¼ÖÂ½ÏµÍÄ£ĞÍĞÔÄÜ 
+     *ç»“è®º:ç­‰çº§ä½çš„æ­£åŒ–å¯¹æ¨¡å‹çš„æ€§èƒ½å½±å“ä¸å¤§,ç„¶å,å¢å¤§æ­£åˆ™åŒ–å¯ä»¥çœ‹åˆ°æ¬ æ‹Ÿåˆä¼šå¯¼è‡´è¾ƒä½æ¨¡å‹æ€§èƒ½ 
     0.001 L2 regularization parameter, AUC = 66.55%
     0.01 L2 regularization parameter, AUC = 66.55%
     0.1 L2 regularization parameter, AUC = 66.63%
@@ -496,8 +496,8 @@ object AppScala6 {
     10.0 L2 regularization parameter, AUC = 35.33%
     */
 
-    /**¾ö²ßÊ÷Ä£ĞÍ²ÎÊı**/
-    /**¾ö²ßÊ÷Ä£ĞÍÔÚÒ»¿ªÊ¼Ê¹ÓÃÔ­Ê¼Êı¾İ×öÑµÁ·Ê±»ñµÃÁË×îºÃµÄĞÔÄÜ,µ±Ê±ÉèÖÃÁË²ÎÊı×î´óÉî¶È**/
+    /**å†³ç­–æ ‘æ¨¡å‹å‚æ•°**/
+    /**å†³ç­–æ ‘æ¨¡å‹åœ¨ä¸€å¼€å§‹ä½¿ç”¨åŸå§‹æ•°æ®åšè®­ç»ƒæ—¶è·å¾—äº†æœ€å¥½çš„æ€§èƒ½,å½“æ—¶è®¾ç½®äº†å‚æ•°æœ€å¤§æ·±åº¦**/
     import org.apache.spark.mllib.tree.impurity.Entropy
     import org.apache.spark.mllib.tree.impurity.Gini
     def trainDTWithParams(input: RDD[LabeledPoint], maxDepth: Int, impurity: Impurity) = {
@@ -537,8 +537,8 @@ object AppScala6 {
     }
     dtResultsGini.foreach { case (param, auc) => println(f"$param, AUC = ${auc * 100}%2.2f%%") }
     /*
-     * ½áÂÛ:Ìá¸ßÊ÷µÄÉî¶È¿ÉÒÔµÃµ½¸ü¾«È·µÄÄ£ĞÍ,È»¶øÊ÷µÄÉî¶ÈÔ½´ó,Ä£ĞÍ¶ÔÑµÁ·Êı¾İ¹ıÄâºÏ¶ÈÔ½ÑÏÖØ
-     * Á½ÖÖ²»´¿¶È·½·¨¶ÔĞÔÄÜµÄÓ°Ïì²îÒì½ÏĞ¡ 
+     * ç»“è®º:æé«˜æ ‘çš„æ·±åº¦å¯ä»¥å¾—åˆ°æ›´ç²¾ç¡®çš„æ¨¡å‹,ç„¶è€Œæ ‘çš„æ·±åº¦è¶Šå¤§,æ¨¡å‹å¯¹è®­ç»ƒæ•°æ®è¿‡æ‹Ÿåˆåº¦è¶Šä¸¥é‡
+     * ä¸¤ç§ä¸çº¯åº¦æ–¹æ³•å¯¹æ€§èƒ½çš„å½±å“å·®å¼‚è¾ƒå° 
     1 tree depth, AUC = 59.33%
     2 tree depth, AUC = 61.68%
     3 tree depth, AUC = 62.61%
@@ -547,7 +547,7 @@ object AppScala6 {
     10 tree depth, AUC = 78.37%
     20 tree depth, AUC = 98.87%
     */
-    /**ÆÓËØ±´Ò¶Ë¹Ä£ĞÍ²ÎÊı**/
+    /**æœ´ç´ è´å¶æ–¯æ¨¡å‹å‚æ•°**/
     // investigate Naive Bayes parameters
     def trainNBWithParams(input: RDD[LabeledPoint], lambda: Double) = {
       val nb = new NaiveBayes
@@ -564,15 +564,15 @@ object AppScala6 {
     }
     nbResults.foreach { case (param, auc) => println(f"$param, AUC = ${auc * 100}%2.2f%%") }
     /*
-     * Lamda²ÎÊı¶ÔÆÓËØ±´Ò¶Ë¹Ä£ĞÍµÄÓ°Ïì,Lamda½â¾öÊı¾İÖĞÄ³¸öÀà±ğºÍÄ³¸öÌØÕ÷ÖµµÄ×éºÏÃ»ÓĞÍ¬Ê±³öÏÖµÄÎÊÌâ 
-     * ×Ü½á:LamdaµÄÖµ¶ÔĞÔÄÜÃ»ÓĞÓ°Ïì
+     * Lamdaå‚æ•°å¯¹æœ´ç´ è´å¶æ–¯æ¨¡å‹çš„å½±å“,Lamdaè§£å†³æ•°æ®ä¸­æŸä¸ªç±»åˆ«å’ŒæŸä¸ªç‰¹å¾å€¼çš„ç»„åˆæ²¡æœ‰åŒæ—¶å‡ºç°çš„é—®é¢˜ 
+     * æ€»ç»“:Lamdaçš„å€¼å¯¹æ€§èƒ½æ²¡æœ‰å½±å“
     0.001 lambda, AUC = 60.51%
     0.01 lambda, AUC = 60.51%
     0.1 lambda, AUC = 60.51%
     1.0 lambda, AUC = 60.51%
     10.0 lambda, AUC = 60.51%
     */
-    /**½»²æÑéÖ¤²ÎÊı**/
+    /**äº¤å‰éªŒè¯å‚æ•°**/
     // illustrate cross-validation
     // create a 60% / 40% train/test data split
     val trainTestSplit = scaledDataCats.randomSplit(Array(0.6, 0.4), 123)

@@ -8,24 +8,24 @@ import org.apache.spark.mllib.recommendation.Rating
 
 object als1 {
 
-  //0 ¹¹½¨Spark¶ÔÏó
+  //0 æ„å»ºSparkå¯¹è±¡
   val conf = new SparkConf().setAppName("ALS")
   val sc = new SparkContext(conf)
   Logger.getRootLogger.setLevel(Level.WARN)
 
-  //1 ¶ÁÈ¡Ñù±¾Êı¾İ
+  //1 è¯»å–æ ·æœ¬æ•°æ®
   val data = sc.textFile("ml-100k/test.data")
   val ratings = data.map(_.split(',') match {
     case Array(user, item, rate) =>
       Rating(user.toInt, item.toInt, rate.toDouble)
   })
 
-  //2 ½¨Á¢Ä£ĞÍ
+  //2 å»ºç«‹æ¨¡å‹
   val rank = 10
   val numIterations = 20
   val model = ALS.train(ratings, rank, numIterations, 0.01)
 
-  //3 Ô¤²â½á¹û
+  //3 é¢„æµ‹ç»“æœ
   val usersProducts = ratings.map {
     case Rating(user, product, rate) =>
       (user, product)
@@ -33,22 +33,22 @@ object als1 {
   val predictions =
     model.predict(usersProducts).map {
       case Rating(user, product, rate) =>
-        ((user, product), rate)//rate Ô¤²â·Ö
+        ((user, product), rate)//rate é¢„æµ‹åˆ†
     }
   val ratesAndPreds = ratings.map {
     case Rating(user, product, rate) =>
-      ((user, product), rate)//rateÊµ¼ÊÆÀ·İ
+      ((user, product), rate)//rateå®é™…è¯„ä»½
   }.join(predictions)
-  /**ÓÃ»§ÆÀ·ÖÎó²î**/  
+  /**ç”¨æˆ·è¯„åˆ†è¯¯å·®**/  
   val MSE = ratesAndPreds.map {
-    //userÓÃ»§ID,product²úÆ·ID,r1Êµ¼ÊÆÀ·Ö,Ô¤²âÆÀ·Ör2
+    //userç”¨æˆ·ID,productäº§å“ID,r1å®é™…è¯„åˆ†,é¢„æµ‹è¯„åˆ†r2
     case ((user, product), (r1, r2)) =>
       val err = (r1 - r2)
-      err * err //Ïà³Ë
-  }.mean()//Æ½¾ùÖµ
+      err * err //ç›¸ä¹˜
+  }.mean()//å¹³å‡å€¼
   println("Mean Squared Error = " + MSE)
 
-  //4 ±£´æ/¼ÓÔØÄ£ĞÍ
+  //4 ä¿å­˜/åŠ è½½æ¨¡å‹
   model.save(sc, "myModelPath")
   val sameModel = MatrixFactorizationModel.load(sc, "myModelPath")
 

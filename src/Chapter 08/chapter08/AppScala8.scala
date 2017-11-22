@@ -5,27 +5,27 @@ import org.apache.spark.SparkContext
 import breeze.linalg.csvwrite
 import java.awt.image.BufferedImage
 /**
- * ´ÓÊý¾ÝÖÐ³éÈ¡ºÏÊÊµÄÊý¾Ý,½µÎ¬Ä£ÐÍ
+ * ä»Žæ•°æ®ä¸­æŠ½å–åˆé€‚çš„æ•°æ®,é™ç»´æ¨¡åž‹
  */
 object AppScala8 {
   def main(args: Array[String]) {
     val conf = new SparkConf().setAppName("test").setMaster("local")
     val sc = new SparkContext(conf)
-    //Ê¹ÓÃÍ¨Åä·ûµÄÂ·¾¶±êÊ¶À´¸æËßSparkÔÚlfwÎÄ¼þ¼ÐÖÐ·ÃÎÊÃ¿¸öÎÄ¼þ¼ÐÒÔ»ñµÃÎÄ¼þ
+    //ä½¿ç”¨é€šé…ç¬¦çš„è·¯å¾„æ ‡è¯†æ¥å‘Šè¯‰Sparkåœ¨lfwæ–‡ä»¶å¤¹ä¸­è®¿é—®æ¯ä¸ªæ–‡ä»¶å¤¹ä»¥èŽ·å¾—æ–‡ä»¶
     val path = "lfw/*"
-    //wholeTextFiles ¶ÁÈ¡Ò»´ÎÕû¸öÎÄ¼þ,textFileÔÚÒ»¸öÎÄ¼þ»ò¶à¸öÎÄ¼þÖðÐÐ¶ÁÈ¡Êý¾Ý  
+    //wholeTextFiles è¯»å–ä¸€æ¬¡æ•´ä¸ªæ–‡ä»¶,textFileåœ¨ä¸€ä¸ªæ–‡ä»¶æˆ–å¤šä¸ªæ–‡ä»¶é€è¡Œè¯»å–æ•°æ®  
     val rdd = sc.wholeTextFiles(path)
     val first = rdd.first
     println(first)
-    //±¾µØµÚÒ»²½ÏÈ°ÑÓ²ÅÌÄ¿Â¼Ìæ»»µô
+    //æœ¬åœ°ç¬¬ä¸€æ­¥å…ˆæŠŠç¡¬ç›˜ç›®å½•æ›¿æ¢æŽ‰
     val files2 = rdd.map { case (fileName, content) => fileName.replace("file:/D:/spark/spark-1.5.0-hadoop2.6/bin/", "") }
-    //ÔÙ°Ñfile:Ìæ»»µô
+    //å†æŠŠfile:æ›¿æ¢æŽ‰
     val files = rdd.map { case (fileName, content) => fileName.replace("file:", "") }
     println(files.first)
     println(files.count)
-    /**¼ÓÔØÍ¼Æ¬**/
+    /**åŠ è½½å›¾ç‰‡**/
     import java.awt.image.BufferedImage
-    //´ÓÎÄ¼þÖÐ¶ÁÈ¡Í¼Æ¬
+    //ä»Žæ–‡ä»¶ä¸­è¯»å–å›¾ç‰‡
     def loadImageFromFile(path: String): BufferedImage = {
       import javax.imageio.ImageIO
       import java.io.File
@@ -40,94 +40,94 @@ object AppScala8 {
      *  color space = java.awt.color.ICC_ColorSpace@4edeb425 transparency = 1 
      *  has alpha = false isAlphaPre = false 
      *  ByteInterleavedRaster: width = 250 height = 250 #numDataElements 3 dataOff[0] = 2
-     *  Í¼Æ¬¸ß¶ÈºÍ¿í¶È¶¼250ÏñËØ,ÑÕÉ«×é¼þ(RGB)ÊýÎª3,
+     *  å›¾ç‰‡é«˜åº¦å’Œå®½åº¦éƒ½250åƒç´ ,é¢œè‰²ç»„ä»¶(RGB)æ•°ä¸º3,
      */
-    //×ª»»»Ò¶ÈÍ¼Æ¬²¢¸Ä±äÍ¼Æ¬´óÐ¡ 
+    //è½¬æ¢ç°åº¦å›¾ç‰‡å¹¶æ”¹å˜å›¾ç‰‡å¤§å° 
     def processImage(image: BufferedImage, width: Int, height: Int): BufferedImage = {
-      //TYPE_BYTE_GRAY±íÊ¾ÎÞ·ûºÅbyte»Ò¶È¼¶Í¼Ïñ£¨ÎÞË÷Òý£©
+      //TYPE_BYTE_GRAYè¡¨ç¤ºæ— ç¬¦å·byteç°åº¦çº§å›¾åƒï¼ˆæ— ç´¢å¼•ï¼‰
       val bwImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY)
-      val g = bwImage.getGraphics() //Îª×é¼þ´´½¨Ò»¸öÍ¼ÐÎÉÏÏÂÎÄ
+      val g = bwImage.getGraphics() //ä¸ºç»„ä»¶åˆ›å»ºä¸€ä¸ªå›¾å½¢ä¸Šä¸‹æ–‡
       /**
-       * img - Òª»æÖÆµÄÖ¸¶¨Í¼Ïñ¡£Èç¹û img Îª null£¬Ôò´Ë·½·¨²»Ö´ÐÐÈÎºÎ¶¯×÷¡£
-       * x - x ×ø±ê¡£
-       * y - y ×ø±ê¡£
-       * width - ¾ØÐÎµÄ¿í¶È¡£
-       * height - ¾ØÐÎµÄ¸ß¶È¡£
-       * observer - µ±×ª»»ÁË¸ü¶àÍ¼ÏñÊ±ÒªÍ¨ÖªµÄ¶ÔÏó¡£
+       * img - è¦ç»˜åˆ¶çš„æŒ‡å®šå›¾åƒã€‚å¦‚æžœ img ä¸º nullï¼Œåˆ™æ­¤æ–¹æ³•ä¸æ‰§è¡Œä»»ä½•åŠ¨ä½œã€‚
+       * x - x åæ ‡ã€‚
+       * y - y åæ ‡ã€‚
+       * width - çŸ©å½¢çš„å®½åº¦ã€‚
+       * height - çŸ©å½¢çš„é«˜åº¦ã€‚
+       * observer - å½“è½¬æ¢äº†æ›´å¤šå›¾åƒæ—¶è¦é€šçŸ¥çš„å¯¹è±¡ã€‚
        */
-      g.drawImage(image, 0, 0, width, height, null) //»æÖÆÖ¸¶¨Í¼ÏñÖÐµ±Ç°¿ÉÓÃµÄÍ¼Ïñ
-      //ÊÍ·Å´ËÍ¼ÐÎµÄÉÏÏÂÎÄÒÔ¼°ËüÊ¹ÓÃµÄËùÓÐÏµÍ³×ÊÔ´¡£
+      g.drawImage(image, 0, 0, width, height, null) //ç»˜åˆ¶æŒ‡å®šå›¾åƒä¸­å½“å‰å¯ç”¨çš„å›¾åƒ
+      //é‡Šæ”¾æ­¤å›¾å½¢çš„ä¸Šä¸‹æ–‡ä»¥åŠå®ƒä½¿ç”¨çš„æ‰€æœ‰ç³»ç»Ÿèµ„æºã€‚
       g.dispose()
       bwImage
     }
-     //×ª»»»Ò¶ÈÍ¼Æ¬²¢¸Ä±äÍ¼Æ¬´óÐ¡ 
+     //è½¬æ¢ç°åº¦å›¾ç‰‡å¹¶æ”¹å˜å›¾ç‰‡å¤§å° 
     val grayImage = processImage(aeImage, 100, 100)
 
     // write the image out to the file system
     import javax.imageio.ImageIO
     import java.io.File
-    //Êä³öÍ¼Æ¬Î»ÖÃ
+    //è¾“å‡ºå›¾ç‰‡ä½ç½®
     ImageIO.write(grayImage, "jpg", new File("/tmp/aeGray.jpg"))
 
     // extract the raw pixels from the image as a Double array
     def getPixelsFromImage(image: BufferedImage): Array[Double] = {
       val width = image.getWidth
       val height = image.getHeight
-      //ÓÃÀ´ÉùÃ÷¶àÎ¬Êý×é
+      //ç”¨æ¥å£°æ˜Žå¤šç»´æ•°ç»„
       val pixels = Array.ofDim[Double](width * height)
       
       /**
-       * getPixels  ¶ÁÈ¡ÏñËØµÄÊýÖµ£¬´æµ½pixelsÊý×éÀïÃæ
-       *     ²ÎÊý1 ´ÓÎ»Í¼ÖÐ¶ÁÈ¡µÄµÚÒ»¸öÏñËØµÄx×ø±êÖµ
-       *     ²ÎÊý2 ´ÓÎ»Í¼ÖÐ¶ÁÈ¡µÄµÚÒ»¸öÏñËØµÄy×ø±êÖµ
-       *     ²ÎÊý3 ´ÓÃ¿Ò»ÐÐÖÐ¶ÁÈ¡µÄÏñËØ¿í¶È 
-       *     ²ÎÊý4 ¶ÁÈ¡µÄÐÐÊý 
-       *     ²ÎÊý5 ½ÓÊÕÎ»Í¼ÑÕÉ«ÖµµÄÊý×é 
+       * getPixels  è¯»å–åƒç´ çš„æ•°å€¼ï¼Œå­˜åˆ°pixelsæ•°ç»„é‡Œé¢
+       *     å‚æ•°1 ä»Žä½å›¾ä¸­è¯»å–çš„ç¬¬ä¸€ä¸ªåƒç´ çš„xåæ ‡å€¼
+       *     å‚æ•°2 ä»Žä½å›¾ä¸­è¯»å–çš„ç¬¬ä¸€ä¸ªåƒç´ çš„yåæ ‡å€¼
+       *     å‚æ•°3 ä»Žæ¯ä¸€è¡Œä¸­è¯»å–çš„åƒç´ å®½åº¦ 
+       *     å‚æ•°4 è¯»å–çš„è¡Œæ•° 
+       *     å‚æ•°5 æŽ¥æ”¶ä½å›¾é¢œè‰²å€¼çš„æ•°ç»„ 
        */
        image.getData.getPixels(0, 0, width, height, pixels)
       // pixels.map(p => p / 255.0) 		// optionally scale to [0, 1] domain
     }
     // put all the functions together
-    //½ÓÊÜÒ»¸öÍ¼Æ¬ÎÄ¼þÎ»ÖÃºÍÐèÒª´¦ÀíµÄ¿íºÍ¸ß,·µ»ØÒ»¸ö°üº¬ÏñËØÊý¾ÝµÄArray[Double]Öµ
+    //æŽ¥å—ä¸€ä¸ªå›¾ç‰‡æ–‡ä»¶ä½ç½®å’Œéœ€è¦å¤„ç†çš„å®½å’Œé«˜,è¿”å›žä¸€ä¸ªåŒ…å«åƒç´ æ•°æ®çš„Array[Double]å€¼
     def extractPixels(path: String, width: Int, height: Int): Array[Double] = {
       val raw = loadImageFromFile(path)
       val processed = processImage(raw, width, height)
       getPixelsFromImage(processed)
     }
-    //°ÑÃ¿¸öº¯ÊýÓ¦ÓÃµ½°üº¬Í¼Æ¬Â·¾¶µÄRDDµÄÃ¿¸öÔªËØÉÏ½« ²úÉúÒ»¸öÐÂRDD,ÐÂµÄRDD°üº¬µÚÕÅÍ¼Æ¬µÄÏñËØÊý¾Ý
+    //æŠŠæ¯ä¸ªå‡½æ•°åº”ç”¨åˆ°åŒ…å«å›¾ç‰‡è·¯å¾„çš„RDDçš„æ¯ä¸ªå…ƒç´ ä¸Šå°† äº§ç”Ÿä¸€ä¸ªæ–°RDD,æ–°çš„RDDåŒ…å«ç¬¬å¼ å›¾ç‰‡çš„åƒç´ æ•°æ®
     val pixels = files.map(f => extractPixels(f, 50, 50))
     println(pixels.take(10).map(_.take(10).mkString("", ",", ", ...")).mkString("\n"))
 
     // create vectors
-    //Ã¿¸öÍ¼Æ¬´´½¨MLlib¶ÔÏó,½«»º´æRDDÀ´¼ÓËÙºó¼ÆËã 
+    //æ¯ä¸ªå›¾ç‰‡åˆ›å»ºMLlibå¯¹è±¡,å°†ç¼“å­˜RDDæ¥åŠ é€ŸåŽè®¡ç®— 
     import org.apache.spark.mllib.linalg.Vectors
     val vectors = pixels.map(p => Vectors.dense(p))
     // the setName method createa a human-readable name that is displayed in the Spark Web UI
     vectors.setName("image-vectors")
     // remember to cache the vectors to speed up computation
     vectors.cache
-    //ÕýÔò»¯,ÌáÈ¡ÁÐµÄÆ½¾ùÖµ 
+    //æ­£åˆ™åŒ–,æå–åˆ—çš„å¹³å‡å€¼ 
     // normalize the vectors by subtracting the column means
     import org.apache.spark.mllib.feature.StandardScaler
-    //fitº¯Êý»áµ¼ÖÂ»ùÓÚRDD¼ÆËã
+    //fitå‡½æ•°ä¼šå¯¼è‡´åŸºäºŽRDDè®¡ç®—
     val scaler = new StandardScaler(withMean = true, withStd = false).fit(vectors)
-    //½«·µ»ØµÄscalerÀ´×ª»»Ô­Ê¼µÄÍ¼Æ¬ÏòÁ¿,ÈÃËùÓÐÏòÁ¿¼õÈ¥µ±Ç°ÁÐµÄÆ½¾ùÖµ
+    //å°†è¿”å›žçš„scaleræ¥è½¬æ¢åŽŸå§‹çš„å›¾ç‰‡å‘é‡,è®©æ‰€æœ‰å‘é‡å‡åŽ»å½“å‰åˆ—çš„å¹³å‡å€¼
     val scaledVectors = vectors.map(v => scaler.transform(v))
     // create distributed RowMatrix from vectors, and train PCA on it
-   //PACºÍSVDµÄ¼ÆËãÊÇÍ¨¹ýÌá¹©»ùÓÚRowMatrixµÄ·½·¨ÊµÏÖ
+   //PACå’ŒSVDçš„è®¡ç®—æ˜¯é€šè¿‡æä¾›åŸºäºŽRowMatrixçš„æ–¹æ³•å®žçŽ°
     import org.apache.spark.mllib.linalg.Matrix
     import org.apache.spark.mllib.linalg.distributed.RowMatrix
-    //ÎÒÃÇÒÑ¾­´ÓÍ¼ÏñÊý¾ÝÖÐÌáÈ¡³öÁËÏòÁ¿,
+    //æˆ‘ä»¬å·²ç»ä»Žå›¾åƒæ•°æ®ä¸­æå–å‡ºäº†å‘é‡,
     val matrix = new RowMatrix(scaledVectors)
     val K = 10
-    //³õÊ¼»¯Ò»¸öÐÂRowMatrix,²¢µ÷ÓÃcomputePrincipalComponentsÀ´¼ÆËã·Ö²¼¾ØÕóµÄÇ°K¸öÖ÷³É·Ö
+    //åˆå§‹åŒ–ä¸€ä¸ªæ–°RowMatrix,å¹¶è°ƒç”¨computePrincipalComponentsæ¥è®¡ç®—åˆ†å¸ƒçŸ©é˜µçš„å‰Kä¸ªä¸»æˆåˆ†
     val pc = matrix.computePrincipalComponents(K)
     // you may see warnings, if the native BLAS libraries are not installed, don't worry about these 
     // 14/09/17 19:53:49 WARN LAPACK: Failed to load implementation from: com.github.fommil.netlib.NativeSystemLAPACK
     // 14/09/17 19:53:49 WARN LAPACK: Failed to load implementation from: com.github.fommil.netlib.NativeRefLAPACK
 
     // use Breeze to save the principal components as a CSV file
-    //Ö÷³É·ÖÎöÐÐÒµºÍÁÐÊý
+    //ä¸»æˆåˆ†æžè¡Œä¸šå’Œåˆ—æ•°
     val rows = pc.numRows
     val cols = pc.numCols
     println(rows, cols)
@@ -137,11 +137,11 @@ object AppScala8 {
     val pcBreeze = new DenseMatrix(rows, cols, pc.toArray)
     import breeze.linalg.csvwrite
     import java.io.File
-    //csvwrite °Ñ¾ØÕóÐ´µ½CSVÎÄ¼þÖÐ
+    //csvwrite æŠŠçŸ©é˜µå†™åˆ°CSVæ–‡ä»¶ä¸­
     csvwrite(new File("/tmp/pc.csv"), pcBreeze)
 
     // project the raw images to the K-dimensional space of the principla components
-    //¾ØÕó³Ë·¨°ÑÍ¼Ïñ¾ØÕóºÍÖ÷³É·ÖÎö¾ØÕóÏà³ËÊµÏÖÍ¶Ó°¾ØÕó
+    //çŸ©é˜µä¹˜æ³•æŠŠå›¾åƒçŸ©é˜µå’Œä¸»æˆåˆ†æžçŸ©é˜µç›¸ä¹˜å®žçŽ°æŠ•å½±çŸ©é˜µ
     val projected = matrix.multiply(pc)
     println(projected.numRows, projected.numCols)
     // (1055,10)
@@ -155,21 +155,21 @@ object AppScala8 {
 		*/
 
     // relationship to SVD
-    //Ö÷³É·ÖÎöºÍÆæÒìÖµµÄ¹ØÏµ
+    //ä¸»æˆåˆ†æžå’Œå¥‡å¼‚å€¼çš„å…³ç³»
     val svd = matrix.computeSVD(10, computeU = true)
-    //SVD¼ÆËã²úÉúµÄÓÒÆæÒìÏòÁ¿µÈÓÚÎÒÃÇ¼ÆËãµÃµ½µÄÖ÷³É·Ö
+    //SVDè®¡ç®—äº§ç”Ÿçš„å³å¥‡å¼‚å‘é‡ç­‰äºŽæˆ‘ä»¬è®¡ç®—å¾—åˆ°çš„ä¸»æˆåˆ†
     println(s"U dimension: (${svd.U.numRows}, ${svd.U.numCols})")
     println(s"S dimension: (${svd.s.size}, )")
     println(s"V dimension: (${svd.V.numRows}, ${svd.V.numCols})")
-    // U dimension: (1055, 10),U¾ØÕóµÈÓÚÍ¶Ó°Êý¾Ý
+    // U dimension: (1055, 10),UçŸ©é˜µç­‰äºŽæŠ•å½±æ•°æ®
     // S dimension: (10, )
-    // V dimension: (2500, 10)  ÓÒÆæÒìÏòÁ¿µÈÓÚÎÒÃÇ¼ÆËãµÃµ½µÄÖ÷³É·Ö
+    // V dimension: (2500, 10)  å³å¥‡å¼‚å‘é‡ç­‰äºŽæˆ‘ä»¬è®¡ç®—å¾—åˆ°çš„ä¸»æˆåˆ†
     // simple function to compare the two matrices, with a tolerance for floating point number comparison
-    //±È½ÏÁ½¸öÏòÁ¿Êý¾Ý
+    //æ¯”è¾ƒä¸¤ä¸ªå‘é‡æ•°æ®
     def approxEqual(array1: Array[Double], array2: Array[Double], tolerance: Double = 1e-6): Boolean = {
       // note we ignore sign of the principal component / singular vector elements
       val bools = array1.zip(array2).map { case (v1, v2) => if (math.abs(math.abs(v1) - math.abs(v2)) > 1e-6) false else true }
-      bools.fold(true)(_ & _)//foldº¯Êý¿ªÊ¼¶Ô´«½øµÄÁ½¸ö²ÎÊý½øÐÐ¼ÆËã,³õÊ¼ÖµÎªtrue,& ´Ó×óµ½ÓÒ
+      bools.fold(true)(_ & _)//foldå‡½æ•°å¼€å§‹å¯¹ä¼ è¿›çš„ä¸¤ä¸ªå‚æ•°è¿›è¡Œè®¡ç®—,åˆå§‹å€¼ä¸ºtrue,& ä»Žå·¦åˆ°å³
     }
     // test the function
     println(approxEqual(Array(1.0, 2.0, 3.0), Array(1.0, 2.0, 3.0)))
@@ -190,7 +190,7 @@ object AppScala8 {
     // 1055
 
     // inspect singular values
-    //ÆÀ¹ÀSVDµÄkÖµ
+    //è¯„ä¼°SVDçš„kå€¼
     val sValues = (1 to 5).map { i => matrix.computeSVD(i, computeU = false).s }
     sValues.foreach(println)
     /*

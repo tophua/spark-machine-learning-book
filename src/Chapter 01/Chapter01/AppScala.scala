@@ -18,11 +18,11 @@ object AppScala {
     //val  sc = new SparkContext(conf)
    val sc = new SparkContext("local[2]", "First Spark App")
     // we take the raw data in CSV format and convert it into a set of records of the form (user, product, price)
-    //½«csv¸ñÊ½µÄÔ­Ê¼Êı¾İ×ª»¯Îª(user, product, price),·µ»ØÈıÔªÊı×é(¿Í»§Ãû³Æ,ÉÌÆ·Ãû³Æ,ÉÌÆ·¼Û¸ñ)
+    //å°†csvæ ¼å¼çš„åŸå§‹æ•°æ®è½¬åŒ–ä¸º(user, product, price),è¿”å›ä¸‰å…ƒæ•°ç»„(å®¢æˆ·åç§°,å•†å“åç§°,å•†å“ä»·æ ¼)
     
     /**
-     * Êı¾İ¸ñÊ½:
-     * ¿Í»§		   ÉÌÆ·Ãû³Æ							¼Û¸ñ
+     * æ•°æ®æ ¼å¼:
+     * å®¢æˆ·		   å•†å“åç§°							ä»·æ ¼
      * John	   iPhone Cover	        9.99
 		 * John	   Headphones	          5.49
 		 * Jack	   iPhone Cover	        9.99
@@ -30,40 +30,40 @@ object AppScala {
 		 * Bob	   iPad Cover	          5.49
      */
       //hdfs://xcsq:8089/machineLearning/Chapter01/UserPurchaseHistory.csv
-    //²»ÄÜÖ¸¶¨ÎÄ¼şÃû
+    //ä¸èƒ½æŒ‡å®šæ–‡ä»¶å
     //val data = sc.textFile("hdfs://xcsq:8089/machineLearning/Chapter01/")
     val data = sc.textFile("D:\\eclipse44_64\\workspace\\MachineLearning\\data\\UserPurchaseHistory.csv")
       .map(line => line.split(","))
       .map(purchaseRecord => (purchaseRecord(0), purchaseRecord(1), purchaseRecord(2)))
     // let's count the number of purchases
-    //¹ºÂòÊı¾İ×ÜÊı
+    //è´­ä¹°æ•°æ®æ€»æ•°
     val numPurchases = data.count()
     // let's count how many unique users made purchases
-    //ÓĞ¶àÉÙ¸ö²»Í¬¿Í»§¹ºÂò¹ıÉÌÆ·
+    //æœ‰å¤šå°‘ä¸ªä¸åŒå®¢æˆ·è´­ä¹°è¿‡å•†å“
     val uniqueUsers = data.map { case (user, product, price) => {
       println(user)
       user     
      }
     }.distinct().count()
     // let's sum up our total revenue
-    //µÃ³ö×ÜÊÕÈë
+    //å¾—å‡ºæ€»æ”¶å…¥
     val totalRevenue = data.map { case (user, product, price) => price.toDouble }.sum()
     // let's find our most popular product
-    //Çó×î³©ÏúµÄ²úÆ·ÊÇÊ²Ã´,
+    //æ±‚æœ€ç•…é”€çš„äº§å“æ˜¯ä»€ä¹ˆ,
     val productsByPopularity = data
       .map { case (user, product, price) => (product, 1) }.sortByKey(false)
-      .reduceByKey(_ + _)  // .sortByKey(false)(½µĞò)ÅÅĞò Í¬Ê±¿ÉÒÔÊ¹ÓÃsortByKey()À´¶ÔÆä½øĞĞ²¢ĞĞ²Ù×÷ÅÅĞò
+      .reduceByKey(_ + _)  // .sortByKey(false)(é™åº)æ’åº åŒæ—¶å¯ä»¥ä½¿ç”¨sortByKey()æ¥å¯¹å…¶è¿›è¡Œå¹¶è¡Œæ“ä½œæ’åº
       .collect()
-     // .sortBy(-_._2)//-±íÊ¾½µĞò °´×Å¹ºÂò´ÎÊı½øĞĞ(½µĞò)ÅÅĞò,±¾µØÅÅĞò
+     // .sortBy(-_._2)//-è¡¨ç¤ºé™åº æŒ‰ç€è´­ä¹°æ¬¡æ•°è¿›è¡Œ(é™åº)æ’åº,æœ¬åœ°æ’åº
     val mostPopular = productsByPopularity(0)//
     // finally, print everything out
-    //5´Î½»Ò×ĞÅÏ¢
+    //5æ¬¡äº¤æ˜“ä¿¡æ¯
     println("Total purchases: " + numPurchases)
-     //×ÜÓĞ¿Í»§
+     //æ€»æœ‰å®¢æˆ·
     println("Unique users: " + uniqueUsers)
-    //×ÜÊÕÈë
+    //æ€»æ”¶å…¥
     println("Total revenue: " + totalRevenue)
-    //×î³©ÏúµÄ²úÆ·,¹²¹ºÂò´ÎÊı
+    //æœ€ç•…é”€çš„äº§å“,å…±è´­ä¹°æ¬¡æ•°
     println("Most popular product: %s with %d purchases".format(mostPopular._1, mostPopular._2))
 
     sc.stop()

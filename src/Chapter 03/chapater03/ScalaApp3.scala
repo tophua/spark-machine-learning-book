@@ -20,15 +20,15 @@ object ScalaApp3 {
   def main(args: Array[String]) {
     val sparkConf = new SparkConf().setMaster("local[2]").setAppName("SparkHdfsLR")
     val sc = new SparkContext(sparkConf)
-    /**ÓÃ»§Êı¾İ****/
+    /**ç”¨æˆ·æ•°æ®****/
     val user_data = sc.textFile("ml-100k/u.user")
     val user_first = user_data.first()
-    //ÓÃ»§ID|ÄêÁä  |ĞÔ±ğ|   Ö°Òµ         | ÓÊ±à
+    //ç”¨æˆ·ID|å¹´é¾„  |æ€§åˆ«|   èŒä¸š         | é‚®ç¼–
     //1     |24  |  M |technician| 85711
-    //Í³¼ÆÓÃ»§,ĞÔ±ğ,Ö°ÒµºÍÓÊ±àµÄÊıÄ¿
-    val usre_files = user_data.map(line => line.split('|')) //ÒÔÊúÏß·Ö¸ô
+    //ç»Ÿè®¡ç”¨æˆ·,æ€§åˆ«,èŒä¸šå’Œé‚®ç¼–çš„æ•°ç›®
+    val usre_files = user_data.map(line => line.split('|')) //ä»¥ç«–çº¿åˆ†éš”
     println(usre_files)
-    //Í³¼ÆÓÃ»§Êı
+    //ç»Ÿè®¡ç”¨æˆ·æ•°
     val num_users = usre_files.map(line => {
        /**
        * usre_files: Array[Array[String]] = Array(Array(1, 24, M, technician, 85711), Array(2,53, F, other, 94043), 
@@ -40,67 +40,67 @@ object ScalaApp3 {
        * Array(17, 30, M, programmer, 06355), Array(18, 35, F, other, 37212), Array(19, 40, M, librarian, 02138),
        * Array(20, 42, F, homemaker, 95660), Array(21, 26, M, writer, 30068), Array(22, 25, M, writer, 40206),...
        **/
-      //println(line(0))// line.headÊÇÒ»Ñù
-      //È¡³öÓÃ»§ID
+      //println(line(0))// line.headæ˜¯ä¸€æ ·
+      //å–å‡ºç”¨æˆ·ID
       line.head
     }
     ).count()
-    //Í³¼ÆĞÔ±ğµÄÊıÄ¿,¼´µÚÈıÁĞ
+    //ç»Ÿè®¡æ€§åˆ«çš„æ•°ç›®,å³ç¬¬ä¸‰åˆ—
     val num_genders = usre_files.map { line => line(2) }.distinct().count()
-    //Í³¼ÆÖ°ÒµµÄÊıÄ¿,¼´µÚËÄÁĞ
+    //ç»Ÿè®¡èŒä¸šçš„æ•°ç›®,å³ç¬¬å››åˆ—
     val num_occuptions = usre_files.map { line => line(3) }.distinct().count()
-    //Í³¼ÆÓÊ±àµÄÊıÄ¿,¼´µÚÎåÁĞ
+    //ç»Ÿè®¡é‚®ç¼–çš„æ•°ç›®,å³ç¬¬äº”åˆ—
     val num_zipCode = usre_files.map { line => line(4) }.distinct().count()
     //println("Most popular product: %s with %d purchases".format(mostPopular._1, mostPopular._2))
     println("Users: %d,genders: %d,occupations: %d,ZIP Codes: %d".format(num_users, num_genders, num_occuptions, num_zipCode))
-    //µçÓ°Êı¾İ
+    //ç”µå½±æ•°æ®
     val move_data = sc.textFile("ml-100k/u.item")
     val move_nums = move_data.count()
     println(move_nums)
     val move_first = move_data.first()
-    //µçÓ°ID|µçÓ°±êÌâ                       |·¢ĞĞÊ±¼ä          |
+    //ç”µå½±ID|ç”µå½±æ ‡é¢˜                       |å‘è¡Œæ—¶é—´          |
     //1     |Toy Story (1995)|01-Jan-1995||http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0
     println(move_first)
-    val move_files = move_data.map(line => line.split('|')) //ÒÔÊúÏß·Ö¸ô
-    /**ÆÀ¼¶Êı¾İ**/
+    val move_files = move_data.map(line => line.split('|')) //ä»¥ç«–çº¿åˆ†éš”
+    /**è¯„çº§æ•°æ®**/
     val rating_data = sc.textFile("ml-100k/u.data")
     val rating_nums = rating_data.count()
     val rating_first = rating_data.first()
-    //ÓÃ»§ID  | Ó°Æ¬ID   | ĞÇ¼¶   | Ê±¼ä´Á	
+    //ç”¨æˆ·ID  | å½±ç‰‡ID   | æ˜Ÿçº§   | æ—¶é—´æˆ³	
     //196	    | 242	    |  3   |	881250949
     println("rating_first:" + rating_first)
     //println(rating_nums)
-    val rating_files = rating_data.map(line => line.split("\t")) //ÒÔÊúÏß·Ö¸ô
-    val ratings = rating_files.map { line => line(2).toInt } //×¢Òâ×ª»»IntÀàĞÍ
+    val rating_files = rating_data.map(line => line.split("\t")) //ä»¥ç«–çº¿åˆ†éš”
+    val ratings = rating_files.map { line => line(2).toInt } //æ³¨æ„è½¬æ¢Intç±»å‹
     // println(1.max(3))
-    val max_rating = ratings.reduce((x, y) => x.max(y)) //×î´óÖµÆÀ¼¶
-    val min_rating = ratings.reduce((x, y) => x.min(y)) //×îĞ¡ÖµÆÀ¼¶
-    val mean_rating = ratings.reduce(_ + _) / rating_nums //Æ½¾ùÆÀ¼¶
+    val max_rating = ratings.reduce((x, y) => x.max(y)) //æœ€å¤§å€¼è¯„çº§
+    val min_rating = ratings.reduce((x, y) => x.min(y)) //æœ€å°å€¼è¯„çº§
+    val mean_rating = ratings.reduce(_ + _) / rating_nums //å¹³å‡è¯„çº§
     //val median_rating=ratings.collect()
 
-    val median_per_user = rating_nums / num_users //ÆÀ¼¶×ÜÊı/ÓÃ»§×ÜÊı
-    val retinags_per_move = rating_nums / move_nums //ÆÀ¼¶×ÜÊı/µçÓ°×ÜÊı
+    val median_per_user = rating_nums / num_users //è¯„çº§æ€»æ•°/ç”¨æˆ·æ€»æ•°
+    val retinags_per_move = rating_nums / move_nums //è¯„çº§æ€»æ•°/ç”µå½±æ€»æ•°
     //
     val stats: StatCounter = ratings.stats()
-    println("×î´óÖµ:" + stats.max + "\t×îĞ¡Öµ:" + stats.min + "\tÖĞ¼äÖµ:" + stats.mean + "\t×ÜÊı¾İ:" + stats.count + "\tºÏ¼ÆÖµ:" + stats.sum + "\t±ê×¼Æ«²î:" + stats.stdev)
-    println("Í³¼ÆÊı¾İ:" + ratings.stats())
+    println("æœ€å¤§å€¼:" + stats.max + "\tæœ€å°å€¼:" + stats.min + "\tä¸­é—´å€¼:" + stats.mean + "\tæ€»æ•°æ®:" + stats.count + "\tåˆè®¡å€¼:" + stats.sum + "\tæ ‡å‡†åå·®:" + stats.stdev)
+    println("ç»Ÿè®¡æ•°æ®:" + ratings.stats())
     println("Min rating: %d,Max rating: %d,Average rating:%d,Median rating: %d".format(min_rating, max_rating, mean_rating, median_per_user))
-    //rating_data Ìá³öÓÃ»§IDÎªÖ÷¼ü,ÆÀ¼¶ÎªÖµµÄ¼üÖµ¶Ô
+    //rating_data æå‡ºç”¨æˆ·IDä¸ºä¸»é”®,è¯„çº§ä¸ºå€¼çš„é”®å€¼å¯¹
     val user_ratings_grouped = rating_data.map { file => (file(0).toInt, file(2).toInt) }.groupByKey()
-    //Çó³öÃ¿¸öÖ÷¼ü(ÓÃ»§ID)¶ÔÓ¦µÄÆÀ¼¶¼¯ºÏµÄ´óĞ¡,Õâ»á¸ø³ö¸÷ÓÃ»§ÆÀ¼¶µÄ´ÎÊı
+    //æ±‚å‡ºæ¯ä¸ªä¸»é”®(ç”¨æˆ·ID)å¯¹åº”çš„è¯„çº§é›†åˆçš„å¤§å°,è¿™ä¼šç»™å‡ºå„ç”¨æˆ·è¯„çº§çš„æ¬¡æ•°
     // val user_ratings_byuser=user_ratings_grouped.map((k,v) => (k,count(v)))
 
-    /***µçÓ°Êı¾İ***/
+    /***ç”µå½±æ•°æ®***/
     val movie_data = sc.textFile("ml-100k/u.item")
-    //µçÓ°ID|µçÓ°±êÌâ                       |·¢ĞĞÊ±¼ä          |
+    //ç”µå½±ID|ç”µå½±æ ‡é¢˜                       |å‘è¡Œæ—¶é—´          |
     //1     |Toy Story (1995)|01-Jan-1995||http://us.imdb.com/M/title-exact?Toy%20Story%20(1995)|0|0|0|1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0
     println(movie_data.first())
-    //×ÜÊı¾İ1682s
+    //æ€»æ•°æ®1682s
     val num_movies = movie_data.count()
     println("Movies: %d".format(num_movies))
-    val movie_fields = movie_data.map(lines => lines.split('|')) //×¢ÒâÊÇµ¥ÒıºÅ 
+    val movie_fields = movie_data.map(lines => lines.split('|')) //æ³¨æ„æ˜¯å•å¼•å· 
 
-    //´ÓµçÓ°Êı¾İÖĞ»ñÈ¡µÚÈı¸ö×Ö¶Î²¢È¡³öÄê·İ²¢×ª³ÉÊıÖµ,Èç¹û²»Æ¥ÅäÄ¬ÈÏÎª1900Äê 
+    //ä»ç”µå½±æ•°æ®ä¸­è·å–ç¬¬ä¸‰ä¸ªå­—æ®µå¹¶å–å‡ºå¹´ä»½å¹¶è½¬æˆæ•°å€¼,å¦‚æœä¸åŒ¹é…é»˜è®¤ä¸º1900å¹´ 
     val pattern = "([0-9]+)-([A-Za-z]+)-([0-9]+)".r
     val years = movie_fields.map(fields => fields(2)).map(x => {
       x match {
@@ -115,41 +115,41 @@ object ScalaApp3 {
       }
     })
     // # we filter out any 'bad' data points here
-    //¹ıÂËµô1900
+    //è¿‡æ»¤æ‰1900
     val years_filtered = years.filter(x => x != 1900)
     val years_1900 = years.filter(x => x == 1900)
-    //Ê¹ÓÃ1988Äê¼õÈ¥Äê·İ,Í¬Ê±°´KÀàĞÍÍ³¼Æ,°üº¬<K,Long>¼üÖµ¶Ô£¬LongÊÇÃ¿¸öK³öÏÖµÄÆµÂÊ
-    //¼ÆËã²»Í¬ÄêÁäµçÓ°ÊıÄ¿
+    //ä½¿ç”¨1988å¹´å‡å»å¹´ä»½,åŒæ—¶æŒ‰Kç±»å‹ç»Ÿè®¡,åŒ…å«<K,Long>é”®å€¼å¯¹ï¼ŒLongæ˜¯æ¯ä¸ªKå‡ºç°çš„é¢‘ç‡
+    //è®¡ç®—ä¸åŒå¹´é¾„ç”µå½±æ•°ç›®
     val movie_ages = years_filtered.map(yr => 1998 - yr).countByValue()
-    //È¡³öµçÓ°ÊıÄ¿
+    //å–å‡ºç”µå½±æ•°ç›®
     val values = movie_ages.values
-    //È¡³öµçÓ°ÄêÁä
+    //å–å‡ºç”µå½±å¹´é¾„
     val bins = movie_ages.keys
 
-    /**ÆÀ¼¶Êı¾İ**/
+    /**è¯„çº§æ•°æ®**/
     val rating_data_raw = sc.textFile("ml-100k/u.data")
-    //ÓÃ»§ID  | Ó°Æ¬ID   | ÆÀ¼¶   | Ê±¼ä´Á	
+    //ç”¨æˆ·ID  | å½±ç‰‡ID   | è¯„çº§   | æ—¶é—´æˆ³	
     //196	    | 242	    |  3   |	881250949
     println(rating_data_raw.first())
-    //10WÌõÊı¾İ
+    //10Wæ¡æ•°æ®
     val num_ratings = rating_data_raw.count()
-    println("µÈ¼¶×ÜÊı¾İ:" + num_ratings)
-    //Êı¾İ·Ö¸ô
+    println("ç­‰çº§æ€»æ•°æ®:" + num_ratings)
+    //æ•°æ®åˆ†éš”
     val rating_dataRaw = rating_data_raw.map(line => line.split("\t"))
-    //È¡³öµÈ¼¶Êı¾İ
+    //å–å‡ºç­‰çº§æ•°æ®
     val ratingsRaw = rating_dataRaw.map(fields => fields(2).toInt)
-    //È¡³ö×î´óµÈ¼¶
+    //å–å‡ºæœ€å¤§ç­‰çº§
     val max_ratingRaw = ratingsRaw.reduce((x, y) => max(x, y))
-    //È¡³ö×îĞ¡µÈ¼¶
+    //å–å‡ºæœ€å°ç­‰çº§
     val min_ratingRaw = ratingsRaw.reduce((x, y) => min(x, y))
-    //Æ½¾ùµÈ¼¶3.5
+    //å¹³å‡ç­‰çº§3.5
     val mean_ratingRaw = ratingsRaw.reduce((x, y) => x + y) / num_ratings.toFloat
     val statsRaw: StatCounter = ratings.stats()
-    //ÆÀ¼¶ÖĞÎ»Êı4
+    //è¯„çº§ä¸­ä½æ•°4
     val median_rating = statsRaw.mean
-    //Æ½¾ùÓÃ»§ÆÀ¼¶
+    //å¹³å‡ç”¨æˆ·è¯„çº§
     val ratings_per_user = num_ratings / num_users
-    //Æ½¾ùµçÓ°ÆÀ¼¶
+    //å¹³å‡ç”µå½±è¯„çº§
     val ratings_per_movie = num_ratings / num_movies
 <<<<<<< HEAD
     print("Min rating: %d".format(min_rating))
@@ -167,8 +167,8 @@ object ScalaApp3 {
     println("Average # of ratings per movie: %d".format(ratings_per_movie))
 >>>>>>> 909e73ce8d55704746c86f6b74a12382a8deb3dc
 
-    /**È±Ê§Êı¾İÌî³ä¶ÔÏÂÃæ·¢ĞĞÈÕÆÚÓĞÎÊÌâ½øĞĞÌî³ä**/
-    //¹ıÂËµô·¢ĞĞÈÕÆÚÓĞÎÊÌâ 
+    /**ç¼ºå¤±æ•°æ®å¡«å……å¯¹ä¸‹é¢å‘è¡Œæ—¥æœŸæœ‰é—®é¢˜è¿›è¡Œå¡«å……**/
+    //è¿‡æ»¤æ‰å‘è¡Œæ—¥æœŸæœ‰é—®é¢˜ 
     val years_pre_processed = movie_fields.map(fields => fields(2)).map(x => {
       x match {
         case pattern(num, item, year) => {
@@ -184,15 +184,15 @@ object ScalaApp3 {
 
     val years_pre_processed_array: StatCounter = years_pre_processed.stats()
 
-    /**Ö°Òµ**/
+    /**èŒä¸š**/
     val user_fields = user_data.map(line => line.split('|'))
-    //ÓÃ»§ID|ÄêÁä  |ĞÔ±ğ|   Ö°Òµ         | ÓÊ±à
+    //ç”¨æˆ·ID|å¹´é¾„  |æ€§åˆ«|   èŒä¸š         | é‚®ç¼–
     // 1    |24  |  M |technician| 85711
     val all_occupations = user_fields.map(fields => fields(3)).distinct().collect()
 <<<<<<< HEAD
-    //ÅÅĞò
+    //æ’åº
 =======
-    //ÅÅĞò user_fields.map(fields => fields(3)).collect()
+    //æ’åº user_fields.map(fields => fields(3)).collect()
 >>>>>>> 909e73ce8d55704746c86f6b74a12382a8deb3dc
     all_occupations.sorted
     val map = mutable.Map.empty[String, Int]
@@ -207,7 +207,7 @@ object ScalaApp3 {
 
 =======
      
-      println("Ö°Òµ>>>"+occu+"\tidx:"+idx)
+      println("èŒä¸š>>>"+occu+"\tidx:"+idx)
       map(occu) = idx
        idx += 1
     }
@@ -216,22 +216,22 @@ object ScalaApp3 {
        println("222222>>>>>>>>>>>>>>"+u)
     }
     
-    //mapº¯ÊıÖĞ·µ»ØµÄÀàĞÍÎªArray[String]£¬²¢²»ÊÇString¡£
-    //flatMapÖ»»á½«String±âÆ½»¯³É×Ö·ûÊı×é£¬²¢²»»á°ÑArray[String]Ò²±âÆ½»¯³É×Ö·ûÊı×é
-    //ËùÒÔÊ¹ÓÃsplit·Ö¸ô\\s±íÊ¾ ¿Õ¸ñ,»Ø³µ,»»ĞĞµÈ¿Õ°×·û
-    //Èç¹û²»Ê¹ÓÃsplit·Ö¸ô\\s,flatMap»á°ÑÃ¿¸ö×Ö·û´®±ä³É×Ö·ûÊı×é
+    //mapå‡½æ•°ä¸­è¿”å›çš„ç±»å‹ä¸ºArray[String]ï¼Œå¹¶ä¸æ˜¯Stringã€‚
+    //flatMapåªä¼šå°†Stringæ‰å¹³åŒ–æˆå­—ç¬¦æ•°ç»„ï¼Œå¹¶ä¸ä¼šæŠŠArray[String]ä¹Ÿæ‰å¹³åŒ–æˆå­—ç¬¦æ•°ç»„
+    //æ‰€ä»¥ä½¿ç”¨splitåˆ†éš”\\sè¡¨ç¤º ç©ºæ ¼,å›è½¦,æ¢è¡Œç­‰ç©ºç™½ç¬¦
+    //å¦‚æœä¸ä½¿ç”¨splitåˆ†éš”\\s,flatMapä¼šæŠŠæ¯ä¸ªå­—ç¬¦ä¸²å˜æˆå­—ç¬¦æ•°ç»„
   
     println("Encoding of 'doctor': %d".format(map("doctor")))
     println("Encoding of 'programmer': %d".format(map("programmer")))        
       for(u<-user_fields.map(fields => fields(3)).flatMap(x => x.split("\\s")).distinct().zipWithIndex().collect()){
        println("111111>>>>>>>>>>>>>>"+u)
     }    
-    //mapº¯ÊıÖĞ·µ»ØµÄÀàĞÍÎªArray[String]£¬²¢²»ÊÇString¡£
-    //flatMapÖ»»á½«String±âÆ½»¯³É×Ö·ûÊı×é£¬²¢²»»á°ÑArray[String]Ò²±âÆ½»¯³É×Ö·ûÊı×é
-    //ËùÒÔÊ¹ÓÃsplit·Ö¸ô\\s±íÊ¾ ¿Õ¸ñ,»Ø³µ,»»ĞĞµÈ¿Õ°×·û
-    //Èç¹û²»Ê¹ÓÃsplit·Ö¸ô\\s,flatMap»á°ÑÃ¿¸ö×Ö·û´®±ä³É×Ö·ûÊı×é
+    //mapå‡½æ•°ä¸­è¿”å›çš„ç±»å‹ä¸ºArray[String]ï¼Œå¹¶ä¸æ˜¯Stringã€‚
+    //flatMapåªä¼šå°†Stringæ‰å¹³åŒ–æˆå­—ç¬¦æ•°ç»„ï¼Œå¹¶ä¸ä¼šæŠŠArray[String]ä¹Ÿæ‰å¹³åŒ–æˆå­—ç¬¦æ•°ç»„
+    //æ‰€ä»¥ä½¿ç”¨splitåˆ†éš”\\sè¡¨ç¤º ç©ºæ ¼,å›è½¦,æ¢è¡Œç­‰ç©ºç™½ç¬¦
+    //å¦‚æœä¸ä½¿ç”¨splitåˆ†éš”\\s,flatMapä¼šæŠŠæ¯ä¸ªå­—ç¬¦ä¸²å˜æˆå­—ç¬¦æ•°ç»„
     
-    //ÓëÉÏÃæ¹¦ÄÜÒ»Ñù distinctÈ¥µôÖØ¸´,zipWithIndex ·µ»Ø¶ÔÅ¼ÁĞ±í,µÚ¶ş¸ö×é³É²¿·ÖÊÇÔªËØÏÂ±ê,collectAsMap·µ»ØMap¸ñÊ½
+    //ä¸ä¸Šé¢åŠŸèƒ½ä¸€æ · distinctå»æ‰é‡å¤,zipWithIndex è¿”å›å¯¹å¶åˆ—è¡¨,ç¬¬äºŒä¸ªç»„æˆéƒ¨åˆ†æ˜¯å…ƒç´ ä¸‹æ ‡,collectAsMapè¿”å›Mapæ ¼å¼
     val all_terms_dict3 = user_fields.map(fields => fields(3)).flatMap(x => x.split("\\s")).distinct().zipWithIndex().collectAsMap()
          for(dic<-all_terms_dict3){
      println(">>>>>>>>>>>>>>"+dic)
@@ -240,11 +240,11 @@ object ScalaApp3 {
      println("222Encoding of 'doctor': %d".format(all_terms_dict3("doctor")))
      println("222 Encoding of 'programmer': %d".format(all_terms_dict3("programmer")))
      /**
-      * ½«Àà±ğÌØÕ÷×ª»»¶şÔªÏòÁ¿
-      * ¼ÙÉè±äÁ¿¿ÉÈ¡µÄÖµÓĞK¸ö,Èç¹û¶ÔÕâĞ©ÖµÓÃ1µ½K±àĞò,Ôò¿ÉÒÔÓÃ³¤¶ÈÎªKµÄ¶şÔªÏòÁ¿À´±íÊ¾Ò»¸ö±ä¸üµÄÈ¡Öµ
-      * ÔÚÕâ¸öÏòÁ¿Àï,¸ÃÈ¡Öµ¶ÔÓ¦µÄĞòºÅËùÔÚµÄÔªËØÎª1,ÆäËûÔªËØÎª0
-      * 1)½«ÏÈ´´½¨Ò»¸ö³¤¶ÈºÍÖ°ÒµÊıÄ¿ÏàÍ¬µÄÊı×é
-      * 2)ÆäËûÔªËØÎª0,ÌáÈ¡Ö°ÒµµÄĞòºÅ,½«Êı×éÖĞ¶ÔÓ¦¸ÃĞòºÅµÄÄÇ¸öÔªËØÖµ¸³Îª1
+      * å°†ç±»åˆ«ç‰¹å¾è½¬æ¢äºŒå…ƒå‘é‡
+      * å‡è®¾å˜é‡å¯å–çš„å€¼æœ‰Kä¸ª,å¦‚æœå¯¹è¿™äº›å€¼ç”¨1åˆ°Kç¼–åº,åˆ™å¯ä»¥ç”¨é•¿åº¦ä¸ºKçš„äºŒå…ƒå‘é‡æ¥è¡¨ç¤ºä¸€ä¸ªå˜æ›´çš„å–å€¼
+      * åœ¨è¿™ä¸ªå‘é‡é‡Œ,è¯¥å–å€¼å¯¹åº”çš„åºå·æ‰€åœ¨çš„å…ƒç´ ä¸º1,å…¶ä»–å…ƒç´ ä¸º0
+      * 1)å°†å…ˆåˆ›å»ºä¸€ä¸ªé•¿åº¦å’ŒèŒä¸šæ•°ç›®ç›¸åŒçš„æ•°ç»„
+      * 2)å…¶ä»–å…ƒç´ ä¸º0,æå–èŒä¸šçš„åºå·,å°†æ•°ç»„ä¸­å¯¹åº”è¯¥åºå·çš„é‚£ä¸ªå…ƒç´ å€¼èµ‹ä¸º1
       * **/
      val k = new Array[Int](all_terms_dict3.size)
      val k_programmer=all_terms_dict3("programmer")
@@ -261,25 +261,25 @@ object ScalaApp3 {
     //println("Index of term 'Dead': %d".format(all_terms_dict3("doctor"))
     // println("Index of term 'Rooms': %d".format(all_terms_dict3("programmer"))
    
-    //ÊµÏÖÓëÉÏÀàËÆ¹¦ÄÜ²¢¸ü¸ßĞ§
-    /**ÎÄ±¾ÌØÕ÷**/
+    //å®ç°ä¸ä¸Šç±»ä¼¼åŠŸèƒ½å¹¶æ›´é«˜æ•ˆ
+    /**æ–‡æœ¬ç‰¹å¾**/
     val raw_titles = movie_fields.map(fields => fields(1))
-    //×î³öÇ°5¸ö (\\(\\w+\\))   
-    val grps = "(\\(\\w+ \\))".r//¸Ã±í´ïÊ½ÕÒÑ°À¨ºÅÖ®¼äµÄ·Çµ¥´Ê(Êı×Ö)
+    //æœ€å‡ºå‰5ä¸ª (\\(\\w+\\))   
+    val grps = "(\\(\\w+ \\))".r//è¯¥è¡¨è¾¾å¼æ‰¾å¯»æ‹¬å·ä¹‹é—´çš„éå•è¯(æ•°å­—)
     raw_titles.take(20).foreach { x => 
       println(x)
-      grps.findAllMatchIn(x).foreach { x => println("±í´ïÊ½ÕÒÑ°À¨ºÅÖ®¼äµÄ·Çµ¥´Ê:"+x) }
+      grps.findAllMatchIn(x).foreach { x => println("è¡¨è¾¾å¼æ‰¾å¯»æ‹¬å·ä¹‹é—´çš„éå•è¯:"+x) }
      
       }
-    //¶ÔÔ­Ê¼±êÌâµ÷ÓÃ¸ÃÖ°º¯Êı,²¢µ÷ÓÃÒ»¸ö·Ö´Ê·¨À´½«´¦ÀíºóµÄ±êÌâ×ªÎª´Ê
+    //å¯¹åŸå§‹æ ‡é¢˜è°ƒç”¨è¯¥èŒå‡½æ•°,å¹¶è°ƒç”¨ä¸€ä¸ªåˆ†è¯æ³•æ¥å°†å¤„ç†åçš„æ ‡é¢˜è½¬ä¸ºè¯
   /* val movie_titles = raw_titles.map( m=>extract_title(m))
- //Ê¹ÓÃ¼òµ¥¿Õ°×·Ö´Ê·¨½«±êÌâ·Ö´ÊÎª´Ê
+ //ä½¿ç”¨ç®€å•ç©ºç™½åˆ†è¯æ³•å°†æ ‡é¢˜åˆ†è¯ä¸ºè¯
    val titles_terms=movie_titles.map { x => x.split(' ') }
      titles_terms.take(5).foreach { x => println(x)}
      
-    //ÏÂÃæÈ¡»ØËùÓĞ¿ÉÄÜµÄ´Ê,ÒÔ±ã¹¹½¨Ò»¸ö´Êµ½ĞòºÅµÄÓ³Éä×Öµä
+    //ä¸‹é¢å–å›æ‰€æœ‰å¯èƒ½çš„è¯,ä»¥ä¾¿æ„å»ºä¸€ä¸ªè¯åˆ°åºå·çš„æ˜ å°„å­—å…¸
     val all_times=titles_terms.flatMap { x => x }.distinct().collect()
-    //´´½¨Ò»¸öĞÂµÄ×ÖµäÀ´±£´æ´Ê,²¢·ÖÅäKÖ®1ĞòºÅ
+    //åˆ›å»ºä¸€ä¸ªæ–°çš„å­—å…¸æ¥ä¿å­˜è¯,å¹¶åˆ†é…Kä¹‹1åºå·
      val maps = mutable.Map.empty[String, Int]
        idx = 0
     for (occu <- all_times) {
@@ -290,8 +290,8 @@ object ScalaApp3 {
     println("Encoding of 'doctor': %d".format(map("Dead")))
     println("Encoding of 'programmer': %d".format(map("Rooms"))
     
-    //¿ÉÒÔÍ¨¹ızipWithIndexº¯ÊıÀ´¸ü¸ßĞ§µÃµ½ÏàÍ¬½á¹û,¶ÔÖµ½øĞĞºÏ²¢ÒÔÉú³ÉÒ»¸öĞÂµÄ¼üÖµ¶ÔRDD
-    //¶ÔĞÂµÄRDD,ÆäÖ÷¼üÎª´Ê,ÖµÎª´ÊÔÚ´Ê×ÖµäÖĞµÄĞòºÅ    
+    //å¯ä»¥é€šè¿‡zipWithIndexå‡½æ•°æ¥æ›´é«˜æ•ˆå¾—åˆ°ç›¸åŒç»“æœ,å¯¹å€¼è¿›è¡Œåˆå¹¶ä»¥ç”Ÿæˆä¸€ä¸ªæ–°çš„é”®å€¼å¯¹RDD
+    //å¯¹æ–°çš„RDD,å…¶ä¸»é”®ä¸ºè¯,å€¼ä¸ºè¯åœ¨è¯å­—å…¸ä¸­çš„åºå·    
     val all_terms_dict2 = title_terms.flatMap(x=> x).distinct().zipWithIndex().collectAsMap()
     println("Index of term 'Dead': %d".format(all_terms_dict2("Dead"))
     println("Index of term 'Rooms': %d".format(all_terms_dict2("Rooms"))
@@ -299,9 +299,9 @@ object ScalaApp3 {
    
     import org.apache.spark.ml.feature.Normalizer
 
-     /**ÕıÔò»¯***/
+     /**æ­£åˆ™åŒ–***/
      val l2Normalizer = new Normalizer()
-     //×ª»»
+     //è½¬æ¢
      // val normalized_x_mllib = l2Normalizer.transform(vector).first().toArray()
 
 

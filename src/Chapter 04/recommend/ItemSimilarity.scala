@@ -5,30 +5,30 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.SparkContext._
 
 /**
- * ÓÃ»§ÆÀ·Ö.
- * @param userid ÓÃ»§
- * @param itemid ÆÀ·ÖÎïÆ·
- * @param pref ÆÀ·Ö
+ * ç”¨æˆ·è¯„åˆ†.
+ * @param userid ç”¨æˆ·
+ * @param itemid è¯„åˆ†ç‰©å“
+ * @param pref è¯„åˆ†
  */
 case class ItemPref(
   val userid: String,
   val itemid: String,
   val pref: Double) extends Serializable
 /**
- * ÓÃ»§ÍÆ¼ö.
- * @param userid ÓÃ»§
- * @param itemid ÍÆ¼öÎïÆ·
- * @param pref ÆÀ·Ö
+ * ç”¨æˆ·æŽ¨è.
+ * @param userid ç”¨æˆ·
+ * @param itemid æŽ¨èç‰©å“
+ * @param pref è¯„åˆ†
  */
 case class UserRecomm(
   val userid: String,
   val itemid: String,
   val pref: Double) extends Serializable
 /**
- * ÏàËÆ¶È.
- * @param itemid1 ÎïÆ·
- * @param itemid2 ÎïÆ·
- * @param similar ÏàËÆ¶È
+ * ç›¸ä¼¼åº¦.
+ * @param itemid1 ç‰©å“
+ * @param itemid2 ç‰©å“
+ * @param similar ç›¸ä¼¼åº¦
  */
 case class ItemSimi(
   val itemid1: String,
@@ -36,26 +36,26 @@ case class ItemSimi(
   val similar: Double) extends Serializable
 
 /**
- * ÏàËÆ¶È¼ÆËã.
- * Ö§³Ö£ºÍ¬ÏÖÏàËÆ¶È¡¢Å·ÊÏ¾àÀëÏàËÆ¶È¡¢ÓàÏÒÏàËÆ¶È
+ * ç›¸ä¼¼åº¦è®¡ç®—.
+ * æ”¯æŒï¼šåŒçŽ°ç›¸ä¼¼åº¦ã€æ¬§æ°è·ç¦»ç›¸ä¼¼åº¦ã€ä½™å¼¦ç›¸ä¼¼åº¦
  *
  */
 class ItemSimilarity extends Serializable {
 
   /**
-   * ÏàËÆ¶È¼ÆËã.
-   * @param user_rdd ÓÃ»§ÆÀ·Ö
-   * @param stype ¼ÆËãÏàËÆ¶È¹«Ê½
-   * @param RDD[ItemSimi] ·µ»ØÎïÆ·ÏàËÆ¶È
+   * ç›¸ä¼¼åº¦è®¡ç®—.
+   * @param user_rdd ç”¨æˆ·è¯„åˆ†
+   * @param stype è®¡ç®—ç›¸ä¼¼åº¦å…¬å¼
+   * @param RDD[ItemSimi] è¿”å›žç‰©å“ç›¸ä¼¼åº¦
    *
    */
   def Similarity(user_rdd: RDD[ItemPref], stype: String): (RDD[ItemSimi]) = {
     val simil_rdd = stype match {
-      case "cooccurrence" => //Í¬ÏÖÏàËÆ¶È
+      case "cooccurrence" => //åŒçŽ°ç›¸ä¼¼åº¦
         ItemSimilarity.CooccurrenceSimilarity(user_rdd)
-      case "cosine" =>// ÓàÏÒÏàËÆ¶È¾ØÕó¼ÆËã.
+      case "cosine" =>// ä½™å¼¦ç›¸ä¼¼åº¦çŸ©é˜µè®¡ç®—.
         ItemSimilarity.CosineSimilarity(user_rdd)
-      case "euclidean" =>//Å·ÊÏ¾àÀëÏàËÆ¶È¾ØÕó¼ÆËã
+      case "euclidean" =>//æ¬§æ°è·ç¦»ç›¸ä¼¼åº¦çŸ©é˜µè®¡ç®—
         ItemSimilarity.EuclideanDistanceSimilarity(user_rdd)
       case _ =>
         ItemSimilarity.CooccurrenceSimilarity(user_rdd)
@@ -68,26 +68,26 @@ class ItemSimilarity extends Serializable {
 object ItemSimilarity {
 
   /**
-   * Í¬ÏÖÏàËÆ¶È¾ØÕó¼ÆËã.
-   * w(i,j) = N(i)¡ÉN(j)/sqrt(N(i)*N(j))
-   * @param user_rdd ÓÃ»§ÆÀ·Ö
-   * @param RDD[ItemSimi] ·µ»ØÎïÆ·ÏàËÆ¶È
+   * åŒçŽ°ç›¸ä¼¼åº¦çŸ©é˜µè®¡ç®—.
+   * w(i,j) = N(i)âˆ©N(j)/sqrt(N(i)*N(j))
+   * @param user_rdd ç”¨æˆ·è¯„åˆ†
+   * @param RDD[ItemSimi] è¿”å›žç‰©å“ç›¸ä¼¼åº¦
    *
    */
   def CooccurrenceSimilarity(user_rdd: RDD[ItemPref]): (RDD[ItemSimi]) = {
-    // 0 Êý¾Ý×ö×¼±¸
+    // 0 æ•°æ®åšå‡†å¤‡
     val user_rdd1 = user_rdd.map(f => (f.userid, f.itemid, f.pref))
     val user_rdd2 = user_rdd1.map(f => (f._1, f._2))
-    // 1 (ÓÃ»§£ºÎïÆ·) µÑ¿¨¶û»ý (ÓÃ»§£ºÎïÆ·) => ÎïÆ·:ÎïÆ·×éºÏ     
+    // 1 (ç”¨æˆ·ï¼šç‰©å“) ç¬›å¡å°”ç§¯ (ç”¨æˆ·ï¼šç‰©å“) => ç‰©å“:ç‰©å“ç»„åˆ     
     val user_rdd3 = user_rdd2.join(user_rdd2)
     val user_rdd4 = user_rdd3.map(f => (f._2, 1))
-    // 2 ÎïÆ·:ÎïÆ·:Æµ´Î 
+    // 2 ç‰©å“:ç‰©å“:é¢‘æ¬¡ 
     val user_rdd5 = user_rdd4.reduceByKey((x, y) => x + y)
-    // 3 ¶Ô½Ç¾ØÕó 
+    // 3 å¯¹è§’çŸ©é˜µ 
     val user_rdd6 = user_rdd5.filter(f => f._1._1 == f._1._2)
-    // 4 ·Ç¶Ô½Ç¾ØÕó 
+    // 4 éžå¯¹è§’çŸ©é˜µ 
     val user_rdd7 = user_rdd5.filter(f => f._1._1 != f._1._2)
-    // 5 ¼ÆËãÍ¬ÏÖÏàËÆ¶È£¨ÎïÆ·1£¬ÎïÆ·2£¬Í¬ÏÖÆµ´Î£©
+    // 5 è®¡ç®—åŒçŽ°ç›¸ä¼¼åº¦ï¼ˆç‰©å“1ï¼Œç‰©å“2ï¼ŒåŒçŽ°é¢‘æ¬¡ï¼‰
     val user_rdd8 = user_rdd7.map(f => (f._1._1, (f._1._1, f._1._2, f._2))).
       join(user_rdd6.map(f => (f._1._1, f._2)))
     val user_rdd9 = user_rdd8.map(f => (f._2._1._2, (f._2._1._1,
@@ -95,31 +95,31 @@ object ItemSimilarity {
     val user_rdd10 = user_rdd9.join(user_rdd6.map(f => (f._1._1, f._2)))
     val user_rdd11 = user_rdd10.map(f => (f._2._1._1, f._2._1._2, f._2._1._3, f._2._1._4, f._2._2))
     val user_rdd12 = user_rdd11.map(f => (f._1, f._2, (f._3 / sqrt(f._4 * f._5))))
-    // 6 ½á¹û·µ»Ø
+    // 6 ç»“æžœè¿”å›ž
     user_rdd12.map(f => ItemSimi(f._1, f._2, f._3))
   }
 
   /**
-   * ÓàÏÒÏàËÆ¶È¾ØÕó¼ÆËã.
-   * T(x,y) = ¡Æx(i)y(i) / sqrt(¡Æ(x(i)*x(i)) * ¡Æ(y(i)*y(i)))
-   * @param user_rdd ÓÃ»§ÆÀ·Ö
-   * @param RDD[ItemSimi] ·µ»ØÎïÆ·ÏàËÆ¶È
+   * ä½™å¼¦ç›¸ä¼¼åº¦çŸ©é˜µè®¡ç®—.
+   * T(x,y) = âˆ‘x(i)y(i) / sqrt(âˆ‘(x(i)*x(i)) * âˆ‘(y(i)*y(i)))
+   * @param user_rdd ç”¨æˆ·è¯„åˆ†
+   * @param RDD[ItemSimi] è¿”å›žç‰©å“ç›¸ä¼¼åº¦
    *
    */
   def CosineSimilarity(user_rdd: RDD[ItemPref]): (RDD[ItemSimi]) = {
-    // 0 Êý¾Ý×ö×¼±¸
+    // 0 æ•°æ®åšå‡†å¤‡
     val user_rdd1 = user_rdd.map(f => (f.userid, f.itemid, f.pref))
     val user_rdd2 = user_rdd1.map(f => (f._1, (f._2, f._3)))
-    // 1 (ÓÃ»§,ÎïÆ·,ÆÀ·Ö) µÑ¿¨¶û»ý (ÓÃ»§,ÎïÆ·,ÆÀ·Ö) => £¨ÎïÆ·1,ÎïÆ·2,ÆÀ·Ö1,ÆÀ·Ö2£©×éºÏ       
+    // 1 (ç”¨æˆ·,ç‰©å“,è¯„åˆ†) ç¬›å¡å°”ç§¯ (ç”¨æˆ·,ç‰©å“,è¯„åˆ†) => ï¼ˆç‰©å“1,ç‰©å“2,è¯„åˆ†1,è¯„åˆ†2ï¼‰ç»„åˆ       
     val user_rdd3 = user_rdd2.join(user_rdd2)
     val user_rdd4 = user_rdd3.map(f => ((f._2._1._1, f._2._2._1), (f._2._1._2, f._2._2._2)))
-    // 2 £¨ÎïÆ·1,ÎïÆ·2,ÆÀ·Ö1,ÆÀ·Ö2£©×éºÏ => £¨ÎïÆ·1,ÎïÆ·2,ÆÀ·Ö1*ÆÀ·Ö2£© ×éºÏ ²¢ÀÛ¼Ó       
+    // 2 ï¼ˆç‰©å“1,ç‰©å“2,è¯„åˆ†1,è¯„åˆ†2ï¼‰ç»„åˆ => ï¼ˆç‰©å“1,ç‰©å“2,è¯„åˆ†1*è¯„åˆ†2ï¼‰ ç»„åˆ å¹¶ç´¯åŠ        
     val user_rdd5 = user_rdd4.map(f => (f._1, f._2._1 * f._2._2)).reduceByKey(_ + _)
-    // 3 ¶Ô½Ç¾ØÕó 
+    // 3 å¯¹è§’çŸ©é˜µ 
     val user_rdd6 = user_rdd5.filter(f => f._1._1 == f._1._2)
-    // 4 ·Ç¶Ô½Ç¾ØÕó 
+    // 4 éžå¯¹è§’çŸ©é˜µ 
     val user_rdd7 = user_rdd5.filter(f => f._1._1 != f._1._2)
-    // 5 ¼ÆËãÏàËÆ¶È
+    // 5 è®¡ç®—ç›¸ä¼¼åº¦
     val user_rdd8 = user_rdd7.map(f => (f._1._1, (f._1._1, f._1._2, f._2))).
       join(user_rdd6.map(f => (f._1._1, f._2)))
     val user_rdd9 = user_rdd8.map(f => (f._2._1._2, (f._2._1._1,
@@ -127,35 +127,35 @@ object ItemSimilarity {
     val user_rdd10 = user_rdd9.join(user_rdd6.map(f => (f._1._1, f._2)))
     val user_rdd11 = user_rdd10.map(f => (f._2._1._1, f._2._1._2, f._2._1._3, f._2._1._4, f._2._2))
     val user_rdd12 = user_rdd11.map(f => (f._1, f._2, (f._3 / sqrt(f._4 * f._5))))
-    // 6 ½á¹û·µ»Ø
+    // 6 ç»“æžœè¿”å›ž
     user_rdd12.map(f => ItemSimi(f._1, f._2, f._3))
   }
 
   /**
-   * Å·ÊÏ¾àÀëÏàËÆ¶È¾ØÕó¼ÆËã.
-   * d(x, y) = sqrt(¡Æ((x(i)-y(i)) * (x(i)-y(i))))
+   * æ¬§æ°è·ç¦»ç›¸ä¼¼åº¦çŸ©é˜µè®¡ç®—.
+   * d(x, y) = sqrt(âˆ‘((x(i)-y(i)) * (x(i)-y(i))))
    * sim(x, y) = n / (1 + d(x, y))
-   * @param user_rdd ÓÃ»§ÆÀ·Ö
-   * @param RDD[ItemSimi] ·µ»ØÎïÆ·ÏàËÆ¶È
+   * @param user_rdd ç”¨æˆ·è¯„åˆ†
+   * @param RDD[ItemSimi] è¿”å›žç‰©å“ç›¸ä¼¼åº¦
    *
    */
   def EuclideanDistanceSimilarity(user_rdd: RDD[ItemPref]): (RDD[ItemSimi]) = {
-    // 0 Êý¾Ý×ö×¼±¸
+    // 0 æ•°æ®åšå‡†å¤‡
     val user_rdd1 = user_rdd.map(f => (f.userid, f.itemid, f.pref))
     val user_rdd2 = user_rdd1.map(f => (f._1, (f._2, f._3)))
-    // 1 (ÓÃ»§,ÎïÆ·,ÆÀ·Ö) µÑ¿¨¶û»ý (ÓÃ»§,ÎïÆ·,ÆÀ·Ö) => £¨ÎïÆ·1,ÎïÆ·2,ÆÀ·Ö1,ÆÀ·Ö2£©×éºÏ       
+    // 1 (ç”¨æˆ·,ç‰©å“,è¯„åˆ†) ç¬›å¡å°”ç§¯ (ç”¨æˆ·,ç‰©å“,è¯„åˆ†) => ï¼ˆç‰©å“1,ç‰©å“2,è¯„åˆ†1,è¯„åˆ†2ï¼‰ç»„åˆ       
     val user_rdd3 = user_rdd2 join user_rdd2
     val user_rdd4 = user_rdd3.map(f => ((f._2._1._1, f._2._2._1), (f._2._1._2, f._2._2._2)))
-    // 2 £¨ÎïÆ·1,ÎïÆ·2,ÆÀ·Ö1,ÆÀ·Ö2£©×éºÏ => £¨ÎïÆ·1,ÎïÆ·2,ÆÀ·Ö1-ÆÀ·Ö2£© ×éºÏ ²¢ÀÛ¼Ó       
+    // 2 ï¼ˆç‰©å“1,ç‰©å“2,è¯„åˆ†1,è¯„åˆ†2ï¼‰ç»„åˆ => ï¼ˆç‰©å“1,ç‰©å“2,è¯„åˆ†1-è¯„åˆ†2ï¼‰ ç»„åˆ å¹¶ç´¯åŠ        
     val user_rdd5 = user_rdd4.map(f => (f._1, (f._2._1 - f._2._2) * (f._2._1 - f._2._2))).reduceByKey(_ + _)
-    // 3 £¨ÎïÆ·1,ÎïÆ·2,ÆÀ·Ö1,ÆÀ·Ö2£©×éºÏ => £¨ÎïÆ·1,ÎïÆ·2,1£© ×éºÏ ²¢ÀÛ¼Ó    ¼ÆËãÖØµþÊý
+    // 3 ï¼ˆç‰©å“1,ç‰©å“2,è¯„åˆ†1,è¯„åˆ†2ï¼‰ç»„åˆ => ï¼ˆç‰©å“1,ç‰©å“2,1ï¼‰ ç»„åˆ å¹¶ç´¯åŠ     è®¡ç®—é‡å æ•°
     val user_rdd6 = user_rdd4.map(f => (f._1, 1)).reduceByKey(_ + _)
-    // 4 ·Ç¶Ô½Ç¾ØÕó 
+    // 4 éžå¯¹è§’çŸ©é˜µ 
     val user_rdd7 = user_rdd5.filter(f => f._1._1 != f._1._2)
-    // 5 ¼ÆËãÏàËÆ¶È
+    // 5 è®¡ç®—ç›¸ä¼¼åº¦
     val user_rdd8 = user_rdd7.join(user_rdd6)
     val user_rdd9 = user_rdd8.map(f => (f._1._1, f._1._2, f._2._2 / (1 + sqrt(f._2._1))))
-    // 6 ½á¹û·µ»Ø
+    // 6 ç»“æžœè¿”å›ž
     user_rdd9.map(f => ItemSimi(f._1, f._2, f._3))
   }
 

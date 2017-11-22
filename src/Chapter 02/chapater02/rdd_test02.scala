@@ -17,13 +17,13 @@ object rdd_test02 {
     Logger.getRootLogger.setLevel(Level.WARN)
 
     val data_path = "/home/huangmeiling/sample_stat.txt"
-    //×ª»»
-    val data = sc.textFile("ml-100k/sample_stat.txt").map(_.split("\t")).map(f => f.map(f => f.toDouble)) //×ª»»³ÉdoubleÀàĞÍ
+    //è½¬æ¢
+    val data = sc.textFile("ml-100k/sample_stat.txt").map(_.split("\t")).map(f => f.map(f => f.toDouble)) //è½¬æ¢æˆdoubleç±»å‹
     //val data = sc.textFile(data_path)
-    //½«Êı¾İ×ª»»³É RDD[Vector]¸ñÊ½
+    //å°†æ•°æ®è½¬æ¢æˆ RDD[Vector]æ ¼å¼
     val data1 = data.map(f => Vectors.dense(f))
     val stat1 = Statistics.colStats(data1)
-    //¼ÆËãÃ¿ÁĞ×î´óÖµ,×îĞ¡Öµ,Æ½¾ùÖµ,·½²îÖµ,L1·¶Êı,L2·¶Êı
+    //è®¡ç®—æ¯åˆ—æœ€å¤§å€¼,æœ€å°å€¼,å¹³å‡å€¼,æ–¹å·®å€¼,L1èŒƒæ•°,L2èŒƒæ•°
     stat1.max
     val max = stat1.max
     val min = stat1.min
@@ -31,13 +31,13 @@ object rdd_test02 {
     val variance = stat1.variance
     val normL1 = stat1.normL1
     val normL2 = stat1.normL2
-    println("×î´óÖµ:%s,×îĞ¡Öµ:%s,Æ½¾ùÖµ:%s,·½²îÖµ:%s,L1·¶Êı:%s,L2·¶Êı:%s".format(max.toString(), min.toString(), men.toString(), variance.toString(), normL1.toString(), normL2.toString()))
-    //PearsonÏà¹ØÊÇ×î³£¼ûµÄÏà¹Ø¹«Ê½£¬ÓÃÓÚ¼ÆËãÁ¬ĞøÊı¾İµÄÏà¹Ø£¬±ÈÈç¼ÆËã°àÉÏÑ§ÉúÊıÑ§³É¼¨ºÍÓïÎÄ³É¼¨µÄÏà¹Ø¿ÉÒÔÓÃPearsonÏà¹Ø
-    //spearmanÏà¹ØÊÇ×¨ÃÅÓÃÓÚ·ÖÎöË³ĞòÊı¾İ£¬¾ÍÊÇÄÇÖÖÖ»ÓĞË³Ğò¹ØÏµ£¬µ«²¢·ÇµÈ¾àµÄÊı¾İ£¬±ÈÈç¼ÆËã°àÉÏÑ§ÉúÊıÑ§³É¼¨ÅÅÃûºÍÓïÎÄ³É¼¨ÅÅÃûµÄ¹ØÏµ
+    println("æœ€å¤§å€¼:%s,æœ€å°å€¼:%s,å¹³å‡å€¼:%s,æ–¹å·®å€¼:%s,L1èŒƒæ•°:%s,L2èŒƒæ•°:%s".format(max.toString(), min.toString(), men.toString(), variance.toString(), normL1.toString(), normL2.toString()))
+    //Pearsonç›¸å…³æ˜¯æœ€å¸¸è§çš„ç›¸å…³å…¬å¼ï¼Œç”¨äºè®¡ç®—è¿ç»­æ•°æ®çš„ç›¸å…³ï¼Œæ¯”å¦‚è®¡ç®—ç­ä¸Šå­¦ç”Ÿæ•°å­¦æˆç»©å’Œè¯­æ–‡æˆç»©çš„ç›¸å…³å¯ä»¥ç”¨Pearsonç›¸å…³
+    //spearmanç›¸å…³æ˜¯ä¸“é—¨ç”¨äºåˆ†æé¡ºåºæ•°æ®ï¼Œå°±æ˜¯é‚£ç§åªæœ‰é¡ºåºå…³ç³»ï¼Œä½†å¹¶éç­‰è·çš„æ•°æ®ï¼Œæ¯”å¦‚è®¡ç®—ç­ä¸Šå­¦ç”Ÿæ•°å­¦æˆç»©æ’åå’Œè¯­æ–‡æˆç»©æ’åçš„å…³ç³»
     /**
-     * Æ¤¶ûÉ­Ïà¹ØÏµÊı:
-     * ÊÇÓÃÀ´·´Ó¦Á½¸ö±äÁ¿ÏàËÆ³Ì¶ÈµÄÍ³¼ÆÁ¿¡£»òÕßËµ¿ÉÒÔÓÃÀ´¼ÆËãÁ½¸öÏòÁ¿µÄÏàËÆ¶È£¨ÔÚ»ùÓÚÏòÁ¿¿Õ¼äÄ£ĞÍµÄÎÄ±¾·ÖÀà¡¢ÓÃ»§Ï²ºÃÍÆ¼öÏµÍ³ÖĞ¶¼ÓĞÓ¦ÓÃ£©
-     * SpearmanÖÈÏà¹ØÏµÊı:
+     * çš®å°”æ£®ç›¸å…³ç³»æ•°:
+     * æ˜¯ç”¨æ¥ååº”ä¸¤ä¸ªå˜é‡ç›¸ä¼¼ç¨‹åº¦çš„ç»Ÿè®¡é‡ã€‚æˆ–è€…è¯´å¯ä»¥ç”¨æ¥è®¡ç®—ä¸¤ä¸ªå‘é‡çš„ç›¸ä¼¼åº¦ï¼ˆåœ¨åŸºäºå‘é‡ç©ºé—´æ¨¡å‹çš„æ–‡æœ¬åˆ†ç±»ã€ç”¨æˆ·å–œå¥½æ¨èç³»ç»Ÿä¸­éƒ½æœ‰åº”ç”¨ï¼‰
+     * Spearmanç§©ç›¸å…³ç³»æ•°:
      * 
      */
     val corr1 = Statistics.corr(data1, "pearson")
@@ -48,7 +48,7 @@ object rdd_test02 {
 
     val v1 = Vectors.dense(43.0, 9.0)
     val v2 = Vectors.dense(44.0, 4.0)
-    //¼ìÑé
+    //æ£€éªŒ
     val c1 = Statistics.chiSqTest(v1, v2)
 
     val KMeansRDD = KMeansDataGenerator.generateKMeansRDD(sc, 40, 5, 3, 1.0, 2)

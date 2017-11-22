@@ -6,31 +6,31 @@ import org.apache.spark.mllib.recommendation.ALS
 import org.apache.spark.mllib.recommendation.MatrixFactorizationModel
 import org.apache.spark.mllib.recommendation.Rating
 /**
- * ALSÊÇ½»Ìæ×îĞ¡¶ş³ËµÄ¼ò³Æ,ÔÚ»úÆ÷Ñ§Ï°ÖĞALSÌØÖ¸Ê¹ÓÃ½»Ìæ×îĞ¡¶ş³ËÇó½âµÄÒ»ÈËĞ­Í¬ÍÆ¼öËã·¨
- * ËüÊÇÍ¨¹ı¹Û²ìµ½µÄËùÓĞÓÃ»§¸ø²úÆ·´ò·Ö,À´ÍÆ¶ÏÃ¿¸öÓÃ»§µÄÏ²ºÃ²¢ÏòÓÃ»§ÍÆ¼öÊÊºÏµÄ²úÆ·
+ * ALSæ˜¯äº¤æ›¿æœ€å°äºŒä¹˜çš„ç®€ç§°,åœ¨æœºå™¨å­¦ä¹ ä¸­ALSç‰¹æŒ‡ä½¿ç”¨äº¤æ›¿æœ€å°äºŒä¹˜æ±‚è§£çš„ä¸€äººååŒæ¨èç®—æ³•
+ * å®ƒæ˜¯é€šè¿‡è§‚å¯Ÿåˆ°çš„æ‰€æœ‰ç”¨æˆ·ç»™äº§å“æ‰“åˆ†,æ¥æ¨æ–­æ¯ä¸ªç”¨æˆ·çš„å–œå¥½å¹¶å‘ç”¨æˆ·æ¨èé€‚åˆçš„äº§å“
  */
 object als1 {
 
   def main(args: Array[String]) {
 
-    //0 ¹¹½¨Spark¶ÔÏó
+    //0 æ„å»ºSparkå¯¹è±¡
     val conf = new SparkConf().setAppName("ALS").setMaster("local")
     val sc = new SparkContext(conf)
     Logger.getRootLogger.setLevel(Level.WARN)
 
-    //1 ¶ÁÈ¡Ñù±¾Êı¾İ
+    //1 è¯»å–æ ·æœ¬æ•°æ®
     val data = sc.textFile("ml-100k/test.data")
     val ratings = data.map(_.split(',') match {
       case Array(user, item, rate) =>
         Rating(user.toInt, item.toInt, rate.toDouble)
     })
 
-    //2 ½¨Á¢Ä£ĞÍ
+    //2 å»ºç«‹æ¨¡å‹
     val rank = 10
     val numIterations = 20
     val model = ALS.train(ratings, rank, numIterations, 0.01)
 
-    //3 Ô¤²â½á¹û
+    //3 é¢„æµ‹ç»“æœ
     val usersProducts = ratings.map {
       case Rating(user, product, rate) =>
         (user, product)
@@ -51,7 +51,7 @@ object als1 {
     }.mean()
     println("Mean Squared Error = " + MSE)
 
-    //4 ±£´æ/¼ÓÔØÄ£ĞÍ
+    //4 ä¿å­˜/åŠ è½½æ¨¡å‹
     model.save(sc, "myModelPath")
     val sameModel = MatrixFactorizationModel.load(sc, "myModelPath")
   }
