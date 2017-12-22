@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.datanucleus:datanucleus-api-jdo:3.2.6">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.datanucleus/datanucleus-api-jdo/3.2.6/cb21100ecc0d2e80dfd62067046c8a2a25a95c50/datanucleus-api-jdo-3.2.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.datanucleus/datanucleus-api-jdo/3.2.6/802cdd42537d1fdc1f16721be75fdef624252656/datanucleus-api-jdo-3.2.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

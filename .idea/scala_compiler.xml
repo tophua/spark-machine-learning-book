@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ScalaCompilerConfiguration">
+    <profile name="Gradle 1" modules="src_Chapter_01_main,src_Chapter_01_test,src_Chapter_02_main,src_Chapter_02_test,src_Chapter_03_main,src_Chapter_03_test,src_Chapter_04_main,src_Chapter_04_test,src_Chapter_05_main,src_Chapter_05_test,src_Chapter_06_main,src_Chapter_06_test,src_Chapter_07_main,src_Chapter_07_test,src_Chapter_08_main,src_Chapter_08_test,src_Chapter_09_main,src_Chapter_09_test,src_Chapter_10_main,src_Chapter_10_test,src_Chapter_14_main,src_Chapter_14_test">
+      <option name="deprecationWarnings" value="true" />
+      <option name="uncheckedWarnings" value="true" />
+      <parameters>
+        <parameter value="-target:jvm-1.8" />
+      </parameters>
+    </profile>
+  </component>
+</project>

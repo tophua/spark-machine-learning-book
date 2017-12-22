@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.parquet:parquet-format:2.3.0-incubating">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.parquet/parquet-format/2.3.0-incubating/9ce0a76de9e695abc81d28bd6e3cc75322d14d28/parquet-format-2.3.0-incubating.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.parquet/parquet-format/2.3.0-incubating/3d098f6e556ded6b8d0e990bead6fe8c42a47c2b/parquet-format-2.3.0-incubating-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

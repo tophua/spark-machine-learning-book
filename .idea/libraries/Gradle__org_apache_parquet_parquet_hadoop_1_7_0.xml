@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.parquet:parquet-hadoop:1.7.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.parquet/parquet-hadoop/1.7.0/a3d39d6556d0f52a8a47082d2421f70ec74c3e28/parquet-hadoop-1.7.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.parquet/parquet-hadoop/1.7.0/7433755fdcae8e5e4d783ab8d78c0b6f0041e9e6/parquet-hadoop-1.7.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

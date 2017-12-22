@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.tachyonproject:tachyon-underfs-hdfs:0.8.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tachyonproject/tachyon-underfs-hdfs/0.8.2/36f23a23bae1c007110c1e2560fe563cbccb75f6/tachyon-underfs-hdfs-0.8.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tachyonproject/tachyon-underfs-hdfs/0.8.2/bb8221e1d2ef614b2bbe9eb3f32821793823ba7a/tachyon-underfs-hdfs-0.8.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+archivesBaseName = 'Chapter03'
+version = '1.0'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'utf-8'
+}
+
+sourceSets {
+    main.java.srcDirs = ['chapter03']
+   // main.resources.srcDirs = ['src/resources']
+}
+

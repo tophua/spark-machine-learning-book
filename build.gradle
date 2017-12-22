@@ -1,0 +1,64 @@
+allprojects {
+    apply plugin: 'idea'
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url "http://maven.aliyun.com/nexus/content/groups/public/"
+        }
+        maven {
+            url "http://packages.confluent.io/maven/"
+        }
+    }
+
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'scala'
+    version = '1.0'
+    // JVM 版本号要求
+    sourceCompatibility = 1.8
+      targetCompatibility = 1.8
+    // java编译的时候缺省状态下会因为中文字符而失败
+    [compileJava,compileTestJava,javadoc]*.options*.encoding = 'UTF-8'
+ /*   jar {
+        manifest {
+            attributes("Implementation-Title": "Gradle")
+        }
+    }*/
+    configurations {
+        // 所有需要忽略的包定义在此
+      //  all*.exclude group: 'commons-httpclient'
+     //   all*.exclude group: 'commons-logging'
+      //  all*.exclude group: 'commons-beanutils', module: 'commons-beanutils'
+    }
+    dependencies {
+        // 通用依赖
+        compile group: 'org.apache.spark', name: 'spark-core_2.11', version: '1.6.2'
+        compile group: 'org.apache.spark', name: 'spark-sql_2.11', version: '1.6.2'
+        compile group: 'org.apache.spark', name: 'spark-mllib_2.11', version: '1.6.2'
+        compile group: 'org.apache.spark', name: 'spark-streaming_2.11', version: '1.6.2'
+        compile group: 'org.apache.spark', name: 'spark-hive_2.11', version: '1.6.2'
+        // https://mvnrepository.com/artifact/org.scala-lang/scala-library
+        compile group: 'org.scala-lang', name: 'scala-library', version: '2.11.8'
+       //compile group: 'org.apache.commons', name: 'commons-dbcp', version: '2.1.1'
+         compile group: 'commons-pool', name: 'commons-pool', version: '1.6'
+        compile group: 'commons-dbutils', name: 'commons-dbutils', version: '1.6'
+        //compile("commons-collections:commons-collections:$collections3Version")
+        compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+        //compile("commons-collections:commons-collections:3.4")
+        // 依赖maven中不存在的jar
+       // ext.jarTree = fileTree(dir: 'libs', include: '**/*.jar')
+       // ext.rootProjectLibs = new File(rootProject.rootDir, 'libs').getAbsolutePath()
+      //  ext.jarTree += fileTree(dir: rootProjectLibs, include: '**/*.jar')
+      //  compile jarTree
+        // 测试依赖
+    //    testCompile(
+    //            "junit:junit:4.12"
+   //     )
+    }
+
+}
+
+

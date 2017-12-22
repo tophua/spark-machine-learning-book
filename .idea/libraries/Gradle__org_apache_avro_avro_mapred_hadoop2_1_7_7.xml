@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.avro:avro-mapred:hadoop2:1.7.7">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.avro/avro-mapred/1.7.7/d8f23aff4a3c827c6a35009c8182872bfc0e52f5/avro-mapred-1.7.7-hadoop2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.avro/avro-mapred/1.7.7/5a33aec06e67b0eb64979a63a4949aff704b2a74/avro-mapred-1.7.7-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

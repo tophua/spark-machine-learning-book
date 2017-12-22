@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: net.hydromatic:eigenbase-properties:1.1.5">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.hydromatic/eigenbase-properties/1.1.5/a941956b3a4664d0cf728ece06ba25cc2110a3aa/eigenbase-properties-1.1.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.hydromatic/eigenbase-properties/1.1.5/d2ef6f3a0083a8746ba317695a411a232bb3db00/eigenbase-properties-1.1.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

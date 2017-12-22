@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.twitter:chill-java:0.5.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.twitter/chill-java/0.5.0/4b72c40509612ae221db6a2c2f733bd3e365ee5f/chill-java-0.5.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.twitter/chill-java/0.5.0/5a23bae4621915e276ddaa8b427fe5c4e7ffde9e/chill-java-0.5.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

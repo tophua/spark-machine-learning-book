@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="src_Chapter_01_main" target="1.8" />
+      <module name="src_Chapter_01_test" target="1.8" />
+      <module name="src_Chapter_02_main" target="1.8" />
+      <module name="src_Chapter_02_test" target="1.8" />
+      <module name="src_Chapter_03_main" target="1.8" />
+      <module name="src_Chapter_03_test" target="1.8" />
+      <module name="src_Chapter_04_main" target="1.8" />
+      <module name="src_Chapter_04_test" target="1.8" />
+      <module name="src_Chapter_05_main" target="1.8" />
+      <module name="src_Chapter_05_test" target="1.8" />
+      <module name="src_Chapter_06_main" target="1.8" />
+      <module name="src_Chapter_06_test" target="1.8" />
+      <module name="src_Chapter_07_main" target="1.8" />
+      <module name="src_Chapter_07_test" target="1.8" />
+      <module name="src_Chapter_08_main" target="1.8" />
+      <module name="src_Chapter_08_test" target="1.8" />
+      <module name="src_Chapter_09_main" target="1.8" />
+      <module name="src_Chapter_09_test" target="1.8" />
+      <module name="src_Chapter_10_main" target="1.8" />
+      <module name="src_Chapter_10_test" target="1.8" />
+      <module name="src_Chapter_14_main" target="1.8" />
+      <module name="src_Chapter_14_test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

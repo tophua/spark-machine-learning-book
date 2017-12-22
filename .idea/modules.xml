@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/spark-machine-learning-book.iml" filepath="$PROJECT_DIR$/spark-machine-learning-book.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 01/src_Chapter_01.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 01/src_Chapter_01.iml" group="src/Chapter 01" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 01/src_Chapter_01_main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 01/src_Chapter_01_main.iml" group="src/Chapter 01" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 01/src_Chapter_01_test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 01/src_Chapter_01_test.iml" group="src/Chapter 01" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 02/src_Chapter_02.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 02/src_Chapter_02.iml" group="src/Chapter 02" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 02/src_Chapter_02_main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 02/src_Chapter_02_main.iml" group="src/Chapter 02" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 02/src_Chapter_02_test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 02/src_Chapter_02_test.iml" group="src/Chapter 02" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 03/src_Chapter_03.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 03/src_Chapter_03.iml" group="src/Chapter 03" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 03/src_Chapter_03_main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 03/src_Chapter_03_main.iml" group="src/Chapter 03" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 03/src_Chapter_03_test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 03/src_Chapter_03_test.iml" group="src/Chapter 03" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 04/src_Chapter_04.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 04/src_Chapter_04.iml" group="src/Chapter 04" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 04/src_Chapter_04_main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 04/src_Chapter_04_main.iml" group="src/Chapter 04" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 04/src_Chapter_04_test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 04/src_Chapter_04_test.iml" group="src/Chapter 04" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 05/src_Chapter_05.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 05/src_Chapter_05.iml" group="src/Chapter 05" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 05/src_Chapter_05_main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 05/src_Chapter_05_main.iml" group="src/Chapter 05" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 05/src_Chapter_05_test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 05/src_Chapter_05_test.iml" group="src/Chapter 05" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 06/src_Chapter_06.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 06/src_Chapter_06.iml" group="src/Chapter 06" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 06/src_Chapter_06_main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 06/src_Chapter_06_main.iml" group="src/Chapter 06" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 06/src_Chapter_06_test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 06/src_Chapter_06_test.iml" group="src/Chapter 06" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 07/src_Chapter_07.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 07/src_Chapter_07.iml" group="src/Chapter 07" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 07/src_Chapter_07_main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 07/src_Chapter_07_main.iml" group="src/Chapter 07" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 07/src_Chapter_07_test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 07/src_Chapter_07_test.iml" group="src/Chapter 07" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 08/src_Chapter_08.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 08/src_Chapter_08.iml" group="src/Chapter 08" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 08/src_Chapter_08_main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 08/src_Chapter_08_main.iml" group="src/Chapter 08" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 08/src_Chapter_08_test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 08/src_Chapter_08_test.iml" group="src/Chapter 08" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 09/src_Chapter_09.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 09/src_Chapter_09.iml" group="src/Chapter 09" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 09/src_Chapter_09_main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 09/src_Chapter_09_main.iml" group="src/Chapter 09" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 09/src_Chapter_09_test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 09/src_Chapter_09_test.iml" group="src/Chapter 09" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 10/src_Chapter_10.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 10/src_Chapter_10.iml" group="src/Chapter 10" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 10/src_Chapter_10_main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 10/src_Chapter_10_main.iml" group="src/Chapter 10" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 10/src_Chapter_10_test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 10/src_Chapter_10_test.iml" group="src/Chapter 10" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 14/src_Chapter_14.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 14/src_Chapter_14.iml" group="src/Chapter 14" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 14/src_Chapter_14_main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 14/src_Chapter_14_main.iml" group="src/Chapter 14" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/Chapter 14/src_Chapter_14_test.iml" filepath="$PROJECT_DIR$/.idea/modules/src/Chapter 14/src_Chapter_14_test.iml" group="src/Chapter 14" />
+    </modules>
+  </component>
+</project>

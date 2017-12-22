@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.xerial.snappy:snappy-java:1.1.2.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.xerial.snappy/snappy-java/1.1.2.1/19477508808febc1a49214a1beb684c6dc8517ba/snappy-java-1.1.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.xerial.snappy/snappy-java/1.1.2.1/9a1b3e003585393bc83b58b5e65a5beeffcc7a86/snappy-java-1.1.2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

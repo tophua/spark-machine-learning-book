@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.calcite:calcite-core:1.2.0-incubating">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.calcite/calcite-core/1.2.0-incubating/48fbc72e0c33026e53ab2272bafa4917ff598693/calcite-core-1.2.0-incubating.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.calcite/calcite-core/1.2.0-incubating/9cec45e94364a39464283b059b476cf481eeb88e/calcite-core-1.2.0-incubating-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
