@@ -6,12 +6,12 @@ import org.apache.spark.{SparkConf, SparkContext}
   */
 object feature {
   def main(args: Array[String]) {
-    val conf = new SparkConf().setAppName("rdd_test01")
+    val conf = new SparkConf().setAppName("rdd_test01").setMaster("local")
     val sc = new SparkContext(conf)
     Logger.getRootLogger.setLevel(Level.WARN)
 
     /* Replace 'PATH' with the path to the 20 Newsgroups Data */
-    val path = "/PATH/20news-bydate-train/*"
+    val path = "20news-bydate/20news-bydate-train/*"
     val rdd = sc.wholeTextFiles(path)
     // count the number of records in the dataset
     println(rdd.count)
@@ -336,8 +336,8 @@ object feature {
     val breeze1 = new SparseVector(hockey1.indices, hockey1.values, hockey1.size)
     val hockey2 = hockeyTfIdf.sample(true, 0.1, 43).first.asInstanceOf[SV]
     val breeze2 = new SparseVector(hockey2.indices, hockey2.values, hockey2.size)
-    val cosineSim = breeze1.dot(breeze2) / (norm(breeze1) * norm(breeze2))
-    println(cosineSim)
+    //val cosineSim = breeze1.dot(breeze2) / (norm(breeze1) * norm(breeze2))
+   // println(cosineSim)
     // 0.060250114361164626
 
     // compare to comp.graphics topic
@@ -346,8 +346,8 @@ object feature {
     val graphicsTfIdf = idf.transform(graphicsTF.map(_._2))
     val graphics = graphicsTfIdf.sample(true, 0.1, 42).first.asInstanceOf[SV]
     val breezeGraphics = new SparseVector(graphics.indices, graphics.values, graphics.size)
-    val cosineSim2 = breeze1.dot(breezeGraphics) / (norm(breeze1) * norm(breezeGraphics))
-    println(cosineSim2)
+    //val cosineSim2 = breeze1.dot(breezeGraphics) / (norm(breeze1) * norm(breezeGraphics))
+   // println(cosineSim2)
     // 0.004664850323792852
 
     // compare to sport.baseball topic
@@ -356,8 +356,8 @@ object feature {
     val baseballTfIdf = idf.transform(baseballTF.map(_._2))
     val baseball = baseballTfIdf.sample(true, 0.1, 42).first.asInstanceOf[SV]
     val breezeBaseball = new SparseVector(baseball.indices, baseball.values, baseball.size)
-    val cosineSim3 = breeze1.dot(breezeBaseball) / (norm(breeze1) * norm(breezeBaseball))
-    println(cosineSim3)
+   // val cosineSim3 = breeze1.dot(breezeBaseball) / (norm(breeze1) * norm(breezeBaseball))
+   // println(cosineSim3)
     // 0.05047395039466008
 
     // === document classification === //

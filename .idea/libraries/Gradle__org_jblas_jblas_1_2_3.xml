@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.jblas:jblas:1.2.3">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jblas/jblas/1.2.3/a057398fb4cacf90bf6600a102de167f4b367188/jblas-1.2.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jblas/jblas/1.2.3/33c73da3be32fa67029cbf82314b045d4ce3829e/jblas-1.2.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

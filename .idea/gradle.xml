@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="distributionType" value="LOCAL" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="$USER_HOME$/Software/gradle-4.1" />
+        <option name="gradleJvm" value="1.8" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/src/Chapter 01" />
+            <option value="$PROJECT_DIR$/src/Chapter 02" />
+            <option value="$PROJECT_DIR$/src/Chapter 03" />
+            <option value="$PROJECT_DIR$/src/Chapter 04" />
+            <option value="$PROJECT_DIR$/src/Chapter 05" />
+            <option value="$PROJECT_DIR$/src/Chapter 06" />
+            <option value="$PROJECT_DIR$/src/Chapter 07" />
+            <option value="$PROJECT_DIR$/src/Chapter 08" />
+            <option value="$PROJECT_DIR$/src/Chapter 09" />
+            <option value="$PROJECT_DIR$/src/Chapter 10" />
+            <option value="$PROJECT_DIR$/src/Chapter 14" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

@@ -47,6 +47,7 @@ subprojects {
         compile group: 'commons-dbutils', name: 'commons-dbutils', version: '1.6'
         //compile("commons-collections:commons-collections:$collections3Version")
         compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+        compile group: 'org.jblas', name: 'jblas', version: '1.2.3'
         //compile("commons-collections:commons-collections:3.4")
         // 依赖maven中不存在的jar
        // ext.jarTree = fileTree(dir: 'libs', include: '**/*.jar')

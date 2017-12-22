@@ -8,7 +8,7 @@ object ItemCF {
   def main(args: Array[String]) {
 
     //0 构建Spark对象
-    val conf = new SparkConf().setAppName("ItemCF")
+    val conf = new SparkConf().setAppName("ItemCF").setMaster("local")
     val sc = new SparkContext(conf)
     Logger.getRootLogger.setLevel(Level.WARN)
 

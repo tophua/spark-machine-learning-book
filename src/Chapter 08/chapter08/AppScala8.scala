@@ -18,7 +18,6 @@ object AppScala8 {
     val first = rdd.first
     println(first)
     //本地第一步先把硬盘目录替换掉
-    val files2 = rdd.map { case (fileName, content) => fileName.replace("file:/D:/spark/spark-1.5.0-hadoop2.6/bin/", "") }
     //再把file:替换掉
     val files = rdd.map { case (fileName, content) => fileName.replace("file:", "") }
     println(files.first)
@@ -31,8 +30,8 @@ object AppScala8 {
       import java.io.File
       ImageIO.read(new File(path))
     }
-    val aePath = "file:/D:/spark/spark-1.5.0-hadoop2.6/bin/lfw/Aaron_Eckhart/Aaron_Eckhart_0001.jpg"
-    val aePath1 = "D:/spark/spark-1.5.0-hadoop2.6/bin/lfw/Aaron_Eckhart/Aaron_Eckhart_0001.jpg"
+    //val aePath = "file:/D:/spark/spark-1.5.0-hadoop2.6/bin/lfw/Aaron_Eckhart/Aaron_Eckhart_0001.jpg"
+    val aePath1 = "lfw/Aaron_Eckhart/Aaron_Eckhart_0001.jpg"
  
     val aeImage = loadImageFromFile(aePath1)
     /**

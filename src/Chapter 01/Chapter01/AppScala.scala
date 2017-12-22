@@ -32,7 +32,7 @@ object AppScala {
       //hdfs://xcsq:8089/machineLearning/Chapter01/UserPurchaseHistory.csv
     //不能指定文件名
     //val data = sc.textFile("hdfs://xcsq:8089/machineLearning/Chapter01/")
-    val data = sc.textFile("/Users/apple/Idea/workspace/spark-machine-learning-book/data/UserPurchaseHistory.csv")
+    val data = sc.textFile("data/UserPurchaseHistory.csv")
       .map(line => line.split(","))
       .map(purchaseRecord => (purchaseRecord(0), purchaseRecord(1), purchaseRecord(2)))
     // let's count the number of purchases
